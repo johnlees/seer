@@ -26,6 +26,9 @@
 *.exe
 *.out
 *.app
+pangwas
 
 # Editors
 .vimrc
+.lvimrc
+.ycm_extra_conf.py*

@@ -3,7 +3,7 @@ BINDIR=$(PREFIX)/bin
 
 BOOSTDIR=${HOME}/homebrew/Cellar/boost/1.57.0
 
-CXXFLAGS=-g
+CXXFLAGS=-Wall -g
 CPPFLAGS=-I$(BOOSTDIR)/include
 LDLIBS=-L$(BOOSTDIR)/lib -lm -lboost_program_options
 
