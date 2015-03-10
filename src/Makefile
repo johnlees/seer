@@ -1,7 +1,7 @@
 PREFIX=${HOME}/software
 BINDIR=$(PREFIX)/bin
 
-BOOSTDIR=${HOME}/homebrew/Cellar/boost/1.57.0
+BOOSTDIR=${HOME}/homebrew
 
 CXXFLAGS=-Wall -g
 CPPFLAGS=-I$(BOOSTDIR)/include
