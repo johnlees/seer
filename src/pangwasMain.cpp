@@ -28,26 +28,37 @@ int main (int argc, char *argv[])
       return 1;
    }
 
-   if (vm.count("kmers"))
+   // Open .pheno file, parse into vector of samples
+   std::vector<Sample> samples;
+   readPheno(vm["pheno"].as<std::string>(), samples);
+
+   // Open the dsm kmer ifstream
+   std::ifstream ist(vm["kmers"].as<std::string>().c_str());
+   if (!ist)
    {
-      std::cout << "kmers was set to " << vm["kmers"].as<std::string>() << ".\n";
-   }
-   else
-   {
-      std::cout << "Compression level was not set.\n";
+      throw std::runtime_error("Could not open kmer file " + vm["kmers"].as<std::string>() + "\n");
    }
 
-   // Open .pheno file, parse into sensible object (vector of samples?)
+   // Parse a set of dsm lines
+   std::vector<Kmer> kmer_lines(vm["threads"].as<int>());
+   Kmer k;
+
+   for (int i = 0; i<vm["threads"].as<int>(); ++i)
+   {
+      if (!ist)
+      {
+         ist >> k;
+         kmer_lines.push_back(k);
+      }
+   }
 
    // Thread from here...
-   // Parse a dsm line
-
    // Filter
 
    // Test
 
-   // Print
    // ...to here
+   // Print in order when all threads complete
 
    }
 
@@ -70,16 +81,22 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
 
    //Optional filtering parameters
    //NB pval cutoffs are strings for display, and are converted to floats later
+   po::options_description performance("Performance options");
+   performance.add_options()
+    ("threads", po::value<int>()->default_value(1), "number of threads");
+
+   //Optional filtering parameters
+   //NB pval cutoffs are strings for display, and are converted to floats later
    po::options_description filtering("Filtering options");
    filtering.add_options()
     ("max_length", po::value<int>(), "maximum kmer length")
     ("maf", po::value<double>()->default_value(maf_default), "minimum kmer frequency")
     ("min_words", po::value<int>(), "minimum kmer occurences. Overrides --maf")
-    ("chi2", po::value<std::string>()->default_value(chi2_default), "p-value threshold for initial chi squared test")
-    ("pval", po::value<std::string>()->default_value(pval_default), "p-value threshold for final logistic test");
+    ("chi2", po::value<std::string>()->default_value(chi2_default), "p-value threshold for initial chi squared test. Set to zero to show all")
+    ("pval", po::value<std::string>()->default_value(pval_default), "p-value threshold for final logistic test. Set to zero to show all");
 
    po::options_description all;
-   all.add(required).add(filtering).add(other);
+   all.add(required).add(performance).add(filtering).add(other);
 
    try
    {

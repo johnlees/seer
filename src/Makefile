@@ -8,6 +8,8 @@ CPPFLAGS=-I$(BOOSTDIR)/include
 LDLIBS=-L$(BOOSTDIR)/lib -lm -lboost_program_options
 
 PROGRAMS=pangwas
+CLASSES=sample.o kmer.o
+OBJECTS=pangwasMain.o pangwasFilter.o pangwasIO.o pangwasAssoc.o
 
 all: $(PROGRAMS)
 
@@ -18,7 +20,7 @@ install: all
 	install -d $(BINDIR)
 	install $(PROGRAMS) $(BINDIR)
 
-pangwas: pangwasMain.o pangwasFilter.o pangwasIO.o pangwasAssoc.o
+pangwas: $(CLASSES) $(OBJECTS)
 	$(LINK.cpp) $^ $(LDLIBS) -o $@
 
 .PHONY: all test clean install
