@@ -28,39 +28,68 @@ int main (int argc, char *argv[])
       return 1;
    }
 
+   // Parse options
+   double log_cutoff = stod(vm["pval"].as<std::string>());
+   double chi_cutoff = stod(vm["chi2"].as<std::string>());
+
    // Open .pheno file, parse into vector of samples
    std::vector<Sample> samples;
    readPheno(vm["pheno"].as<std::string>(), samples);
 
-   // Open the dsm kmer ifstream
-   std::ifstream ist(vm["kmers"].as<std::string>().c_str());
-   if (!ist)
+   // Open the dsm kmer ifstream, and read through the whole thing
+   std::ifstream kmer_file(vm["kmers"].as<std::string>().c_str());
+   if (!kmer_file)
    {
       throw std::runtime_error("Could not open kmer file " + vm["kmers"].as<std::string>() + "\n");
    }
 
-   // Parse a set of dsm lines
-   std::vector<Kmer> kmer_lines(vm["threads"].as<int>());
-   Kmer k;
-
-   for (int i = 0; i<vm["threads"].as<int>(); ++i)
+   while (kmer_file)
    {
-      if (!ist)
+      // Parse a set of dsm lines
+      // TODO this could also be threaded?
+      std::vector<Kmer> kmer_lines(vm["threads"].as<int>());
+      Kmer k;
+      while(kmer_lines.size() < vm["threads"].as<int>())
       {
-         ist >> k;
-         kmer_lines.push_back(k);
+         if (!kmer_file)
+         {
+            kmer_file >> k;
+
+            // apply filters here
+            if (passFilters(k, samples))
+            {
+               kmer_lines.push_back(k);
+            }
+         }
       }
+
+      // Thread from here...
+      // TODO if slow, can thread with multiple tests per thread
+      std::vector<std::thread> threads(vm["threads"].as<int>());
+      for (int i = 0; i<vm["threads"].as<int>(); ++i)
+      {
+         // Association test
+         // Note threads must be passed values as they are copied
+         // std::reference_wrapper allows references to be passed
+         threads.push_back(std::thread(logisticTest, std::ref(kmer_lines[i]), std::cref(samples)));
+      }
+
+      for (int i = 0; i<vm["threads"].as<int>(); ++i)
+      {
+         // Rejoin in order
+         threads[i].join();
+
+         // Print in order when all threads complete
+         if (kmer_lines[i].p_val() < log_cutoff)
+         {
+            std::cout << kmer_lines[i];
+         }
+      }
+      // ...to here
+
    }
 
-   // Thread from here...
-   // Filter
-
-   // Test
-
-   // ...to here
-   // Print in order when all threads complete
-
-   }
+}
 
 // Use boost::program_options to parse command line input
 // This does pretty much all the parameter checking needed
@@ -154,3 +183,5 @@ int fileStat(const std::string& filename)
 
    return success;
 }
+
+

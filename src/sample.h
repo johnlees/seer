@@ -18,7 +18,7 @@ class Sample
       // nonmodifying operations
       int pheno() const { return phenotype; }
       std::string iid() const { return name; }
-
+      static bool compareSamples(Sample lhs, Sample rhs) { return (lhs.name < rhs.name); }
 
    private:
       int phenotype;

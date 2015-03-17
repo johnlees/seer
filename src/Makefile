@@ -3,7 +3,7 @@ BINDIR=$(PREFIX)/bin
 
 BOOSTDIR=${HOME}/homebrew
 
-CXXFLAGS=-Wall -g
+CXXFLAGS=-Wall -g -std=c++11 -stdlib=libc++
 CPPFLAGS=-I$(BOOSTDIR)/include
 LDLIBS=-L$(BOOSTDIR)/lib -lm -lboost_program_options
 

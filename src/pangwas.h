@@ -11,6 +11,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <string>
+#include <algorithm>
 #include <list>
 #include <vector>
 #include <thread>
@@ -51,6 +52,7 @@ int fileStat(const std::string& filename);
 void readPheno(const std::string& filename, std::vector<Sample>& samples);
 
 // pangwasFilter headers
+int passFilters(const Kmer& k, const std::vector<Sample>& samples);
 
 // pangwasAssoc headers
-
+void logisticTest(Kmer& k, const std::vector<Sample>& samples);

@@ -27,6 +27,9 @@ void readPheno(const std::string& filename, std::vector<Sample>& samples)
    {
       samples.push_back(s);
    }
+
+   // Keep sorted in the same order as the kmers
+   std::sort(samples.begin(), samples.end(), Sample::compareSamples);
 }
 
 
