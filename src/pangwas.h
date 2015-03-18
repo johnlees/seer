@@ -20,6 +20,11 @@
 
 // Boost headers
 #include <boost/program_options.hpp>
+#include <boost/math/distributions/normal.hpp>
+
+// Armadillo/mlpack headers
+#include <mlpack/core.hpp> // this includes armadillo
+#include <mlpack/methods/logistic_regression/logistic_regression.hpp>
 
 // Classes
 #include "kmer.h"
@@ -51,8 +56,13 @@ int fileStat(const std::string& filename);
 // pangwasIO headers
 void readPheno(const std::string& filename, std::vector<Sample>& samples);
 
+arma::vec constructVecY(const std::vector<Sample>& samples);
+arma::vec constructVecX(const Kmer& k, const std::vector<Sample>& samples);
+
 // pangwasFilter headers
-int passFilters(const Kmer& k, const std::vector<Sample>& samples);
+int passBasicFilters(const Kmer& k, const int max_length, const int min_words);
+int passStatsFilters(const arma::vec& x, const arma::vec& y, float chi_cutoff);
 
 // pangwasAssoc headers
-void logisticTest(Kmer& k, const std::vector<Sample>& samples);
+void logisticTest(Kmer& k, arma::vec y, const double p_cutoff);
+float chiTest(arma::Mat<int> table);

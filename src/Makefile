@@ -4,8 +4,8 @@ BINDIR=$(PREFIX)/bin
 BOOSTDIR=${HOME}/homebrew
 
 CXXFLAGS=-Wall -g -std=c++11 -stdlib=libc++
-CPPFLAGS=-I$(BOOSTDIR)/include
-LDLIBS=-L$(BOOSTDIR)/lib -lm -lboost_program_options
+CPPFLAGS=-I$(PREFIX)/include -I$(BOOSTDIR)/include -I/usr/include/libxml2
+LDLIBS=-L$(PREFIX)/lib -L$(BOOSTDIR)/lib -lm -lboost_program_options -larmadillo -lmlpack
 
 PROGRAMS=pangwas
 CLASSES=sample.o kmer.o

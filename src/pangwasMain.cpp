@@ -30,11 +30,23 @@ int main (int argc, char *argv[])
 
    // Parse options
    double log_cutoff = stod(vm["pval"].as<std::string>());
-   double chi_cutoff = stod(vm["chi2"].as<std::string>());
+   float chi_cutoff = stof(vm["chi2"].as<std::string>());
+   int max_length = vm["max_length"].as<int>();
 
    // Open .pheno file, parse into vector of samples
    std::vector<Sample> samples;
    readPheno(vm["pheno"].as<std::string>(), samples);
+   arma::vec y = constructVecY(samples);
+
+   int min_words = 0;
+   if (vm.count("min_words"))
+   {
+      min_words = vm["min_words"].as<int>();
+   }
+   else
+   {
+      min_words = static_cast<int>(samples.size() * vm["maf"].as<double>());
+   }
 
    // Open the dsm kmer ifstream, and read through the whole thing
    std::ifstream kmer_file(vm["kmers"].as<std::string>().c_str());
@@ -56,9 +68,27 @@ int main (int argc, char *argv[])
             kmer_file >> k;
 
             // apply filters here
-            if (passFilters(k, samples))
+            if (passBasicFilters(k, max_length, min_words))
             {
-               kmer_lines.push_back(k);
+               // Don't bother with this if not running stats tests
+               int pass = 1;
+               arma::vec x = constructVecX(k, samples);
+
+               try  // Some chi^2 tests may diverge - proceed anyway for now
+               {
+                  pass = passStatsFilters(x, y, chi_cutoff);
+               }
+               catch (std::exception& e)
+               {
+                  std::cerr << "kmer " + k.sequence() + " failed chisq test with error: " + e.what();
+                  pass = 1;
+               }
+
+               if (pass)
+               {
+                  k.add_x(x);
+                  kmer_lines.push_back(k);
+               }
             }
          }
       }
@@ -71,7 +101,7 @@ int main (int argc, char *argv[])
          // Association test
          // Note threads must be passed values as they are copied
          // std::reference_wrapper allows references to be passed
-         threads.push_back(std::thread(logisticTest, std::ref(kmer_lines[i]), std::cref(samples)));
+         threads.push_back(std::thread(logisticTest, std::ref(kmer_lines[i]), y, log_cutoff));
       }
 
       for (int i = 0; i<vm["threads"].as<int>(); ++i)
