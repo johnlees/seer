@@ -10,7 +10,7 @@
 void logisticTest(Kmer& k, arma::vec y, const double p_cutoff)
 {
    // Train classifier
-   mlpack::regression::LogisticRegression::LogisticRegression fit(k.get_x(), y);
+   mlpack::regression::LogisticRegression<> fit(k.get_x(), y);
 
    // TODO
    // Extract pvalue

@@ -1,0 +1,3 @@
+[submodule "mlpack"]
+	path = mlpack
+	url = git@github.com:mlpack/mlpack.git

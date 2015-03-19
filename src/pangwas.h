@@ -65,4 +65,4 @@ int passStatsFilters(const arma::vec& x, const arma::vec& y, float chi_cutoff);
 
 // pangwasAssoc headers
 void logisticTest(Kmer& k, arma::vec y, const double p_cutoff);
-float chiTest(arma::Mat<int> table);
+float chiTest(arma::Mat<int>& table);
