@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <string>
+#include <stdexcept>
 
 // Samples have a name and phenotype
 // Covariates will be added later
