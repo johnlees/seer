@@ -61,8 +61,9 @@ arma::vec constructVecX(const Kmer& k, const std::vector<Sample>& samples);
 
 // pangwasFilter headers
 int passBasicFilters(const Kmer& k, const int max_length, const int min_words);
-int passStatsFilters(const arma::vec& x, const arma::vec& y, float chi_cutoff);
+int passStatsFilters(const arma::vec& x, const arma::vec& y, double chi_cutoff);
 
 // pangwasAssoc headers
-void logisticTest(Kmer& k, arma::vec y, const double p_cutoff);
-float chiTest(arma::Mat<int>& table);
+void logisticTest(Kmer& k, arma::vec y);
+double chiTest(arma::Mat<int>& table);
+double normalPval(double testStatistic);

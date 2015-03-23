@@ -32,7 +32,7 @@ int passBasicFilters(const Kmer& k, const int max_length, const int min_words)
    return passed;
 }
 
-int passStatsFilters(const arma::vec& x, const arma::vec& y, float chi_cutoff)
+int passStatsFilters(const arma::vec& x, const arma::vec& y, double chi_cutoff)
 {
    int passed = 1;
 

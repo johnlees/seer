@@ -30,7 +30,7 @@ int main (int argc, char *argv[])
 
    // Parse options
    double log_cutoff = stod(vm["pval"].as<std::string>());
-   float chi_cutoff = stof(vm["chi2"].as<std::string>());
+   double chi_cutoff = stod(vm["chi2"].as<std::string>());
    int max_length = vm["max_length"].as<int>();
 
    // Open .pheno file, parse into vector of samples
@@ -101,7 +101,7 @@ int main (int argc, char *argv[])
          // Association test
          // Note threads must be passed values as they are copied
          // std::reference_wrapper allows references to be passed
-         threads.push_back(std::thread(logisticTest, std::ref(kmer_lines[i]), y, log_cutoff));
+         threads.push_back(std::thread(logisticTest, std::ref(kmer_lines[i]), y));
       }
 
       for (int i = 0; i<vm["threads"].as<int>(); ++i)

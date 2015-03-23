@@ -1,11 +1,14 @@
 PREFIX=${HOME}/software
 BINDIR=$(PREFIX)/bin
 
-CXX=~/homebrew/bin/g++-4.9
 CXXFLAGS=-Wall -g -std=c++11
+CPPFLAGS=-I../armadillo-4.650.3/include/ -I../mlpack/build/include/ -I$(PREFIX)/include -I/usr/include/libxml2
+LDLIBS=-L../mlpack-1.0.12/build/lib -L../armadillo-4.650.3 -L$(PREFIX)/lib -lm -lmlpack -larmadillo -lboost_program_options -lblas -llapack
+
+#OS X compile options:
+#CXX=clang++
 #CXXFLAGS=-Wall -g -std=c++11 -stdlib=libc++
-CPPFLAGS=-I../armadillo-4.650.3/include/ -I../mlpack-1.0.12/build/include/ -I$(PREFIX)/include -I/usr/include/libxml2
-LDLIBS=-L../mlpack-1.0.12/build/lib -L../armadillo-4.650.3 -L$(PREFIX)/lib -lm -framework Accelerate -lmlpack -larmadillo -lboost_program_options
+#LDLIBS=-L../mlpack-1.0.12/build/lib -L../armadillo-4.650.3 -L$(PREFIX)/lib -lm -framework Accelerate -lmlpack -larmadillo -lboost_program_options
 
 PROGRAMS=pangwas
 CLASSES=sample.o kmer.o
