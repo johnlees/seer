@@ -31,7 +31,12 @@ int main (int argc, char *argv[])
    // Parse options
    double log_cutoff = stod(vm["pval"].as<std::string>());
    double chi_cutoff = stod(vm["chi2"].as<std::string>());
-   int max_length = vm["max_length"].as<int>();
+   int max_length = vm["max_length"].as<long int>();
+#ifdef NO_THREADS
+   int num_threads = 1;
+#else
+   int num_threads = vm["threads"].as<int>();
+#endif
 
    // Open .pheno file, parse into vector of samples
    std::vector<Sample> samples;
@@ -59,11 +64,13 @@ int main (int argc, char *argv[])
    {
       // Parse a set of dsm lines
       // TODO this could also be threaded?
-      std::vector<Kmer> kmer_lines(vm["threads"].as<int>());
+      std::vector<Kmer> kmer_lines;
+      kmer_lines.reserve(num_threads);
+
       Kmer k;
-      while(kmer_lines.size() < vm["threads"].as<int>())
+      while(kmer_lines.size() < num_threads)
       {
-         if (!kmer_file)
+         if (kmer_file)
          {
             kmer_file >> k;
 
@@ -86,6 +93,9 @@ int main (int argc, char *argv[])
 
                if (pass)
                {
+#ifdef PANGWAS_DEBUG
+                  std::cerr << "kmer " + k.sequence() + " seems signifcant\n";
+#endif
                   k.add_x(x);
                   kmer_lines.push_back(k);
                }
@@ -93,10 +103,20 @@ int main (int argc, char *argv[])
          }
       }
 
+#ifdef NO_THREAD
+      logisticTest(kmer_lines[0], y);
+
+      if (kmer_lines[0].p_val() < log_cutoff)
+      {
+         std::cout << kmer_lines[0];
+      }
+#else
       // Thread from here...
       // TODO if slow, can thread with multiple tests per thread
-      std::vector<std::thread> threads(vm["threads"].as<int>());
-      for (int i = 0; i<vm["threads"].as<int>(); ++i)
+      std::vector<std::thread> threads;
+      threads.reserve(kmer_lines.size());
+
+      for (int i = 0; i<kmer_lines.size(); ++i)
       {
          // Association test
          // Note threads must be passed values as they are copied
@@ -104,7 +124,7 @@ int main (int argc, char *argv[])
          threads.push_back(std::thread(logisticTest, std::ref(kmer_lines[i]), y));
       }
 
-      for (int i = 0; i<vm["threads"].as<int>(); ++i)
+      for (int i = 0; i<threads.size(); ++i)
       {
          // Rejoin in order
          threads[i].join();
@@ -116,7 +136,7 @@ int main (int argc, char *argv[])
          }
       }
       // ...to here
-
+#endif
    }
 
 }
@@ -148,7 +168,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
    //NB pval cutoffs are strings for display, and are converted to floats later
    po::options_description filtering("Filtering options");
    filtering.add_options()
-    ("max_length", po::value<int>(), "maximum kmer length")
+    ("max_length", po::value<long int>()->default_value(max_length_default), "maximum kmer length")
     ("maf", po::value<double>()->default_value(maf_default), "minimum kmer frequency")
     ("min_words", po::value<int>(), "minimum kmer occurences. Overrides --maf")
     ("chi2", po::value<std::string>()->default_value(chi2_default), "p-value threshold for initial chi squared test. Set to zero to show all")

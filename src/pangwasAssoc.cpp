@@ -64,7 +64,11 @@ double chiTest(arma::Mat<int>& table)
    }
 
    // For df = 1, as here, chi^2 == N(0,1)^2
-   return normalPval(pow(chisq, 0.5));
+   double p_value = normalPval(pow(chisq, 0.5));
+#ifdef PANGWAS_DEBUG
+   std::cerr << "chisq result: " << p_value << "\n";
+#endif
+   return p_value;
 }
 
 // Returns p-value for a test statistic that is >0 and standard normally distributed

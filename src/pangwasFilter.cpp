@@ -58,13 +58,14 @@ int passStatsFilters(const arma::vec& x, const arma::vec& y, double chi_cutoff)
             b++;
          }
       }
+      j++;
    }
 
    arma::Mat<int>::fixed<2, 2> table = {a, b, c, d};
 
    if (chiTest(table) > chi_cutoff)
    {
-         passed = 0;
+      passed = 0;
    }
 
    return passed;

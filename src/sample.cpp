@@ -30,7 +30,7 @@ std::istream& operator>>(std::istream &is, Sample& s)
    std::string FID, IID;
 
    is >> FID >> IID >> phenotype;
-   if (!is)
+   if (is)
    {
       s = Sample(phenotype, IID);
    }

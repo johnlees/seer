@@ -1,8 +1,8 @@
 PREFIX=${HOME}/software
 BINDIR=$(PREFIX)/bin
 
-CXXFLAGS=-Wall -g -std=c++11
-CPPFLAGS=-I../armadillo-4.650.3/include/ -I../mlpack/build/include/ -I$(PREFIX)/include -I/usr/include/libxml2
+CXXFLAGS=-Wall -g -O0 -std=c++11
+CPPFLAGS=-I../armadillo-4.650.3/include/ -I../mlpack/build/include/ -I$(PREFIX)/include -I/usr/include/libxml2 -D PANGWAS_DEBUG=1
 LDLIBS=-L../mlpack-1.0.12/build/lib -L../armadillo-4.650.3 -L$(PREFIX)/lib -lm -lmlpack -larmadillo -lboost_program_options -lblas -llapack
 
 #OS X compile options:

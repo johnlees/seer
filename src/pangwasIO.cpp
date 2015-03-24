@@ -53,13 +53,19 @@ arma::vec constructVecX(const Kmer& k, const std::vector<Sample>& samples)
    x.zeros(samples.size());
 
    // Names in k and samples are sorted in the same order
-   std::vector<std::string>::iterator nameIt = k.occurrence_vector().begin();
+   std::vector<std::string> k_vec = k.occurrence_vector(); // is this copy necessary?
+   std::vector<std::string>::iterator nameIt = k_vec.begin();
    for (int i = 0; i < samples.size(); ++i)
    {
       if(*nameIt == samples[i].iid())
       {
-         nameIt++;
          x[i] = 1;
+
+         nameIt++;
+         if (nameIt == k_vec.end())
+         {
+            break;
+         }
       }
    }
 

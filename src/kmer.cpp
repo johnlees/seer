@@ -47,42 +47,48 @@ std::ostream& operator<<(std::ostream &os, const Kmer& k)
 std::istream& operator>>(std::istream &is, Kmer& k)
 {
    std::vector<std::string> samples;
-   std::string word, s_buffer;
+   std::string word, s_buffer, kmer_line;
    char c_buffer;
 
    /*
     * Example dsm file line AAAAAAAAAAAAAAAAAATGCATATTTATCTTAG 5.172314 0.175087 100 0 100
     * 0.164875 100 | 6925_3#7:9 6823_4#17:26 6871_2#9:8
     */
-   // First field is the kmer
-   is >> word;
-
-   // Skip entropy fields
-   while(is && s_buffer != "|")
+   if (is)
    {
-      is >> s_buffer;
-   }
-   s_buffer = "";
+      getline(is, kmer_line);
+      std::stringstream line(kmer_line);
 
-   while(is && c_buffer != '\n')
-   {
-      is >> c_buffer;
+      // First field is the kmer
+      line >> word;
 
-      // Found end of sample. Read forward to next one
-      if (c_buffer == ':')
+      // Skip entropy fields
+      while (line >> s_buffer)
       {
-         samples.push_back(s_buffer);
-         s_buffer = "";
-         while (is && (c_buffer != ' ' || c_buffer != '\n'))
+         if (s_buffer == "|")
          {
-            is >> c_buffer;
+            break;
          }
       }
-      else
+      s_buffer = "";
+
+      while (line >> c_buffer)
       {
-         s_buffer += c_buffer;
+         // Found end of sample. Read forward to next one
+         if (c_buffer == ':')
+         {
+            samples.push_back(s_buffer);
+            line >> s_buffer;
+
+            s_buffer = "";
+         }
+         else
+         {
+            s_buffer += c_buffer;
+         }
       }
    }
+
    // Keep samples sorted, for easy conversion into a vector
    std::sort(samples.begin(), samples.end());
 
