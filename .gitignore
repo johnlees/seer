@@ -34,6 +34,6 @@ pangwas
 .ycm_extra_conf.py*
 
 # Submodules
-armadillo-4.650.3
-mlpack-1.0.12
-boost_1_57_0
+armadillo-4.*
+mlpack-1.0.*
+boost_1_*

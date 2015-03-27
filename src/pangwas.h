@@ -64,6 +64,6 @@ int passBasicFilters(const Kmer& k, const int max_length, const int min_words);
 int passStatsFilters(const arma::vec& x, const arma::vec& y, double chi_cutoff);
 
 // pangwasAssoc headers
-void logisticTest(Kmer& k, arma::vec y);
+void logisticTest(Kmer& k, const arma::vec& y);
 double chiTest(arma::Mat<int>& table);
 double normalPval(double testStatistic);

@@ -7,7 +7,7 @@
 
 #include "pangwas.h"
 
-void logisticTest(Kmer& k, arma::vec y_train)
+void logisticTest(Kmer& k, const arma::vec& y_train)
 {
    // Train classifier
    arma::vec x_train = k.get_x();

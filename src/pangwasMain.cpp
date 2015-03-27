@@ -68,7 +68,7 @@ int main (int argc, char *argv[])
       kmer_lines.reserve(num_threads);
 
       Kmer k;
-      while(kmer_lines.size() < num_threads)
+      while(kmer_lines.size() < num_threads && kmer_file)
       {
          if (kmer_file)
          {
@@ -94,7 +94,7 @@ int main (int argc, char *argv[])
                if (pass)
                {
 #ifdef PANGWAS_DEBUG
-                  std::cerr << "kmer " + k.sequence() + " seems signifcant\n";
+                  std::cerr << "kmer " + k.sequence() + " seems significant\n";
 #endif
                   k.add_x(x);
                   kmer_lines.push_back(k);
@@ -104,13 +104,17 @@ int main (int argc, char *argv[])
       }
 
 #ifdef NO_THREAD
-      logisticTest(kmer_lines[0], y);
-
-      if (kmer_lines[0].p_val() < log_cutoff)
+      if (kmer_lines.size() == 1)
       {
-         std::cout << kmer_lines[0];
+         logisticTest(kmer_lines[0], y);
+
+         if (kmer_lines[0].p_val() < log_cutoff)
+         {
+            std::cout << kmer_lines[0];
+         }
       }
-#else
+
+     #else
       // Thread from here...
       // TODO if slow, can thread with multiple tests per thread
       std::vector<std::thread> threads;
@@ -121,7 +125,7 @@ int main (int argc, char *argv[])
          // Association test
          // Note threads must be passed values as they are copied
          // std::reference_wrapper allows references to be passed
-         threads.push_back(std::thread(logisticTest, std::ref(kmer_lines[i]), y));
+         threads.push_back(std::thread(logisticTest, std::ref(kmer_lines[i]), std::cref(y)));
       }
 
       for (int i = 0; i<threads.size(); ++i)
@@ -138,6 +142,8 @@ int main (int argc, char *argv[])
       // ...to here
 #endif
    }
+
+   std::cerr << "Done.\n";
 
 }
 
