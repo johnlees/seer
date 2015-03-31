@@ -10,7 +10,7 @@
 void logisticTest(Kmer& k, const arma::vec& y_train)
 {
    // Train classifier
-   arma::vec x_train = k.get_x();
+   arma::mat x_train = k.get_x();
    mlpack::regression::LogisticRegression<> fit(x_train, y_train);
 
    // Extract beta
@@ -38,9 +38,8 @@ void logisticTest(Kmer& k, const arma::vec& y_train)
    k.p_val(pvalue);
 }
 
-double chiTest(arma::Mat<int>& table)
+double chiTest(arma::mat& table)
 {
-   // Use floats, speed over accuracy?
    double chisq = 0;
    int N = accu(table);
 
@@ -49,24 +48,18 @@ double chiTest(arma::Mat<int>& table)
       throw std::logic_error("Empty table for chisq test\n");
    }
 
+   // Without Yates' continuity correction
+   chisq = N * pow(det(table), 2);
    for (int i = 0; i < 2; ++i)
    {
-      for (int j = 0; j < 2; ++j)
-      {
-         double fe = (accu(table.row(i)) * accu(table.col(j))) / N;
-         if (fe == 0)
-         {
-            throw std::runtime_error("Table element " + std::to_string(i) + "'" + std::to_string(j) + " fe = 0\n");
-         }
-
-         chisq += pow(table(i,j) - fe, 2);
-      }
+      chisq /= accu(table.row(i)) * accu(table.col(i));
    }
 
-   // For df = 1, as here, chi^2 == N(0,1)^2
+   // For df = 1, as here, chi^2 == N(0,1)^2 (standard normal dist.)
    double p_value = normalPval(pow(chisq, 0.5));
 #ifdef PANGWAS_DEBUG
-   std::cerr << "chisq result: " << p_value << "\n";
+   std::cerr << "chisq:" << chisq << "\n";
+   std::cerr << "chisq p: " << p_value << "\n";
 #endif
    return p_value;
 }

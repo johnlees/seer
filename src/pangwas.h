@@ -65,5 +65,5 @@ int passStatsFilters(const arma::vec& x, const arma::vec& y, double chi_cutoff);
 
 // pangwasAssoc headers
 void logisticTest(Kmer& k, const arma::vec& y);
-double chiTest(arma::Mat<int>& table);
+double chiTest(arma::mat& table);
 double normalPval(double testStatistic);

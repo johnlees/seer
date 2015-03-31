@@ -61,7 +61,10 @@ int passStatsFilters(const arma::vec& x, const arma::vec& y, double chi_cutoff)
       j++;
    }
 
-   arma::Mat<int>::fixed<2, 2> table = {a, b, c, d};
+   arma::mat::fixed<2, 2> table = {a, b, c, d};
+#ifdef PANGWAS_DEBUG
+   std::cerr << table << "\n";
+#endif
 
    if (chiTest(table) > chi_cutoff)
    {
