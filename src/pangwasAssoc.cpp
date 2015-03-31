@@ -10,7 +10,7 @@
 void logisticTest(Kmer& k, const arma::vec& y_train)
 {
    // Train classifier
-   arma::mat x_train = k.get_x();
+   arma::mat x_train = k.get_x().t();
    mlpack::regression::LogisticRegression<> fit(x_train, y_train);
 
    // Extract beta

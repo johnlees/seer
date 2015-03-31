@@ -9,12 +9,13 @@
 #include "pangwas.h"
 
 // Wrapper to all filter functions
-int passBasicFilters(const Kmer& k, const int max_length, const int min_words)
+int passBasicFilters(const Kmer& k, const int max_length, const int min_words, const int max_words)
 {
    int passed = 1;
 
    //TODO there might be a nicer way to write this, each filter as its own
    //function, then call all functions of type filter on the passed objects
+
    // Don't test long kmers
    if (k.length() > max_length)
    {
@@ -24,7 +25,7 @@ int passBasicFilters(const Kmer& k, const int max_length, const int min_words)
    // Impose min words
    // TODO may want to make this more sophisticated, make sure there are at
    // least ten words in each category
-   if (passed && k.num_occurrences() < min_words)
+   if (passed && k.num_occurrences() < min_words || k.num_occurrences() > max_words)
    {
       passed = 0;
    }

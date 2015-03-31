@@ -60,7 +60,7 @@ arma::vec constructVecY(const std::vector<Sample>& samples);
 arma::vec constructVecX(const Kmer& k, const std::vector<Sample>& samples);
 
 // pangwasFilter headers
-int passBasicFilters(const Kmer& k, const int max_length, const int min_words);
+int passBasicFilters(const Kmer& k, const int max_length, const int min_words, const int max_words);
 int passStatsFilters(const arma::vec& x, const arma::vec& y, double chi_cutoff);
 
 // pangwasAssoc headers

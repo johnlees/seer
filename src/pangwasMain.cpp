@@ -53,6 +53,12 @@ int main (int argc, char *argv[])
       min_words = static_cast<int>(samples.size() * vm["maf"].as<double>());
    }
 
+   if (min_words < 0 || min_words > samples.size())
+   {
+      throw std::runtime_error("Bad min_words specified: " + std::to_string(min_words) + "\n");
+   }
+   int max_words = samples.size() - min_words;
+
    // Open the dsm kmer ifstream, and read through the whole thing
    std::ifstream kmer_file(vm["kmers"].as<std::string>().c_str());
    if (!kmer_file)
@@ -75,7 +81,7 @@ int main (int argc, char *argv[])
             kmer_file >> k;
 
             // apply filters here
-            if (passBasicFilters(k, max_length, min_words))
+            if (passBasicFilters(k, max_length, min_words, max_words))
             {
                // Don't bother with this if not running stats tests
                int pass = 1;
@@ -177,8 +183,8 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
     ("max_length", po::value<long int>()->default_value(max_length_default), "maximum kmer length")
     ("maf", po::value<double>()->default_value(maf_default), "minimum kmer frequency")
     ("min_words", po::value<int>(), "minimum kmer occurences. Overrides --maf")
-    ("chi2", po::value<std::string>()->default_value(chi2_default), "p-value threshold for initial chi squared test. Set to zero to show all")
-    ("pval", po::value<std::string>()->default_value(pval_default), "p-value threshold for final logistic test. Set to zero to show all");
+    ("chi2", po::value<std::string>()->default_value(chi2_default), "p-value threshold for initial chi squared test. Set to 1 to show all")
+    ("pval", po::value<std::string>()->default_value(pval_default), "p-value threshold for final logistic test. Set to 1 to show all");
 
    po::options_description all;
    all.add(required).add(performance).add(filtering).add(other);
