@@ -12,7 +12,7 @@ LDLIBS=-L../mlpack-1.0.12/build/lib -L../armadillo-4.650.3 -L$(PREFIX)/lib -lm -
 
 PROGRAMS=pangwas
 CLASSES=sample.o kmer.o
-OBJECTS=pangwasMain.o pangwasFilter.o pangwasIO.o pangwasAssoc.o
+OBJECTS=pangwasMain.o pangwasCmdLine.o pangwasFilter.o pangwasIO.o pangwasAssoc.o
 
 all: $(PROGRAMS)
 

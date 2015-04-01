@@ -40,7 +40,7 @@ long int Kmer::map(std::string& ref_file)
 // Output
 std::ostream& operator<<(std::ostream &os, const Kmer& k)
 {
-   return os << k.sequence() << "\t" << std::scientific << std::to_string(k.p_val()) << "\t" << k.beta() << "\n";
+   return os << k.sequence() << "\t" << std::scientific << k.p_val() << "\t" << k.beta() << "\n";
 }
 
 // Input

@@ -38,7 +38,7 @@ arma::vec constructVecY(const std::vector<Sample>& samples)
    arma::vec y;
    y.zeros(samples.size());
 
-   for (int i = 0; i < samples.size(); ++i)
+   for (unsigned int i = 0; i < samples.size(); ++i)
    {
       y[i] = samples[i].pheno();
    }
@@ -55,7 +55,7 @@ arma::vec constructVecX(const Kmer& k, const std::vector<Sample>& samples)
    // Names in k and samples are sorted in the same order
    std::vector<std::string> k_vec = k.occurrence_vector(); // is this copy necessary?
    std::vector<std::string>::iterator nameIt = k_vec.begin();
-   for (int i = 0; i < samples.size(); ++i)
+   for (unsigned int i = 0; i < samples.size(); ++i)
    {
       if(*nameIt == samples[i].iid())
       {
@@ -72,8 +72,19 @@ arma::vec constructVecX(const Kmer& k, const std::vector<Sample>& samples)
    return x;
 }
 
+// Check for file existence
+int fileStat(const std::string& filename)
+{
+   struct stat buffer;
+   int success = 1;
 
+   if (stat (filename.c_str(), &buffer) != 0)
+   {
+      std::cerr << "Can't stat input file: " << filename << "\n";
 
+      success = 0;
+   }
 
-
+   return success;
+}
 

@@ -7,8 +7,6 @@
 
 #include "pangwas.h"
 
-namespace po = boost::program_options; // Save some typing
-
 int main (int argc, char *argv[])
 {
    // Program description
@@ -16,7 +14,7 @@ int main (int argc, char *argv[])
 
    // Do parsing and checking of command line params
    // If no input options, give quick usage rather than full help
-   po::variables_map vm;
+   boost::program_options::variables_map vm;
    if (argc == 1)
    {
       std::cerr << "Usage: pangwas -k dsm.txt -p data.pheno -o output\n\n"
@@ -28,14 +26,17 @@ int main (int argc, char *argv[])
       return 1;
    }
 
-   // Parse options
+   // Read cmd line options
    double log_cutoff = stod(vm["pval"].as<std::string>());
    double chi_cutoff = stod(vm["chi2"].as<std::string>());
    int max_length = vm["max_length"].as<long int>();
-#ifdef NO_THREADS
-   int num_threads = 1;
-#else
-   int num_threads = vm["threads"].as<int>();
+   unsigned int num_threads = 1;
+
+#ifndef NO_THREADS
+   if (vm["threads"].as<int>() >= 1)
+   {
+      num_threads = vm["threads"].as<int>();
+   }
 #endif
 
    // Open .pheno file, parse into vector of samples
@@ -43,7 +44,8 @@ int main (int argc, char *argv[])
    readPheno(vm["pheno"].as<std::string>(), samples);
    arma::vec y = constructVecY(samples);
 
-   int min_words = 0;
+   // Error check cmd line options
+   size_t min_words = 0;
    if (vm.count("min_words"))
    {
       min_words = vm["min_words"].as<int>();
@@ -55,9 +57,9 @@ int main (int argc, char *argv[])
 
    if (min_words < 0 || min_words > samples.size())
    {
-      throw std::runtime_error("Bad min_words specified: " + std::to_string(min_words) + "\n");
+      throw std::runtime_error("Bad min_words/maf specified: " + std::to_string(min_words) + "\n");
    }
-   int max_words = samples.size() - min_words;
+   size_t max_words = samples.size() - min_words;
 
    // Open the dsm kmer ifstream, and read through the whole thing
    std::ifstream kmer_file(vm["kmers"].as<std::string>().c_str());
@@ -119,14 +121,13 @@ int main (int argc, char *argv[])
             std::cout << kmer_lines[0];
          }
       }
-
-     #else
+#else
       // Thread from here...
       // TODO if slow, can thread with multiple tests per thread
       std::vector<std::thread> threads;
       threads.reserve(kmer_lines.size());
 
-      for (int i = 0; i<kmer_lines.size(); ++i)
+      for (unsigned int i = 0; i<kmer_lines.size(); ++i)
       {
          // Association test
          // Note threads must be passed values as they are copied
@@ -134,7 +135,7 @@ int main (int argc, char *argv[])
          threads.push_back(std::thread(logisticTest, std::ref(kmer_lines[i]), std::cref(y)));
       }
 
-      for (int i = 0; i<threads.size(); ++i)
+      for (unsigned int i = 0; i<threads.size(); ++i)
       {
          // Rejoin in order
          threads[i].join();
@@ -152,98 +153,4 @@ int main (int argc, char *argv[])
    std::cerr << "Done.\n";
 
 }
-
-// Use boost::program_options to parse command line input
-// This does pretty much all the parameter checking needed
-int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
-{
-   int failed = 0;
-
-   //Required options
-   po::options_description required("Required options");
-   required.add_options()
-    ("kmers,k", po::value<std::string>()->required(), "dsm kmer output file")
-    ("pheno,p", po::value<std::string>()->required(), ".pheno metadata")
-    ("output,o", po::value<std::string>()->required(), "output prefix");
-
-   po::options_description other("Other options");
-   other.add_options()
-    ("help,h", "full help message");
-
-   //Optional filtering parameters
-   //NB pval cutoffs are strings for display, and are converted to floats later
-   po::options_description performance("Performance options");
-   performance.add_options()
-    ("threads", po::value<int>()->default_value(1), "number of threads");
-
-   //Optional filtering parameters
-   //NB pval cutoffs are strings for display, and are converted to floats later
-   po::options_description filtering("Filtering options");
-   filtering.add_options()
-    ("max_length", po::value<long int>()->default_value(max_length_default), "maximum kmer length")
-    ("maf", po::value<double>()->default_value(maf_default), "minimum kmer frequency")
-    ("min_words", po::value<int>(), "minimum kmer occurences. Overrides --maf")
-    ("chi2", po::value<std::string>()->default_value(chi2_default), "p-value threshold for initial chi squared test. Set to 1 to show all")
-    ("pval", po::value<std::string>()->default_value(pval_default), "p-value threshold for final logistic test. Set to 1 to show all");
-
-   po::options_description all;
-   all.add(required).add(performance).add(filtering).add(other);
-
-   try
-   {
-      po::store(po::command_line_parser(argc, argv).options(all).run(), vm);
-
-      if (vm.count("help"))
-      {
-         printHelp(all);
-         failed = 1;
-      }
-      else
-      {
-         po::notify(vm);
-         failed = 0;
-
-         // Check input files exist, and can stat
-         if (!fileStat(vm["kmers"].as<std::string>()) || !fileStat(vm["pheno"].as<std::string>()))
-         {
-            failed = 1;
-         }
-      }
-
-   }
-   catch (po::error& e)
-   {
-      // Report errors from boost library
-      std::cerr << "Error in command line input: " << e.what() << "\n";
-      std::cerr << "Run 'pangwas --help' for full option listing\n\n";
-      std::cerr << required << "\n" << other << "\n";
-
-      failed = 1;
-   }
-
-   return failed;
-}
-
-// Print long help message
-void printHelp(po::options_description& help)
-{
-   std::cerr << help << "\n";
-}
-
-// Check for file existence
-int fileStat(const std::string& filename)
-{
-   struct stat buffer;
-   int success = 1;
-
-   if (stat (filename.c_str(), &buffer) != 0)
-   {
-      std::cerr << "Can't stat input file: " << filename << "\n";
-
-      success = 0;
-   }
-
-   return success;
-}
-
 

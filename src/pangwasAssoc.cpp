@@ -32,7 +32,7 @@ void logisticTest(Kmer& k, const arma::vec& y_train)
    // than ^2 as responses are 0 or 1
    //
    double b1_se = pow(accu(abs(y_train - y_predicted)) / (y_train.n_rows - 2), 0.5);
-   double W = b_1/b1_se; // b_0 = 0
+   double W = b_1/b1_se; // null hypothesis b_1 = 0
 
    double pvalue = normalPval(W);
    k.p_val(pvalue);
