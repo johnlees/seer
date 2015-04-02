@@ -32,7 +32,7 @@ int main (int argc, char *argv[])
    int max_length = vm["max_length"].as<long int>();
    unsigned int num_threads = 1;
 
-#ifndef NO_THREADS
+#ifndef NO_THREAD
    if (vm["threads"].as<int>() >= 1)
    {
       num_threads = vm["threads"].as<int>();

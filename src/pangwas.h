@@ -47,11 +47,9 @@ struct Assoc
    double beta;
 };
 
-// pangwasMain headers
+// pangwasCmdLine headers
 int parseCommandLine (int argc, char *argv[], boost::program_options::variables_map& vm);
-
 void printHelp(boost::program_options::options_description& help);
-int fileStat(const std::string& filename);
 
 // pangwasIO headers
 void readPheno(const std::string& filename, std::vector<Sample>& samples);
@@ -59,11 +57,16 @@ void readPheno(const std::string& filename, std::vector<Sample>& samples);
 arma::vec constructVecY(const std::vector<Sample>& samples);
 arma::vec constructVecX(const Kmer& k, const std::vector<Sample>& samples);
 
+int fileStat(const std::string& filename);
+
 // pangwasFilter headers
 int passBasicFilters(const Kmer& k, const int max_length, const int min_words, const int max_words);
 int passStatsFilters(const arma::vec& x, const arma::vec& y, double chi_cutoff);
 
 // pangwasAssoc headers
 void logisticTest(Kmer& k, const arma::vec& y);
+arma::mat varCovarMat(const arma::mat& x, const arma::mat& b);
+arma::vec predictLogitProbs(const arma::mat& x, const arma::vec& b);
+
 double chiTest(arma::mat& table);
 double normalPval(double testStatistic);
