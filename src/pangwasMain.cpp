@@ -5,7 +5,7 @@
  *
  */
 
-#include "pangwas.h"
+#include "pangwas.hpp"
 
 int main (int argc, char *argv[])
 {
@@ -48,25 +48,39 @@ int main (int argc, char *argv[])
    size_t min_words = 0;
    if (vm.count("min_words"))
    {
-      min_words = vm["min_words"].as<int>();
+      int min_words_in = vm["min_words"].as<int>();
+      if (min_words_in >= 0)
+      {
+         min_words = min_words_in;
+      }
+      else
+      {
+         badCommand("min_words", std::to_string(min_words_in));
+      }
    }
    else
    {
-      min_words = static_cast<int>(samples.size() * vm["maf"].as<double>());
+      double maf_in = vm["maf"].as<double>();
+      if (maf_in >= 0)
+      {
+         min_words =  static_cast<unsigned int>(samples.size() * maf_in);
+      }
+      else
+      {
+         badCommand("maf", std::to_string(maf_in));
+      }
    }
 
-   if (min_words < 0 || min_words > samples.size())
+   if (min_words > samples.size())
    {
-      throw std::runtime_error("Bad min_words/maf specified: " + std::to_string(min_words) + "\n");
+      badCommand("min_words/maf", std::to_string(min_words));
    }
    size_t max_words = samples.size() - min_words;
 
    // Open the dsm kmer ifstream, and read through the whole thing
-   std::ifstream kmer_file(vm["kmers"].as<std::string>().c_str());
-   if (!kmer_file)
-   {
-      throw std::runtime_error("Could not open kmer file " + vm["kmers"].as<std::string>() + "\n");
-   }
+   //std::ifstream kmer_file; // need to initialise with pointer to streambuf, which is not yet set
+   //openDsmFile(kmer_file, vm["kmers"].as<std::string>());
+   igzstream kmer_file(vm["kmers"].as<std::string>().c_str());
 
    while (kmer_file)
    {

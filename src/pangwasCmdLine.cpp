@@ -5,7 +5,7 @@
  *
  */
 
-#include "pangwas.h"
+#include "pangwas.hpp"
 
 namespace po = boost::program_options; // Save some typing
 

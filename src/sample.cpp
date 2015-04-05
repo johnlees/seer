@@ -5,7 +5,7 @@
  *
  */
 
-#include "sample.h"
+#include "sample.hpp"
 
 const int default_pheno = 0;
 const std::string default_name = "";

@@ -6,7 +6,7 @@
  *
  */
 
-#include "pangwas.h"
+#include "pangwas.hpp"
 
 // Wrapper to all filter functions
 int passBasicFilters(const Kmer& k, const int max_length, const int min_words, const int max_words)

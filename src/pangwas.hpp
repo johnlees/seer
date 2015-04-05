@@ -5,7 +5,7 @@
  *
  */
 
-// C headers
+// C/C++/C++11 headers
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -17,18 +17,22 @@
 #include <thread>
 #include <exception>
 #include <sys/stat.h>
+#include <regex>
 
 // Boost headers
 #include <boost/program_options.hpp>
 #include <boost/math/distributions/normal.hpp>
+
+// gzstream headers
+#include <gzstream.h>
 
 // Armadillo/mlpack headers
 #include <mlpack/core.hpp> // this includes armadillo
 #include <mlpack/methods/logistic_regression/logistic_regression.hpp>
 
 // Classes
-#include "kmer.h"
-#include "sample.h"
+#include "kmer.hpp"
+#include "sample.hpp"
 
 // Constants
 //    Default options
@@ -37,22 +41,13 @@ const double maf_default = 0.01;
 const std::string chi2_default = "10e-5";
 const std::string pval_default = "10e-8";
 
-// Structs
-
-// Association results return a pvalue and some form of effect size
-// Take the slope (beta_1)
-struct Assoc
-{
-   double pvalue;
-   double beta;
-};
-
 // pangwasCmdLine headers
 int parseCommandLine (int argc, char *argv[], boost::program_options::variables_map& vm);
 void printHelp(boost::program_options::options_description& help);
 
 // pangwasIO headers
 void readPheno(const std::string& filename, std::vector<Sample>& samples);
+void openDsmFile(igzstream& dsm_file, const std::string file_name);
 
 arma::vec constructVecY(const std::vector<Sample>& samples);
 arma::vec constructVecX(const Kmer& k, const std::vector<Sample>& samples);
@@ -70,3 +65,6 @@ arma::vec predictLogitProbs(const arma::mat& x, const arma::vec& b);
 
 double chiTest(arma::mat& table);
 double normalPval(double testStatistic);
+
+//pangwasErr headers
+void badCommand(const std::string& command, const std::string& value);

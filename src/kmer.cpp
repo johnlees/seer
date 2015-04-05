@@ -5,7 +5,7 @@
  *
  */
 
-#include "kmer.h"
+#include "kmer.hpp"
 
 const std::string seq_default = "";
 const std::vector<std::string> occ_default;
@@ -56,7 +56,7 @@ std::istream& operator>>(std::istream &is, Kmer& k)
     */
    if (is)
    {
-      getline(is, kmer_line);
+      std::getline(is, kmer_line);
       std::stringstream line(kmer_line);
 
       // First field is the kmer

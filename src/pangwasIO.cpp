@@ -2,13 +2,16 @@
  * File: pangwasIO.cpp
  *
  * Controls: reading in pheno to sample object
+ * Open (zipped) dsm file
  * Internal format conversion
  *
  * NB: some input and output used overridden operators in
  * <class>.cpp files
  *
  */
-#include "pangwas.h"
+#include "pangwas.hpp"
+
+std::regex gzipped("\\.gz$"); // matches .gz at the end of a string
 
 /* .pheno files
  * space separated:
@@ -31,6 +34,27 @@ void readPheno(const std::string& filename, std::vector<Sample>& samples)
 
    // Keep sorted in the same order as the kmers
    std::sort(samples.begin(), samples.end(), Sample::compareSamples);
+}
+
+// Open dsm files, which are possibly zipped
+void openDsmFile(igzstream& dsm_stream, const std::string file_name)
+{
+   // Check for a .gz extension
+   if (!regex_match(file_name, gzipped))
+   {
+      // Warn
+      std::cerr << "WARNING: Input file " + file_name
+         + " is not gzip compressed, which is recommended\n";
+   }
+
+   dsm_stream.open(file_name.c_str()); // Push binary file into buffer
+
+   // Set stream buffer of istream to the one just opened, and check ok
+   if (!dsm_stream.good())
+   {
+      throw std::runtime_error("Could not open kmer file " + file_name + "\n");
+   }
+
 }
 
 arma::vec constructVecY(const std::vector<Sample>& samples)

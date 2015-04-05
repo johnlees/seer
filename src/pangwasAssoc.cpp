@@ -5,7 +5,7 @@
  *
  */
 
-#include "pangwas.h"
+#include "pangwas.hpp"
 
 void logisticTest(Kmer& k, const arma::vec& y_train)
 {
