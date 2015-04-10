@@ -25,19 +25,21 @@ class Kmer
       std::vector<std::string> occurrence_vector() const { return occurrences; }
       long int get_position() const { return position; }
       arma::vec get_x() const { return x; }
+      int has_x() const { return x_set; }
       double p_val() const { return pvalue; }
       double beta() const { return b; }
 
       //Modifying operations
       void p_val(double p) { pvalue = p; }
       void beta(double new_b) { b = new_b; }
-      void add_x(arma::vec new_x) { x = new_x; }
+      void add_x(arma::vec new_x) { x = new_x; x_set = 1; }
       long int map(std::string& ref_file);
 
    private:
       std::string word;
       std::vector<std::string> occurrences;
       arma::vec x;
+      int x_set;
       double pvalue;
       double b;
       long int position;

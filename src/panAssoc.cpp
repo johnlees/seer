@@ -5,18 +5,40 @@
  *
  */
 
-#include "pangwas.hpp"
+#include "pancommon.hpp"
 
+// Logistic fit without covariates
 void logisticTest(Kmer& k, const arma::vec& y_train)
 {
    // Train classifier
    arma::mat x_train = k.get_x();
+
+   regression fit = logisticPval(y_train, x_train);
+   k.p_val(fit.p_val);
+   k.beta(fit.beta);
+}
+
+// Logistic fit with covariates
+void logisticTest(Kmer& k, const arma::vec& y_train, const arma::mat& mds)
+{
+   // Train classifier
+   arma::mat x_train = arma::join_rows(k.get_x(), mds);
+
+   regression fit = logisticPval(y_train, x_train);
+   k.p_val(fit.p_val);
+   k.beta(fit.beta);
+}
+
+// Fits logistic regression, and returns beta and pvalue
+regression logisticPval(const arma::vec& y_train, const arma::mat& x_train)
+{
+   regression parameters;
    mlpack::regression::LogisticRegression<> fit(x_train.t(), y_train);
 
    // Extract beta
    arma::vec b_vector = fit.Parameters();
    double b_1 = b_vector(1);
-   k.beta(b_1);
+   parameters.beta = b_1;
 
    // Extract p-value
    //
@@ -27,16 +49,17 @@ void logisticTest(Kmer& k, const arma::vec& y_train)
    // than ^2 as responses are 0 or 1
    //
    double W = std::abs(b_1) / pow(varCovarMat(x_train, b_vector)(1,1), 0.5); // null hypothesis b_1 = 0
-   double pvalue = normalPval(W);
+   parameters.p_val = normalPval(W);
 
 #ifdef PANGWAS_DEBUG
    std::cerr << "Wald statistic: " << W << "\n";
+   std::cerr << "p-value: " << parameters.p_val << "\n";
 #endif
 
-   k.p_val(pvalue);
+   return parameters;
 }
 
-//
+// Returns var-covar matrix for logistic function
 arma::mat varCovarMat(const arma::mat& x, const arma::mat& b)
 {
    // var-covar matrix = inv(I)
@@ -53,21 +76,17 @@ arma::mat varCovarMat(const arma::mat& x, const arma::mat& b)
 
    // Fill elements of I, which are sums of element by element vector multiples
    arma::mat I(b.n_elem, b.n_elem);
+   unsigned int j_max = I.n_rows;
    for (unsigned int i = 0; i<I.n_cols; ++i)
    {
-      unsigned int j = 0;
-      unsigned int j_max = I.n_rows;
-
-      while (j < j_max)
+      for (unsigned int j = i; j < j_max; j++)
       {
          I(i,j) = accu(y_trans % x_design.col(i) % x_design.col(j));
          if (i != j)
          {
             I(j,i) = I(i,j); // I is symmetric - only need to calculate upper triangle
          }
-         j++;
       }
-      j_max--;
    }
 
    return inv_sympd(I);
@@ -82,6 +101,7 @@ arma::vec predictLogitProbs(const arma::mat& x, const arma::vec& b)
    return y;
 }
 
+// Basic chi^2 test, using contingency table
 double chiTest(arma::mat& table)
 {
    double chisq = 0;

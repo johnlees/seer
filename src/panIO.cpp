@@ -9,9 +9,10 @@
  * <class>.cpp files
  *
  */
-#include "pangwas.hpp"
+#include "pancommon.hpp"
 
-std::regex gzipped("\\.gz$"); // matches .gz at the end of a string
+std::regex gzipped(".+\\.gz"); // matches .gz at the end of a string (as regex match
+                               // matches a whole string)
 
 /* .pheno files
  * space separated:
@@ -37,10 +38,10 @@ void readPheno(const std::string& filename, std::vector<Sample>& samples)
 }
 
 // Open dsm files, which are possibly zipped
-void openDsmFile(igzstream& dsm_stream, const std::string file_name)
+void openDsmFile(igzstream& dsm_stream, const std::string& file_name)
 {
    // Check for a .gz extension
-   if (!regex_match(file_name, gzipped))
+   if (!std::regex_match(file_name, gzipped))
    {
       // Warn
       std::cerr << "WARNING: Input file " + file_name
@@ -94,6 +95,28 @@ arma::vec constructVecX(const Kmer& k, const std::vector<Sample>& samples)
    }
 
    return x;
+}
+
+void writeMDS(const std::string& file_suffix, const arma::mat& MDS)
+{
+   std::string file_name = "mds." + file_suffix;
+   MDS.save(file_name);
+}
+
+arma::mat readMDS(const std::string& file_name)
+{
+   arma::mat MDS;
+
+   if (fileStat(file_name))
+   {
+      MDS.load(file_name);
+   }
+   else
+   {
+      throw std::runtime_error("Problem with loading MDS input file");
+   }
+
+   return MDS;
 }
 
 // Check for file existence

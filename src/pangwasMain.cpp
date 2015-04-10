@@ -17,7 +17,7 @@ int main (int argc, char *argv[])
    boost::program_options::variables_map vm;
    if (argc == 1)
    {
-      std::cerr << "Usage: pangwas -k dsm.txt -p data.pheno -o output\n\n"
+      std::cerr << "Usage: pangwas -k dsm.txt.gz -p data.pheno --struct mds.dsm.txt.gz\n\n"
          << "For full option details run pangwas -h\n";
       return 0;
    }
@@ -26,101 +26,61 @@ int main (int argc, char *argv[])
       return 1;
    }
 
-   // Read cmd line options
-   double log_cutoff = stod(vm["pval"].as<std::string>());
-   double chi_cutoff = stod(vm["chi2"].as<std::string>());
-   int max_length = vm["max_length"].as<long int>();
-   unsigned int num_threads = 1;
-
-#ifndef NO_THREAD
-   if (vm["threads"].as<int>() >= 1)
-   {
-      num_threads = vm["threads"].as<int>();
-   }
-#endif
-
    // Open .pheno file, parse into vector of samples
    std::vector<Sample> samples;
    readPheno(vm["pheno"].as<std::string>(), samples);
    arma::vec y = constructVecY(samples);
 
-   // Error check cmd line options
-   size_t min_words = 0;
-   if (vm.count("min_words"))
+   // Get mds values
+   arma::mat mds;
+   int use_mds = 0;
+   if (vm.count("struct"))
    {
-      int min_words_in = vm["min_words"].as<int>();
-      if (min_words_in >= 0)
-      {
-         min_words = min_words_in;
-      }
-      else
-      {
-         badCommand("min_words", std::to_string(min_words_in));
-      }
-   }
-   else
-   {
-      double maf_in = vm["maf"].as<double>();
-      if (maf_in >= 0)
-      {
-         min_words =  static_cast<unsigned int>(samples.size() * maf_in);
-      }
-      else
-      {
-         badCommand("maf", std::to_string(maf_in));
-      }
+      mds = readMDS(vm["struct"].as<std::string>());
+      use_mds = 1;
+
    }
 
-   if (min_words > samples.size())
-   {
-      badCommand("min_words/maf", std::to_string(min_words));
-   }
-   size_t max_words = samples.size() - min_words;
+#ifndef NO_THREAD
+   // Disambiguate overloaded logistic functions by the type of parameter they
+   // take
+   void (*mdsLogitFunc)(Kmer&, const arma::vec&, const arma::mat&) = &logisticTest;
+   void (*logitFunc)(Kmer&, const arma::vec&) = &logisticTest;
+#endif
+
+   // Error check command line options
+   cmdOptions parameters = verifyCommandLine(vm, samples);
 
    // Open the dsm kmer ifstream, and read through the whole thing
-   //std::ifstream kmer_file; // need to initialise with pointer to streambuf, which is not yet set
-   //openDsmFile(kmer_file, vm["kmers"].as<std::string>());
-   igzstream kmer_file(vm["kmers"].as<std::string>().c_str());
+   igzstream kmer_file;
+   openDsmFile(kmer_file, parameters.kmers);
 
    while (kmer_file)
    {
       // Parse a set of dsm lines
       // TODO this could also be threaded?
       std::vector<Kmer> kmer_lines;
-      kmer_lines.reserve(num_threads);
+      kmer_lines.reserve(parameters.num_threads);
 
       Kmer k;
-      while(kmer_lines.size() < num_threads && kmer_file)
+      while(kmer_lines.size() < parameters.num_threads && kmer_file)
       {
          if (kmer_file)
          {
             kmer_file >> k;
 
             // apply filters here
-            if (passBasicFilters(k, max_length, min_words, max_words))
+            if (!parameters.filter)
             {
-               // Don't bother with this if not running stats tests
-               int pass = 1;
-               arma::vec x = constructVecX(k, samples);
-
-               try  // Some chi^2 tests may diverge - proceed anyway for now
-               {
-                  pass = passStatsFilters(x, y, chi_cutoff);
-               }
-               catch (std::exception& e)
-               {
-                  std::cerr << "kmer " + k.sequence() + " failed chisq test with error: " + e.what();
-                  pass = 1;
-               }
-
-               if (pass)
-               {
+               k.add_x(constructVecX(k, samples));
+               kmer_lines.push_back(k);
+            }
+            else if (passFilters(parameters, k, samples, y))
+            {
 #ifdef PANGWAS_DEBUG
-                  std::cerr << "kmer " + k.sequence() + " seems significant\n";
+               std::cerr << "kmer " + k.sequence() + " seems significant\n";
 #endif
-                  k.add_x(x);
-                  kmer_lines.push_back(k);
-               }
+               kmer_lines.push_back(k);
             }
          }
       }
@@ -128,9 +88,16 @@ int main (int argc, char *argv[])
 #ifdef NO_THREAD
       if (kmer_lines.size() == 1)
       {
-         logisticTest(kmer_lines[0], y);
+         if (use_mds)
+         {
+            logisticTest(kmer_lines[0], y, mds);
+         }
+         else
+         {
+            logisticTest(kmer_lines[0], y);
+         }
 
-         if (kmer_lines[0].p_val() < log_cutoff)
+         if (kmer_lines[0].p_val() < parameters.log_cutoff)
          {
             std::cout << kmer_lines[0];
          }
@@ -146,7 +113,14 @@ int main (int argc, char *argv[])
          // Association test
          // Note threads must be passed values as they are copied
          // std::reference_wrapper allows references to be passed
-         threads.push_back(std::thread(logisticTest, std::ref(kmer_lines[i]), std::cref(y)));
+         if (use_mds)
+         {
+            threads.push_back(std::thread(mdsLogitFunc, std::ref(kmer_lines[i]), std::cref(y), std::cref(mds)));
+         }
+         else
+         {
+            threads.push_back(std::thread(logitFunc, std::ref(kmer_lines[i]), std::cref(y)));
+         }
       }
 
       for (unsigned int i = 0; i<threads.size(); ++i)
@@ -155,7 +129,7 @@ int main (int argc, char *argv[])
          threads[i].join();
 
          // Print in order when all threads complete
-         if (kmer_lines[i].p_val() < log_cutoff)
+         if (kmer_lines[i].p_val() < parameters.log_cutoff)
          {
             std::cout << kmer_lines[i];
          }

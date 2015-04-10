@@ -5,7 +5,7 @@
  *
  */
 
-#include "pangwas.hpp"
+#include "pancommon.hpp"
 
 void badCommand(const std::string& command, const std::string& value)
 {

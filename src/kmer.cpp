@@ -15,19 +15,19 @@ const int position_default = 0;
 
 // Initialisation
 Kmer::Kmer(std::string sequence, std::vector<std::string> occurrences, double pvalue, double beta, long int position)
-   :word(sequence), occurrences(occurrences), pvalue(pvalue), b(beta), position(position)
+   :word(sequence), occurrences(occurrences), x_set(0), pvalue(pvalue), b(beta), position(position)
 {
 }
 
 // Initialise without calculated information
 Kmer::Kmer(std::string sequence, std::vector<std::string> occurrences)
-   :word(sequence), occurrences(occurrences), pvalue(pvalue_default), b(beta_default), position(position_default)
+   :word(sequence), occurrences(occurrences), x_set(0), pvalue(pvalue_default), b(beta_default), position(position_default)
 {
 }
 
 // Initialise with default info only
 Kmer::Kmer()
-   :word(seq_default), occurrences(occ_default), pvalue(pvalue_default), b(beta_default), position(position_default)
+   :word(seq_default), occurrences(occ_default), x_set(0), pvalue(pvalue_default), b(beta_default), position(position_default)
 {
 }
 

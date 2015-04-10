@@ -10,9 +10,12 @@ LDLIBS=-L../mlpack-1.0.12/build/lib -L../armadillo-4.650.3 -L../gzstream -L$(PRE
 #CXXFLAGS=-Wall -g -std=c++11 -stdlib=libc++
 #LDLIBS=-L../mlpack-1.0.12/build/lib -L../armadillo-4.650.3 -L$(PREFIX)/lib -lm -framework Accelerate -lmlpack -larmadillo -lboost_program_options
 
-PROGRAMS=pangwas
+PROGRAMS=pangwas pangloss
+
 CLASSES=sample.o kmer.o
-OBJECTS=pangwasMain.o pangwasCmdLine.o pangwasFilter.o pangwasIO.o pangwasAssoc.o pangwasErr.o
+COMMON_OBJECTS=$(CLASSES) panCommon.o panErr.o panFilter.o panIO.o panAssoc.o
+PANGWAS_OBJECTS=$(COMMON_OBJECTS) pangwasMain.o pangwasCmdLine.o
+PANGLOSS_OBJECTS=$(COMMON_OBJECTS) panglossMain.o panglossStruct.o panglossCmdLine.o
 
 all: $(PROGRAMS)
 
@@ -23,7 +26,10 @@ install: all
 	install -d $(BINDIR)
 	install $(PROGRAMS) $(BINDIR)
 
-pangwas: $(CLASSES) $(OBJECTS)
+pangwas: $(PANGWAS_OBJECTS)
+	$(LINK.cpp) $^ $(LDLIBS) -o $@
+
+pangloss: $(PANGLOSS_OBJECTS)
 	$(LINK.cpp) $^ $(LDLIBS) -o $@
 
 .PHONY: all test clean install

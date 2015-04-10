@@ -25,12 +25,27 @@ pangwas currently depends on
 - armadillo <http://arma.sourceforge.net/>
 - mlpack <http://www.mlpack.org/>
 
+You will also require
+
+- gcc >4.8 or equivalent
+
 Brief installion instructions
 
 **boost**
 
-TODO
-Should use -std=c++11
+Best installed with your distribution's package manager, and you should use the c++11 version if possible.
+
+For a manual installation, see <http://www.boost.org/doc/libs/1_57_0/more/getting_started/unix-variants.html> for details on how to use ./b2 to install. I reccommend that you create a user-config.jam file in the boost root which modifies the gcc compilation:
+
+   using gcc:
+      : std11
+      : g++
+      : <cxxflags>-std=c++11
+
+Then run
+
+   ./bootstrap.sh
+   ./b2 install toolset=gcc-std11
 
 **armadillo**
 

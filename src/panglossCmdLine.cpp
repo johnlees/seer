@@ -1,12 +1,11 @@
 /*
- * File: pangwasCmdLine.cpp
+ * File: panglossCmdLine.cpp
  *
- * Reads command line input to pangwas using boost
- * program options
+ * Reads command line input to pangloss
  *
  */
 
-#include "pangwas.hpp"
+#include "pangloss.hpp"
 
 namespace po = boost::program_options; // Save some typing
 
@@ -22,34 +21,28 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
     ("kmers,k", po::value<std::string>()->required(), "dsm kmer output file")
     ("pheno,p", po::value<std::string>()->required(), ".pheno metadata");
 
-   // pangloss options
-   po::options_description pangloss("pangloss options");
-   pangloss.add_options()
-    ("struct", po::value<std::string>(), "mds values from pangloss");
-
-   //Optional filtering parameters
-   //NB pval cutoffs are strings for display, and are converted to floats later
-   po::options_description performance("Performance options");
-   performance.add_options()
-    ("threads", po::value<int>()->default_value(1), "number of threads");
+   po::options_description mds("MDS options");
+   mds.add_options()
+    ("output,o", po::value<std::string>(), "output prefix for new dsm file")
+    ("pc", po::value<int>()->default_value(pc_default), "number of principal coordinates to output")
+    ("size", po::value<long int>()->default_value(size_default), "number of kmers to use in MDS");
 
    //Optional filtering parameters
    //NB pval cutoffs are strings for display, and are converted to floats later
    po::options_description filtering("Filtering options");
    filtering.add_options()
-    ("no_filtering", "turn off all filtering and peform tests on all kmers input")
+    ("no_filtering", "turn off all filtering and do not output new kmer file")
     ("max_length", po::value<long int>()->default_value(max_length_default), "maximum kmer length")
     ("maf", po::value<double>()->default_value(maf_default), "minimum kmer frequency")
     ("min_words", po::value<int>(), "minimum kmer occurences. Overrides --maf")
-    ("chi2", po::value<std::string>()->default_value(chi2_default), "p-value threshold for initial chi squared test. Set to 1 to show all")
-    ("pval", po::value<std::string>()->default_value(pval_default), "p-value threshold for final logistic test. Set to 1 to show all");
+    ("chi2", po::value<std::string>()->default_value(chi2_default), "p-value threshold for initial chi squared test. Set to 1 to show all");
 
    po::options_description other("Other options");
    other.add_options()
     ("help,h", "full help message");
 
    po::options_description all;
-   all.add(required).add(pangloss).add(performance).add(filtering).add(other);
+   all.add(required).add(mds).add(filtering).add(other);
 
    try
    {
@@ -70,10 +63,6 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
          {
             failed = 1;
          }
-         else if (vm.count("struct") && !fileStat(vm["struct"].as<std::string>()))
-         {
-            failed = 1;
-         }
       }
 
    }
@@ -81,7 +70,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
    {
       // Report errors from boost library
       std::cerr << "Error in command line input: " << e.what() << "\n";
-      std::cerr << "Run 'pangwas --help' for full option listing\n\n";
+      std::cerr << "Run 'pangloss --help' for full option listing\n\n";
       std::cerr << required << "\n" << other << "\n";
 
       failed = 1;
@@ -93,6 +82,11 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
 // Print long help message
 void printHelp(po::options_description& help)
 {
+   std::cerr << "pangloss" << "\n";
+   std::cerr << "\t1) all languages\n";
+   std::cerr << "\t2) Prof. Pangloss, from Voltaire's Candide. 'We live in the best of all possible worlds'\n";
+   std::cerr << "\t3) pan-genome limitation of structure sensitivity. 'We must cultivate our association studies'\n";
+
    std::cerr << help << "\n";
 }
 

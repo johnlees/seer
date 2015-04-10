@@ -6,15 +6,37 @@
  *
  */
 
-#include "pangwas.hpp"
+#include "pancommon.hpp"
 
 // Wrapper to all filter functions
+int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const arma::vec& y)
+{
+   int pass = 0;
+
+   if (passBasicFilters(k, filterOptions.max_length, filterOptions.min_words, filterOptions.max_words))
+   {
+      // Don't bother with this if not running stats tests
+      pass = 1;
+      arma::vec x = constructVecX(k, samples);
+      k.add_x(x);
+
+      try  // Some chi^2 tests may diverge - proceed anyway for now
+      {
+         pass = passStatsFilters(x, y, filterOptions.chi_cutoff);
+      }
+      catch (std::exception& e)
+      {
+         std::cerr << "kmer " + k.sequence() + " failed chisq test with error: " + e.what();
+         pass = 1;
+      }
+   }
+
+   return pass;
+}
+
 int passBasicFilters(const Kmer& k, const int max_length, const int min_words, const int max_words)
 {
    int passed = 1;
-
-   //TODO there might be a nicer way to write this, each filter as its own
-   //function, then call all functions of type filter on the passed objects
 
    // Don't test long kmers
    if (k.length() > max_length)
