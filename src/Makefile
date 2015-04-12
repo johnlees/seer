@@ -13,8 +13,8 @@ LDLIBS=-L../mlpack-1.0.12/build/lib -L../armadillo-4.650.3 -L../gzstream -L$(PRE
 PROGRAMS=pangwas pangloss
 
 CLASSES=sample.o kmer.o
-COMMON_OBJECTS=$(CLASSES) panCommon.o panErr.o panFilter.o panIO.o panAssoc.o
-PANGWAS_OBJECTS=$(COMMON_OBJECTS) pangwasMain.o pangwasCmdLine.o
+COMMON_OBJECTS=$(CLASSES) panCommon.o panErr.o panFilter.o panIO.o panChiFilter.o
+PANGWAS_OBJECTS=$(COMMON_OBJECTS) pangwasMain.o pangwasCmdLine.o pangwasAssoc.o
 PANGLOSS_OBJECTS=$(COMMON_OBJECTS) panglossMain.o panglossStruct.o panglossCmdLine.o
 
 all: $(PROGRAMS)
