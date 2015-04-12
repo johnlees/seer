@@ -34,14 +34,22 @@ arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions)
    arma::vec eigval;
    arma::mat eigvec;
 
-   // TODO check eigenvalues ordered by size
-   // Use arma::sort_index
    arma::eig_sym(eigval, eigvec, B);
 
    // Step 5)
    arma::mat mds = eigvec * diagmat(eigval);
 
-   return mds.cols(0, dimensions - 1);
+   // Sort eigenvalues
+   arma::uvec sort_idx;
+   sort_idx = sort_index(square(eigval), "descend");
+
+   arma::mat mdsCols(matSize, dimensions);
+   for (unsigned int i = 0; i < dimensions; ++i)
+   {
+      mdsCols.col(i) = mds.col(sort_idx(i));
+   }
+
+   return mdsCols;
 }
 
 // Distance between all rows. 0/1 elements only

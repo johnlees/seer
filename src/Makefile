@@ -14,8 +14,8 @@ LDLIBS=-L../mlpack/build/lib -L../armadillo-4.650.4 -L../gzstream -L$(PREFIX)/li
 PROGRAMS=pangwas pangloss
 
 CLASSES=sample.o kmer.o
-COMMON_OBJECTS=$(CLASSES) panCommon.o panErr.o panFilter.o panIO.o panAssoc.o
-PANGWAS_OBJECTS=$(COMMON_OBJECTS) pangwasMain.o pangwasCmdLine.o
+COMMON_OBJECTS=$(CLASSES) panCommon.o panErr.o panFilter.o panIO.o panChiFilter.o
+PANGWAS_OBJECTS=$(COMMON_OBJECTS) pangwasMain.o pangwasCmdLine.o pangwasAssoc.o
 PANGLOSS_OBJECTS=$(COMMON_OBJECTS) panglossMain.o panglossStruct.o panglossCmdLine.o
 
 all: $(PROGRAMS)

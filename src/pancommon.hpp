@@ -82,14 +82,7 @@ int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Samp
 int passBasicFilters(const Kmer& k, const int max_length, const int min_words, const int max_words);
 int passStatsFilters(const arma::vec& x, const arma::vec& y, double chi_cutoff);
 
-// panAssoc headers
-void logisticTest(Kmer& k, const arma::vec& y);
-void logisticTest(Kmer& k, const arma::vec& y_train, const arma::mat& mds);
-
-regression logisticPval(const arma::vec& y_train, const arma::mat& x_train);
-arma::mat varCovarMat(const arma::mat& x, const arma::mat& b);
-arma::vec predictLogitProbs(const arma::mat& x, const arma::vec& b);
-
+// panChiFilter headers
 double chiTest(arma::mat& table);
 double normalPval(double testStatistic);
 
