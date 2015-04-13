@@ -37,19 +37,10 @@ arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions)
    arma::eig_sym(eigval, eigvec, B);
 
    // Step 5)
-   arma::mat mds = eigvec * diagmat(eigval);
+   // Eigenvalues returned are sorted
+   arma::mat mds = eigvec * diagmat(sqrt(eigval));
 
-   // Sort eigenvalues
-   arma::uvec sort_idx;
-   sort_idx = sort_index(square(eigval), "descend");
-
-   arma::mat mdsCols(matSize, dimensions);
-   for (unsigned int i = 0; i < dimensions; ++i)
-   {
-      mdsCols.col(i) = mds.col(sort_idx(i));
-   }
-
-   return mdsCols;
+   return mds.cols(0, dimensions - 1);
 }
 
 // Distance between all rows. 0/1 elements only
@@ -70,7 +61,7 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat)
          }
          else
          {
-            dist(i, j) = accu(square(ref_row * inMat.row(j))); // Distance function
+            dist(i, j) = dot(ref_row, inMat.row(j)); // Distance function
             dist(j, i) = dist(i, j); // Set symmetric elements
          }
       }

@@ -7,8 +7,11 @@
 
 #include "pangloss.hpp"
 
-// Random globals
+// globals
 std::default_random_engine rand_gen;
+
+// $1 file location, $2 file name, $3 file ending
+std::regex file_format_e ("^(.+)/(.+)\\.([^\\.]+)$");
 
 int main (int argc, char *argv[])
 {
@@ -62,20 +65,30 @@ int main (int argc, char *argv[])
    igzstream kmer_file;
    openDsmFile(kmer_file, parameters.kmers.c_str());
 
+   // Set up output files
    ogzstream filtered_file;
-   std::string output_file_name;
+   std::string output_file_name, dsm_file_name;
    if (parameters.filter)
    {
       if (vm.count("output"))
       {
-         output_file_name = parameters.output;
+         output_file_name = parameters.output + ".kmers.gz";
       }
       else
       {
-         output_file_name = "filtered." + parameters.kmers;
+         output_file_name = std::regex_replace(parameters.kmers, file_format_e, "$1/filtered.$2.gz");
       }
 
       filtered_file.open(output_file_name.c_str());
+   }
+
+   if (vm.count("output"))
+   {
+      dsm_file_name = parameters.output + ".dsm";
+   }
+   else
+   {
+      dsm_file_name = std::regex_replace(parameters.kmers, file_format_e, "$1/$2.dsm");
    }
 
    // vector of subsampled kmers
@@ -105,7 +118,7 @@ int main (int argc, char *argv[])
 #ifdef PANGWAS_DEBUG
             std::cerr << "kmer " + k.sequence() + " seems significant\n";
 #endif
-            filtered_file << dsm_line;
+            filtered_file << dsm_line << "\n";
          }
 
          // kmer has passed basic filters, so is a candidate for mds
@@ -142,9 +155,18 @@ int main (int argc, char *argv[])
    writeMDS(parameters.kmers, metricMDS(subsampledMatrix, parameters.pc));
 
    std::cerr << "Done.\n";
-   std::cerr << "You may now want to run:\n\tpangwas -k " << output_file_name
-      << " -p " << vm["pheno"].as<std::string>() << " --struct " << output_file_name
-      << ".mds > significant_kmers.txt\n";
+   if (parameters.filter)
+   {
+      std::cerr << "You may now want to run:\n\tpangwas -k " << output_file_name
+         << " -p " << vm["pheno"].as<std::string>() << " --struct " << dsm_file_name
+         << " > significant_kmers.txt\n";
+   }
+   else
+   {
+      std::cerr << "You may now want to run:\n\tpangwas -k " << parameters.kmers
+         << " -p " << vm["pheno"].as<std::string>() << " --struct " << dsm_file_name
+         << " > significant_kmers.txt\n";
+   }
 
 }
 
