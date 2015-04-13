@@ -11,7 +11,7 @@
 std::default_random_engine rand_gen;
 
 // $1 file location, $2 file name, $3 file ending
-std::regex file_format_e ("^(.+)/(.+)\\.([^\\.]+)$");
+const std::regex file_format_e ("^(.+)/(.+)\\.([^\\.]+)$");
 
 int main (int argc, char *argv[])
 {
@@ -76,7 +76,7 @@ int main (int argc, char *argv[])
       }
       else
       {
-         output_file_name = std::regex_replace(parameters.kmers, file_format_e, "$1/filtered.$2.gz");
+         output_file_name = std::regex_replace(parameters.kmers, file_format_e, std::string("$1/filtered.$2.gz"));
       }
 
       filtered_file.open(output_file_name.c_str());
@@ -88,7 +88,7 @@ int main (int argc, char *argv[])
    }
    else
    {
-      dsm_file_name = std::regex_replace(parameters.kmers, file_format_e, "$1/$2.dsm");
+      dsm_file_name = std::regex_replace(parameters.kmers, file_format_e, std::string("$1/$2.dsm"));
    }
 
    // vector of subsampled kmers
