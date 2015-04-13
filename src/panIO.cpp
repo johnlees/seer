@@ -97,9 +97,8 @@ arma::vec constructVecX(const Kmer& k, const std::vector<Sample>& samples)
    return x;
 }
 
-void writeMDS(const std::string& file_suffix, const arma::mat& MDS)
+void writeMDS(const std::string& file_name, const arma::mat& MDS)
 {
-   std::string file_name = "mds." + file_suffix;
    MDS.save(file_name);
 }
 

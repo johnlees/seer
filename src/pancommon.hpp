@@ -72,7 +72,7 @@ void openDsmFile(igzstream& dsm_file, const std::string& file_name);
 arma::vec constructVecY(const std::vector<Sample>& samples);
 arma::vec constructVecX(const Kmer& k, const std::vector<Sample>& samples);
 
-void writeMDS(const std::string& file_suffix, const arma::mat& MDS);
+void writeMDS(const std::string& file_name, const arma::mat& MDS);
 arma::mat readMDS(const std::string& file_name);
 
 int fileStat(const std::string& filename);
