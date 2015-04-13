@@ -27,6 +27,7 @@
 *.out
 *.app
 pangwas
+pangloss
 
 # Editors
 .vimrc
