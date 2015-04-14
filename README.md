@@ -22,15 +22,16 @@ Dependencies
 pangwas currently depends on
 
 - boost <http://www.boost.org/>
+- gzstream <http://www.cs.unc.edu/Research/compgeom/gzstream/>
 - armadillo <http://arma.sourceforge.net/>
 - mlpack <http://www.mlpack.org/>
 
 You will also require
 
-- gcc >4.8 or equivalent
+- gcc >4.9 or equivalent
 - gcc libstdc++ >4.9
 
-Brief installion instructions
+Brief installation instructions
 
 **boost**
 
@@ -47,6 +48,12 @@ Then run
 
     ./bootstrap.sh
     ./b2 install toolset=gcc-std11
+
+**gzstream**
+
+Download and unpack. Change into directory
+
+    make
 
 **armadillo**
 
