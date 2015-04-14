@@ -11,7 +11,7 @@
 std::default_random_engine rand_gen;
 
 // $1 file location, $2 file name, $3 file ending
-const std::regex file_format_e ("^(.+)/(.+)\\.([^\\.]+)$");
+const std::regex file_format_e ("^(.+)\\/(.+)\\.([^\\.]+)$");
 
 int main (int argc, char *argv[])
 {
@@ -152,7 +152,7 @@ int main (int argc, char *argv[])
    }
 
    // Run metric MDS, then output to file
-   writeMDS(parameters.kmers, metricMDS(subsampledMatrix, parameters.pc));
+   writeMDS(dsm_file_name, metricMDS(subsampledMatrix, parameters.pc));
 
    std::cerr << "Done.\n";
    if (parameters.filter)

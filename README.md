@@ -28,6 +28,7 @@ pangwas currently depends on
 You will also require
 
 - gcc >4.8 or equivalent
+- gcc libstdc++ >4.9
 
 Brief installion instructions
 
@@ -37,15 +38,15 @@ Best installed with your distribution's package manager, and you should use the 
 
 For a manual installation, see <http://www.boost.org/doc/libs/1_57_0/more/getting_started/unix-variants.html> for details on how to use ./b2 to install. I reccommend that you create a user-config.jam file in the boost root which modifies the gcc compilation:
 
-   using gcc:
+    using gcc:
       : std11
       : g++
       : <cxxflags>-std=c++11
 
 Then run
 
-   ./bootstrap.sh
-   ./b2 install toolset=gcc-std11
+    ./bootstrap.sh
+    ./b2 install toolset=gcc-std11
 
 **armadillo**
 
@@ -66,11 +67,25 @@ Download and unpack. Change into directory
 
 Usage
 =============
+The wrapper script is panpipes.py, in the top level directory. Main programs are installed into bin.
+
+pangloss
+--------------
+First, filter kmers and create a matrix representing population structure with pangloss
+
+    ./pangloss -k dsm_input.txt --pheno metadata.pheno -o filtered
+
+pangwas
+--------------
 Type ./pangwas with no options to get brief usage, or for a full option listing
 
     ./pangwas -h
 
 Basic usage is as follows
 
-    ./pangwas -k dsm_input.txt --pheno metadata.pheno > significant_kmers.txt
+    ./pangwas -k dsm_input.txt.gz --pheno metadata.pheno > significant_kmers.txt
+
+To use the pangloss output, and increase execution speed
+
+    ./pangloss -k filtered.gz --pheno metadata.pheno --struct filtered.dsm --no_filtering --threads 4
 
