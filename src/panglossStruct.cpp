@@ -25,7 +25,7 @@ arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions)
 
    // Step 2)
    arma::mat J = arma::eye<arma::mat>(matSize, matSize)
-      - 1/matSize*arma::ones<arma::mat>(matSize, matSize);
+      - 1/double(matSize)*arma::ones<arma::mat>(matSize, matSize);
 
    // Step 3)
    arma::mat B = -0.5 * J * P * J;
@@ -37,8 +37,8 @@ arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions)
    arma::eig_sym(eigval, eigvec, B);
 
    // Step 5)
-   // Eigenvalues returned are sorted
-   arma::mat mds = eigvec * diagmat(sqrt(eigval));
+   // Eigenvalues returned are sorted ascending, so want to reverse order
+   arma::mat mds = fliplr(eigvec * diagmat(sqrt(eigval)));
 
    return mds.cols(0, dimensions - 1);
 }
