@@ -36,6 +36,7 @@ pangloss
 
 # Submodules
 armadillo-4.*
+armadillo-5.*
 mlpack-1.0.*
 boost_1_*
 gzstream
