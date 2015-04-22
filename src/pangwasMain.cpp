@@ -41,11 +41,24 @@ int main (int argc, char *argv[])
 
    }
 
+   unsigned int nr_opt;
+   if (vm.count("optimiser"))
+   {
+      if (vm["optimiser"].as<std::string>() == "newton-raphson")
+      {
+         nr_opt = 1;
+      }
+      else
+      {
+         nr_opt = 0;
+      }
+   }
+
 #ifndef NO_THREAD
    // Disambiguate overloaded logistic functions by the type of parameter they
    // take
-   void (*mdsLogitFunc)(Kmer&, const arma::vec&, const arma::mat&) = &logisticTest;
-   void (*logitFunc)(Kmer&, const arma::vec&) = &logisticTest;
+   void (*mdsLogitFunc)(Kmer&, const arma::vec&, const unsigned int nr, const arma::mat&) = &logisticTest;
+   void (*logitFunc)(Kmer&, const arma::vec&, const unsigned int nr) = &logisticTest;
 #endif
 
    // Error check command line options
@@ -90,11 +103,11 @@ int main (int argc, char *argv[])
       {
          if (use_mds)
          {
-            logisticTest(kmer_lines[0], y, mds);
+            logisticTest(kmer_lines[0], y, nr_opt, mds);
          }
          else
          {
-            logisticTest(kmer_lines[0], y);
+            logisticTest(kmer_lines[0], y, nr_opt);
          }
 
          if (kmer_lines[0].p_val() < parameters.log_cutoff)
@@ -115,11 +128,11 @@ int main (int argc, char *argv[])
          // std::reference_wrapper allows references to be passed
          if (use_mds)
          {
-            threads.push_back(std::thread(mdsLogitFunc, std::ref(kmer_lines[i]), std::cref(y), std::cref(mds)));
+            threads.push_back(std::thread(mdsLogitFunc, std::ref(kmer_lines[i]), std::cref(y), nr_opt, std::cref(mds)));
          }
          else
          {
-            threads.push_back(std::thread(logitFunc, std::ref(kmer_lines[i]), std::cref(y)));
+            threads.push_back(std::thread(logitFunc, std::ref(kmer_lines[i]), std::cref(y), nr_opt));
          }
       }
 
