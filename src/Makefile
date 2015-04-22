@@ -2,8 +2,8 @@ PREFIX=${HOME}/software
 BINDIR=$(PREFIX)/bin
 
 CXXFLAGS=-Wall -g -O0 -std=c++11
-CPPFLAGS=-I../armadillo-4.650.3/include -I../mlpack/build/include -I$(PREFIX)/include -I/usr/include/libxml2 -I../gzstream -D PANGWAS_DEBUG=1
-LDLIBS=-L../mlpack-1.0.12/build/lib -L../armadillo-4.650.3 -L../gzstream -L$(PREFIX)/lib -lgzstream -lz -lmlpack -larmadillo -lboost_program_options -lblas -llapack -lm
+CPPFLAGS=-I$(PREFIX)/include -I/usr/include/libxml2 -I../gzstream -D PANGWAS_DEBUG=1
+LDLIBS=-L../gzstream -L$(PREFIX)/lib -lgzstream -lz -lmlpack -larmadillo -lboost_program_options -lblas -llapack -lm
 
 #OS X compile options:
 #CXX=clang++
