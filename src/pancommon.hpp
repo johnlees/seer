@@ -29,7 +29,6 @@
 
 // Armadillo/mlpack headers
 #include <mlpack/core.hpp> // this includes armadillo
-#include <mlpack/methods/logistic_regression/logistic_regression.hpp>
 
 // Classes
 #include "kmer.hpp"

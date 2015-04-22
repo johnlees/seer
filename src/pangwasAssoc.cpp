@@ -8,25 +8,93 @@
 #include "pangwas.hpp"
 
 // Logistic fit without covariates
-void logisticTest(Kmer& k, const arma::vec& y_train)
+void logisticTest(Kmer& k, const arma::vec& y_train, const unsigned int nr)
 {
    // Train classifier
    arma::mat x_train = k.get_x();
 
-   regression fit = logisticPval(y_train, x_train);
+   regression fit;
+   if (nr != 1)
+   {
+      fit = logisticPval(y_train, x_train);
+   }
+   else
+   {
+      fit = newtonRaphson(y_train, x_train);
+   }
+
    k.p_val(fit.p_val);
    k.beta(fit.beta);
 }
 
 // Logistic fit with covariates
-void logisticTest(Kmer& k, const arma::vec& y_train, const arma::mat& mds)
+void logisticTest(Kmer& k, const arma::vec& y_train, const unsigned int nr, const arma::mat& mds)
 {
    // Train classifier
    arma::mat x_train = arma::join_rows(k.get_x(), mds);
 
-   regression fit = logisticPval(y_train, x_train);
+   regression fit;
+   if (nr != 1)
+   {
+      fit = logisticPval(y_train, x_train);
+   }
+   else
+   {
+      fit = newtonRaphson(y_train, x_train);
+   }
+
    k.p_val(fit.p_val);
    k.beta(fit.beta);
+}
+
+regression newtonRaphson(const arma::vec& y_train, const arma::mat& x_train)
+{
+   regression parameters;
+
+   // Keep iterations to track convergence
+   // Also useful to keep second derivative, for calculating p-value
+   std::vector<arma::vec> parameter_iterations;
+   arma::mat var_covar_mat;
+
+   // Get starting point from a linear regression, which is fast
+   // and will reduce number of n-r iterations
+   mlpack::regression::LinearRegression initial_fit(x_train.t(), y_train);
+   parameter_iterations.push_back(initial_fit.Parameters());
+
+   // parameter_iterations.push_back(arma::ones(x_train.n_cols + 1));
+
+   arma::mat x_design = join_rows(arma::mat(x_train.n_rows,1,arma::fill::ones), x_train);
+
+   for (unsigned int i = 0; i < max_nr_iterations; ++i)
+   {
+      arma::vec b0 = parameter_iterations.back();
+      arma::vec y_pred = predictLogitProbs(x_design, b0);
+
+      var_covar_mat = inv_sympd(x_design.t() * diagmat(y_pred % (arma::ones(y_pred.n_rows) - y_pred)) * x_design);
+      arma::vec b1 = b0 + var_covar_mat * x_design.t() * (y_train - y_pred);
+      parameter_iterations.push_back(b1);
+
+      if (std::abs(b1(1) - b0(1)) < convergence_limit)
+      {
+         break;
+      }
+   }
+
+#ifdef PANGWAS_DEBUG
+   std::cerr << "Number of iterations: " << parameter_iterations.size() << "\n";
+#endif
+
+   parameters.beta = parameter_iterations.back()(1);
+
+   double W = std::abs(parameters.beta) / pow(var_covar_mat(1,1), 0.5);
+   parameters.p_val = normalPval(W);
+
+ #ifdef PANGWAS_DEBUG
+   std::cerr << "Wald statistic: " << W << "\n";
+   std::cerr << "p-value: " << parameters.p_val << "\n";
+#endif
+
+   return parameters;
 }
 
 // Fits logistic regression, and returns beta and pvalue

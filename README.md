@@ -94,5 +94,5 @@ Basic usage is as follows
 
 To use the pangloss output, and increase execution speed
 
-    ./pangloss -k filtered.gz --pheno metadata.pheno --struct filtered.dsm --no_filtering --threads 4
+    ./pangwas -k filtered.gz --pheno metadata.pheno --struct filtered.dsm --no_filtering --threads 4
 
