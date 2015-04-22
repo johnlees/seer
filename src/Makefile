@@ -2,9 +2,9 @@ PREFIX=${HOME}/software
 BINDIR=$(PREFIX)/bin
 
 CXX=icpc
-CXXFLAGS=-Wall -g -O3 -std=c++11 -parallel
-CPPFLAGS=-I../armadillo-4.650.3/include -I../mlpack/build/include -I$(PREFIX)/include -I/usr/include/libxml2 -I../gzstream
-LDLIBS=-L../mlpack/build/lib -L../armadillo-4.650.4 -L../gzstream -L$(PREFIX)/lib -lgzstream -lz -lmlpack -larmadillo -lboost_program_options -mkl
+CXXFLAGS=-Wall -g -std=c++11 -parallel -ipo
+CPPFLAGS=-I$(PREFIX)/include -I/usr/include/libxml2 -I../gzstream
+LDLIBS=-L../gzstream -L$(PREFIX)/lib -lgzstream -lz -lmlpack -larmadillo -lboost_program_options -mkl
 
 #OS X compile options:
 #CXX=clang++
