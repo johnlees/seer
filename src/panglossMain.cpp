@@ -152,7 +152,7 @@ int main (int argc, char *argv[])
    }
 
    // Run metric MDS, then output to file
-   writeMDS(dsm_file_name, metricMDS(subsampledMatrix, parameters.pc));
+   writeMDS(dsm_file_name, metricMDS(subsampledMatrix, parameters.pc, parameters.num_threads));
 
    std::cerr << "Done.\n";
    if (parameters.filter)

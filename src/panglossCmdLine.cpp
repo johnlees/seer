@@ -25,7 +25,8 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
    mds.add_options()
     ("output,o", po::value<std::string>(), "output prefix for new dsm file")
     ("pc", po::value<int>()->default_value(pc_default), "number of principal coordinates to output")
-    ("size", po::value<long int>()->default_value(size_default), "number of kmers to use in MDS");
+    ("size", po::value<long int>()->default_value(size_default), "number of kmers to use in MDS")
+    ("threads", po::value<int>()->default_value(1), ("number of threads. Suggested: " + std::to_string(std::thread::hardware_concurrency())).c_str());
 
    //Optional filtering parameters
    //NB pval cutoffs are strings for display, and are converted to floats later
