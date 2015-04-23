@@ -74,6 +74,12 @@ cmdOptions verifyCommandLine(boost::program_options::variables_map& vm, const st
       verified.filter = 0;
    }
 
+   verified.print_samples = 0;
+   if (vm.count("print_samples"))
+   {
+      verified.print_samples = 1;
+   }
+
    // Error check cmd line options
    verified.min_words = 0;
    if (vm.count("min_words"))

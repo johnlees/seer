@@ -113,6 +113,13 @@ int main (int argc, char *argv[])
          if (kmer_lines[0].p_val() < parameters.log_cutoff)
          {
             std::cout << kmer_lines[0];
+            if (parameters.print_samples)
+            {
+               std::vector<std::string> samples_found = kmer_lines[0].occurrence_vector();
+
+               std::copy(samples_found.begin(), samples_found.end(), std::ostream_iterator<std::string>(std::cout, "\t"));
+               std::cout << "\n";
+            }
          }
       }
 #else
@@ -145,6 +152,14 @@ int main (int argc, char *argv[])
          if (kmer_lines[i].p_val() < parameters.log_cutoff)
          {
             std::cout << kmer_lines[i];
+            if (parameters.print_samples)
+            {
+               std::vector<std::string> samples_found = kmer_lines[i].occurrence_vector();
+
+               std::copy(samples_found.begin(), samples_found.end(), std::ostream_iterator<std::string>(std::cout, "\t"));
+               std::cout << "\n";
+            }
+
          }
       }
       // ...to here

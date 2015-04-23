@@ -47,6 +47,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
 
    po::options_description other("Other options");
    other.add_options()
+    ("print_samples", "print lists of samples significant kmers were found in")
     ("help,h", "full help message");
 
    po::options_description all;

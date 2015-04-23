@@ -13,7 +13,7 @@
 #include <cstdlib>
 #include <string>
 #include <algorithm>
-#include <list>
+#include <iterator>
 #include <vector>
 #include <thread>
 #include <exception>
@@ -43,12 +43,21 @@ const std::string chi2_default = "10e-5";
 // Structs
 struct cmdOptions
 {
-   double log_cutoff, chi_cutoff;
-   long int max_length, size;
-   int filter, pc;
-   size_t min_words, max_words;
-   std::string pheno, kmers, output;
+   double log_cutoff;
+   double chi_cutoff;
+
+   long int max_length;
+   long int size;
+   int filter;
+   int pc;
+   int print_samples;
    unsigned int num_threads;
+   size_t min_words;
+   size_t max_words;
+
+   std::string pheno;
+   std::string kmers;
+   std::string output;
 };
 
 struct regression
