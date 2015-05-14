@@ -112,10 +112,28 @@ arma::mat readMDS(const std::string& file_name)
    }
    else
    {
-      throw std::runtime_error("Problem with loading MDS input file");
+      throw std::runtime_error("Problem with loading MDS input file " + file_name);
    }
 
    return MDS;
+}
+
+arma::mat readMDSList(const std::string& filename)
+{
+   std::ifstream ist(filename.c_str());
+   if (!ist)
+   {
+      throw std::runtime_error("Could not open mds list file " + filename + "\n");
+   }
+
+   std::string matrix_file;
+   arma::mat combined_matrix;
+   while (ist >> matrix_file)
+   {
+      combined_matrix = join_cols(combined_matrix, readMDS(matrix_file));
+   }
+
+   return combined_matrix;
 }
 
 // Check for file existence

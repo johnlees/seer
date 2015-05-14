@@ -69,6 +69,7 @@ struct regression
 // Function headers
 //    panCommon.cpp
 cmdOptions verifyCommandLine(boost::program_options::variables_map& vm, const std::vector<Sample>& samples);
+void verifyMDSOptions(cmdOptions& verified, boost::program_options::variables_map& vm);
 
 // panErr headers
 void badCommand(const std::string& command, const std::string& value);
@@ -82,6 +83,7 @@ arma::vec constructVecX(const Kmer& k, const std::vector<Sample>& samples);
 
 void writeMDS(const std::string& file_name, const arma::mat& MDS);
 arma::mat readMDS(const std::string& file_name);
+arma::mat readMDSList(const std::string& filename);
 
 int fileStat(const std::string& filename);
 
