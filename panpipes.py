@@ -8,6 +8,7 @@
 
 # imports
 import os,sys
+from __future__ import print_function
 import re
 import argparse
 import subprocess
@@ -17,6 +18,8 @@ subsampled_list = "pangloss_tmp_files.txt"
 job_num = re.compile('^Job <(\d+)>')
 
 # subroutines
+
+# Checks, for a list of job numbers, whether they are all done (or failed)
 def check_done(jobs):
     done = 1
     for job in jobs:
@@ -57,7 +60,7 @@ dsm_files = [x.strip('\n') for x in dsm_files]
 
 # Run pangloss --no_mds on each file in parallel
 # Collect output
-print "Filtering " + str(len(dsm_files)) + " files\n"
+print("Filtering " + str(len(dsm_files)) + " files\n")
 i = 0
 subsampled_output = []
 jobs = []
@@ -73,7 +76,7 @@ for dsm in dsm_files:
 
         pangloss_command += "pangloss -k " + str(dsm) + " -p " + str(args.pheno) + " -o pangloss.step1." + str(i) + " --no_mds --maf " + str(args.maf) + " --chi2 " + str(args.chi2) + " --size " + str(length)
 
-        print pangloss_command
+        print(pangloss_command)
 
         if args.LSF:
             job_return = subprocess.check_output(pangloss_command, shell=True)
@@ -83,11 +86,11 @@ for dsm in dsm_files:
         else:
             retcode = subprocess.call(pangloss_command, shell=True)
             if retcode < 0:
-                print >>sys.stderr, "pangloss step 1 file " + str(i) + " failed with ", -retcode
+                print("pangloss step 1 file " + str(i) + " failed with ", -retcode, file=sys.stderr)
 
         subsampled_output.append("pangloss.step1." + str(i))
     except OSError as e:
-        print >>sys.stderr, "Execution failed:", e
+        print("Execution failed:", e, file=sys.stderr)
 
 # Check all jobs have finished
 if args.LSF:
@@ -102,7 +105,7 @@ for subsample in subsampled_output:
 write_list.close()
 
 # Run pangloss --mds_concat on output
-print "Calculating MDS components\n"
+print("Calculating MDS components\n")
 try:
     pangloss_command = ""
     if args.LSF:
@@ -110,7 +113,7 @@ try:
 
     pangloss_command += "pangloss --mds_concat " + str(subsampled_list) + " -o all_structure --threads " + str(args.threads) + " --pc " + str(args.pcs)
 
-    print pangloss_command
+    print(pangloss_command)
 
     if args.LSF:
         job_return = subprocess.check_output(pangloss_command, shell=True)
@@ -120,9 +123,9 @@ try:
     else:
         retcode = subprocess.call(pangloss_command, shell=True)
         if retcode < 0:
-            print >>sys.stderr, "pangloss step 2 file failed with ", -retcode
+            print("pangloss step 2 file failed with ", -retcode, file=sys.stderr)
 except OSError as e:
-    print >>sys.stderr, "Execution failed:", e
+    print("Execution failed:", e, file=sys.stderr)
 
 if args.LSF:
     while not (check_done(jobs)):
@@ -130,7 +133,7 @@ if args.LSF:
     jobs = []
 
 # Run pangwas on each file in parallel
-print "Association on " + str(len(dsm_files)) + " files\n"
+print("Association on " + str(len(dsm_files)) + " files\n")
 i = 0
 pangwas_output = []
 for dsm in dsm_files:
@@ -143,7 +146,7 @@ for dsm in dsm_files:
 
         pangwas_command += "'pangwas -k " + str(dsm) + " -p " + str(args.pheno) + " --no_filtering --pval " + str(args.pval) + " --struct all_structure.dsm --threads " + str(args.threads) + " > pangwas." + str(i) + ".result'"
 
-        print pangwas_command
+        print(pangwas_command)
 
         if args.LSF:
             job_return = subprocess.check_output(pangwas_command, shell=True)
@@ -153,11 +156,11 @@ for dsm in dsm_files:
         else:
             retcode = subprocess.call(pangwas_command, shell=True)
             if retcode < 0:
-                print >>sys.stderr, "pangwas file " + str(i) + " failed with ", -retcode
+                print("pangwas file " + str(i) + " failed with ", -retcode, file=sys.stderr)
 
         pangwas_output.append("pangloss." + str(i))
     except OSError as e:
-        print >>sys.stderr, "Execution failed:", e
+        print("Execution failed:", e, file=sys.stderr)
 
 if args.LSF:
     while not (check_done(jobs)):
@@ -174,5 +177,5 @@ for i in range(1, len(dsm_files)):
 # use blat by default
 # fall back to blast
 
-print "All pans piped\nAssocation results written to pangwas.result"
+print("All pans piped\nAssocation results written to pangwas.result")
 
