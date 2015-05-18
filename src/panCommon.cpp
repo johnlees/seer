@@ -125,3 +125,30 @@ void verifyMDSOptions(cmdOptions& verified, boost::program_options::variables_ma
       }
    }
 }
+
+// Check for continuous phenotype. If even one sample has neither 0 or 1 as
+// phenotype
+int continuousPhenotype (const std::vector<Sample>& sample_list)
+{
+   int cont_pheno = 0;
+   for (std::vector<Sample>::const_iterator it = sample_list.begin(); it != sample_list.end(); ++it)
+   {
+      if (it->continuous())
+      {
+         cont_pheno = 1;
+         break;
+      }
+   }
+
+   // Write inferred output to terminal
+   if (cont_pheno)
+   {
+      std::cerr << "Detected continuous phenotype\n";
+   }
+   else
+   {
+      std::cerr << "Detected binary phenotype\n";
+   }
+
+   return cont_pheno;
+}

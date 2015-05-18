@@ -61,6 +61,7 @@ int main (int argc, char *argv[])
       std::vector<Sample> samples;
       readPheno(vm["pheno"].as<std::string>(), samples);
       arma::vec y = constructVecY(samples);
+      int continuous_phenotype = continuousPhenotype(samples);
 
       cmdOptions parameters = verifyCommandLine(vm, samples);
 
@@ -116,7 +117,7 @@ int main (int argc, char *argv[])
             {
                k.add_x(constructVecX(k, samples));
             }
-            else if (passFilters(parameters, k, samples, y))
+            else if (passFilters(parameters, k, samples, y, continuous_phenotype))
             {
 #ifdef PANGWAS_DEBUG
                std::cerr << "kmer " + k.sequence() + " seems significant\n";

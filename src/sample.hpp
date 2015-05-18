@@ -18,11 +18,13 @@ class Sample
 
       // nonmodifying operations
       int pheno() const { return phenotype; }
+      int continuous() const { return continuous_pheno; }
       std::string iid() const { return name; }
       static bool compareSamples(Sample lhs, Sample rhs) { return (lhs.name < rhs.name); }
 
    private:
       int phenotype;
+      int continuous_pheno;
       std::string name;
 };
 

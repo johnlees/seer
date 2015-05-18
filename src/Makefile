@@ -14,7 +14,7 @@ PROGRAMS=pangwas pangloss
 
 CLASSES=sample.o kmer.o
 COMMON_OBJECTS=$(CLASSES) panCommon.o panErr.o panFilter.o panIO.o panChiFilter.o
-PANGWAS_OBJECTS=$(COMMON_OBJECTS) pangwasMain.o pangwasCmdLine.o pangwasAssoc.o
+PANGWAS_OBJECTS=$(COMMON_OBJECTS) pangwasMain.o pangwasCmdLine.o pangwasContinuousAssoc.o pangwasBinaryAssoc.o
 PANGLOSS_OBJECTS=$(COMMON_OBJECTS) panglossMain.o panglossStruct.o panglossCmdLine.o
 
 all: $(PROGRAMS)

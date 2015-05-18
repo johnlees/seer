@@ -1,7 +1,7 @@
 /*
- * File: pangwasAssoc.cpp
+ * File: pangwasBinaryAssoc.cpp
  *
- * Implements chi^2 and regression association tests for pangwas
+ * Implements logistic regression association tests for pangwas
  *
  */
 
@@ -12,19 +12,7 @@ void logisticTest(Kmer& k, const arma::vec& y_train, const unsigned int nr)
 {
    // Train classifier
    arma::mat x_train = k.get_x();
-
-   regression fit;
-   if (nr != 1)
-   {
-      fit = logisticPval(y_train, x_train);
-   }
-   else
-   {
-      fit = newtonRaphson(y_train, x_train);
-   }
-
-   k.p_val(fit.p_val);
-   k.beta(fit.beta);
+   doLogit(k, y_train, x_train, nr);
 }
 
 // Logistic fit with covariates
@@ -32,7 +20,11 @@ void logisticTest(Kmer& k, const arma::vec& y_train, const unsigned int nr, cons
 {
    // Train classifier
    arma::mat x_train = arma::join_rows(k.get_x(), mds);
+   doLogit(k, y_train, x_train, nr);
+}
 
+void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train, const unsigned int nr)
+{
    regression fit;
    try
    {

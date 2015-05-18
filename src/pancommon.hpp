@@ -26,6 +26,7 @@
 // Boost headers
 #include <boost/program_options.hpp>
 #include <boost/math/distributions/normal.hpp>
+#include <boost/math/distributions/students_t.hpp>
 
 // Armadillo/mlpack headers
 #include <mlpack/core.hpp> // this includes armadillo
@@ -71,6 +72,8 @@ struct regression
 cmdOptions verifyCommandLine(boost::program_options::variables_map& vm, const std::vector<Sample>& samples);
 void verifyMDSOptions(cmdOptions& verified, boost::program_options::variables_map& vm);
 
+int continuousPhenotype (const std::vector<Sample>& sample_list);
+
 // panErr headers
 void badCommand(const std::string& command, const std::string& value);
 
@@ -88,11 +91,12 @@ arma::mat readMDSList(const std::string& filename);
 int fileStat(const std::string& filename);
 
 // panFilter headers
-int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const arma::vec& y);
+int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const arma::vec& y, const int continuous_phenotype);
 int passBasicFilters(const Kmer& k, const int max_length, const int min_words, const int max_words);
-int passStatsFilters(const arma::vec& x, const arma::vec& y, double chi_cutoff);
+int passStatsFilters(const arma::vec& x, const arma::vec& y, const double chi_cutoff, const int continuous_phenotype);
 
 // panChiFilter headers
 double chiTest(arma::mat& table);
+double welchTwoSamplet(const arma::vec& x, const arma::vec& y);
 double normalPval(double testStatistic);
 

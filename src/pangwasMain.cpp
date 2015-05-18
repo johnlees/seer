@@ -30,6 +30,7 @@ int main (int argc, char *argv[])
    std::vector<Sample> samples;
    readPheno(vm["pheno"].as<std::string>(), samples);
    arma::vec y = constructVecY(samples);
+   int continuous_phenotype = continuousPhenotype(samples);
 
    // Get mds values
    arma::mat mds;
@@ -59,6 +60,9 @@ int main (int argc, char *argv[])
    // take
    void (*mdsLogitFunc)(Kmer&, const arma::vec&, const unsigned int nr, const arma::mat&) = &logisticTest;
    void (*logitFunc)(Kmer&, const arma::vec&, const unsigned int nr) = &logisticTest;
+
+   void (*mdsLinearFunc)(Kmer&, const arma::vec&, const arma::mat&) = &linearTest;
+   void (*linearFunc)(Kmer&, const arma::vec&) = &linearTest;
 #endif
 
    // Error check command line options
@@ -88,7 +92,7 @@ int main (int argc, char *argv[])
                k.add_x(constructVecX(k, samples));
                kmer_lines.push_back(k);
             }
-            else if (passFilters(parameters, k, samples, y))
+            else if (passFilters(parameters, k, samples, y, continuous_phenotype))
             {
 #ifdef PANGWAS_DEBUG
                std::cerr << "kmer " + k.sequence() + " seems significant\n";
@@ -103,11 +107,25 @@ int main (int argc, char *argv[])
       {
          if (use_mds)
          {
-            logisticTest(kmer_lines[0], y, nr_opt, mds);
+            if (continuous_phenotype)
+            {
+               linearTest(kmer_lines[0], y, mds);
+            }
+            else
+            {
+               logisticTest(kmer_lines[0], y, nr_opt, mds);
+            }
          }
          else
          {
-            logisticTest(kmer_lines[0], y, nr_opt);
+            if (continuous_phenotype)
+            {
+               linearTest(kmer_lines[0], y);
+            }
+            else
+            {
+               logisticTest(kmer_lines[0], y, nr_opt);
+            }
          }
 
          if (kmer_lines[0].p_val() < parameters.log_cutoff)
@@ -135,11 +153,25 @@ int main (int argc, char *argv[])
          // std::reference_wrapper allows references to be passed
          if (use_mds)
          {
-            threads.push_back(std::thread(mdsLogitFunc, std::ref(kmer_lines[i]), std::cref(y), nr_opt, std::cref(mds)));
+            if (continuous_phenotype)
+            {
+               threads.push_back(std::thread(mdsLinearFunc, std::ref(kmer_lines[i]), std::cref(y), std::cref(mds)));
+            }
+            else
+            {
+               threads.push_back(std::thread(mdsLogitFunc, std::ref(kmer_lines[i]), std::cref(y), nr_opt, std::cref(mds)));
+            }
          }
          else
          {
-            threads.push_back(std::thread(logitFunc, std::ref(kmer_lines[i]), std::cref(y), nr_opt));
+            if (continuous_phenotype)
+            {
+               threads.push_back(std::thread(linearFunc, std::ref(kmer_lines[i]), std::cref(y)));
+            }
+            else
+            {
+               threads.push_back(std::thread(logitFunc, std::ref(kmer_lines[i]), std::cref(y), nr_opt));
+            }
          }
       }
 
