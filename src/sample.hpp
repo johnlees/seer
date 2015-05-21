@@ -1,11 +1,10 @@
 /*
- * sample.h
+ * sample.hpp
  * Header file for sample class
  */
 
 #include <iostream>
 #include <string>
-#include <stdexcept>
 
 // Samples have a name and phenotype
 // Covariates will be added later
