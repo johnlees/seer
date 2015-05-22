@@ -101,10 +101,9 @@ void Fasta::printMappings(std::ostream &os, const std::string& search)
 
    if (hits.size() > 0)
    {
-      os << Fasta::name;
       for (std::vector<Mapping>::iterator it = hits.begin(); it != hits.end(); ++it)
       {
-         os << "\t" << it->sequence_name << ":" << it->position;
+         os << "\t" << Fasta::name << ":" << it->sequence_name << ":" << it->position;
       }
    }
 }

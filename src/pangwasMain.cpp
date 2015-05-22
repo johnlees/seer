@@ -135,7 +135,13 @@ int main (int argc, char *argv[])
             {
                std::vector<std::string> samples_found = kmer_lines[0].occurrence_vector();
 
-               std::copy(samples_found.begin(), samples_found.end(), std::ostream_iterator<std::string>(std::cout, "\t"));
+               // Doing this for all samples leaves trailing whitespace, so
+               // write the last sample separately
+               if (samples_found.size() > 1)
+               {
+                  std::copy(samples_found.begin(), samples_found.end() - 1, std::ostream_iterator<std::string>(std::cout, "\t"));
+               }
+               std::cout << *samples_found.end();
                std::cout << "\n";
             }
          }
@@ -188,7 +194,13 @@ int main (int argc, char *argv[])
             {
                std::vector<std::string> samples_found = kmer_lines[i].occurrence_vector();
 
-               std::copy(samples_found.begin(), samples_found.end(), std::ostream_iterator<std::string>(std::cout, "\t"));
+               // Doing this for all samples leaves trailing whitespace, so
+               // write the last sample separately
+               if (samples_found.size() > 1)
+               {
+                  std::copy(samples_found.begin(), samples_found.end() - 1, std::ostream_iterator<std::string>(std::cout, "\t"));
+               }
+               std::cout << samples_found.back();
                std::cout << "\n";
             }
 

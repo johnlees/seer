@@ -24,20 +24,20 @@ std::istream& operator>>(std::istream &is, Significant_kmer& sk)
    std::string sequence, sample, line_in = "";
    std::vector<std::string> sample_list;
 
+   // Read the line with sequence and p-value, extract only sequence
    std::getline(is, line_in);
    std::stringstream line_stream(line_in);
 
    line_stream >> sequence;
 
+   // Read the line with samples, extract using the same format as they were
+   // written with
    std::getline(is, line_in);
    line_stream.str(line_in);
 
-   while (!line_stream.eof())
-   {
-      line_stream >> sample;
-      sample_list.push_back(sample);
-   }
+   std::copy(std::istream_iterator<std::string>(line_stream), std::istream_iterator<std::string>(), std::back_inserter(sample_list));
 
+   // Ensure vector remains sorted on sample name
    std::sort(sample_list.begin(), sample_list.end());
    sk = Significant_kmer(sequence, sample_list);
 

@@ -44,30 +44,34 @@ int main (int argc, char *argv[])
       {
          kmer_file >> sig_kmer;
 
-         // sig_kmer samples and sample cache are sorted in the same order, so
-         // can go through linearly
-         std::vector<std::string> search_names = sig_kmer.samples_found();
-         std::vector<std::string>::iterator search_names_it = search_names.begin();
-
-         for (std::vector<Fasta>::iterator all_names_it = sequence_cache.begin(); all_names_it != sequence_cache.end(); ++all_names_it)
+         // Check the read into sig_kmer hasn't reached end of file
+         if (!kmer_file.eof())
          {
-            // For each sample we know the sample is in, print all matches to
-            // the kmer
-            if (all_names_it->get_name() == *search_names_it)
+            std::cout << sig_kmer.sequence();
+
+            // sig_kmer samples and sample cache are sorted in the same order, so
+            // can go through linearly
+            std::vector<std::string> search_names = sig_kmer.samples_found();
+            std::vector<std::string>::iterator search_names_it = search_names.begin();
+
+            for (std::vector<Fasta>::iterator all_names_it = sequence_cache.begin(); all_names_it != sequence_cache.end(); ++all_names_it)
             {
-               std::cerr << sig_kmer.sequence();
-
-               all_names_it->printMappings(std::cout, sig_kmer.sequence());
-
-               ++search_names_it;
-               if (search_names_it == search_names.end())
+               // For each sample we know the sample is in, print all matches to
+               // the kmer
+               if (all_names_it->get_name() == *search_names_it)
                {
-                  break;
+                  all_names_it->printMappings(std::cout, sig_kmer.sequence());
+
+                  ++search_names_it;
+                  if (search_names_it == search_names.end())
+                  {
+                     break;
+                  }
                }
             }
-         }
 
-         std::cerr << "\n";
+            std::cerr << "\n";
+         }
       }
    }
 

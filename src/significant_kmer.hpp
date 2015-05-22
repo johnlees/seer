@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <iterator>
 #include <algorithm>
 
 // kmers have a sequence, and a list of samples they appear in
