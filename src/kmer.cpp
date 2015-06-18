@@ -53,6 +53,11 @@ std::istream& operator>>(std::istream &is, Kmer& k)
    /*
     * Example dsm file line AAAAAAAAAAAAAAAAAATGCATATTTATCTTAG 5.172314 0.175087 100 0 100
     * 0.164875 100 | 6925_3#7:9 6823_4#17:26 6871_2#9:8
+    *
+    * OR
+    *
+    * AAAAAAAAAAAAAAAAAATGCATATTTATCTTAG 5.172314 6925_3#7:9 6823_4#17:26 6871_2#9:8
+    *
     */
    if (is)
    {
@@ -68,6 +73,16 @@ std::istream& operator>>(std::istream &is, Kmer& k)
          if (s_buffer == "|")
          {
             break;
+         }
+         // Gone one too far in a string w/out | separator
+         else
+         {
+            size_t occurence_pos = s_buffer.find(":");
+            if (s_buffer.find(":") != std::string::npos)
+            {
+               samples.push_back(s_buffer.substr(0, occurence_pos));
+               break;
+            }
          }
       }
       s_buffer = "";

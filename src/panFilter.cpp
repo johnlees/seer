@@ -9,7 +9,7 @@
 #include "pancommon.hpp"
 
 // Wrapper to all filter functions
-int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const arma::vec& y)
+int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const arma::vec& y, const int continuous_phenotype)
 {
    int pass = 0;
 
@@ -22,7 +22,7 @@ int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Samp
 
       try  // Some chi^2 tests may diverge - proceed anyway for now
       {
-         pass = passStatsFilters(x, y, filterOptions.chi_cutoff);
+         pass = passStatsFilters(x, y, filterOptions.chi_cutoff, continuous_phenotype);
       }
       catch (std::exception& e)
       {
@@ -55,46 +55,56 @@ int passBasicFilters(const Kmer& k, const int max_length, const int min_words, c
    return passed;
 }
 
-int passStatsFilters(const arma::vec& x, const arma::vec& y, double chi_cutoff)
+int passStatsFilters(const arma::vec& x, const arma::vec& y, const double chi_cutoff, const int continuous_phenotype)
 {
    int passed = 1;
 
-   // Contigency table
-   //         unaffected affected
-   // present a          b
-   // absent  c          d
-   //
-   // Use doubles for compatibility with det function in arma::mat
-   double a = 0, b = 0, c = 0, d = 0;
-
-   arma::vec::const_iterator j = y.begin();
-   for (arma::vec::const_iterator i = x.begin(); i!=x.end(); ++i)
+   if (continuous_phenotype)
    {
-      if (*j == 0) {
-         if (*i == 0){
-            c++;
-         } else {
-            a++;
-         }
-      } else {
-         if (*i == 0){
-            d++;
-         } else {
-            b++;
-         }
+      if (welchTwoSamplet(x, y) > chi_cutoff)
+      {
+         passed = 0;
       }
-      j++;
    }
+   else
+   {
+      // Contigency table
+      //         unaffected affected
+      // present a          b
+      // absent  c          d
+      //
+      // Use doubles for compatibility with det function in arma::mat
+      double a = 0, b = 0, c = 0, d = 0;
 
-   arma::mat::fixed<2, 2> table = {a, b, c, d};
+      arma::vec::const_iterator j = y.begin();
+      for (arma::vec::const_iterator i = x.begin(); i!=x.end(); ++i)
+      {
+         if (*j == 0) {
+            if (*i == 0){
+               c++;
+            } else {
+               a++;
+            }
+         } else {
+            if (*i == 0){
+               d++;
+            } else {
+               b++;
+            }
+         }
+         j++;
+      }
+
+      arma::mat::fixed<2, 2> table = {a, b, c, d};
 #ifdef PANGWAS_DEBUG
-   arma::Mat<int>::fixed<2, 2> tab_out = {int (a), int (b), int (c), int(d)};
-   std::cerr << tab_out << "\n";
+      arma::Mat<int>::fixed<2, 2> tab_out = {int (a), int (b), int (c), int(d)};
+      std::cerr << tab_out << "\n";
 #endif
 
-   if (chiTest(table) > chi_cutoff)
-   {
-      passed = 0;
+      if (chiTest(table) > chi_cutoff)
+      {
+         passed = 0;
+      }
    }
 
    return passed;

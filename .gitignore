@@ -28,6 +28,7 @@
 *.app
 pangwas
 pangloss
+map_back
 
 # Editors
 .vimrc

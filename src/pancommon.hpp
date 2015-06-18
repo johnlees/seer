@@ -13,7 +13,7 @@
 #include <cstdlib>
 #include <string>
 #include <algorithm>
-#include <list>
+#include <iterator>
 #include <vector>
 #include <thread>
 #include <exception>
@@ -26,6 +26,7 @@
 // Boost headers
 #include <boost/program_options.hpp>
 #include <boost/math/distributions/normal.hpp>
+#include <boost/math/distributions/students_t.hpp>
 
 // Armadillo/mlpack headers
 #include <mlpack/core.hpp> // this includes armadillo
@@ -43,12 +44,21 @@ const std::string chi2_default = "10e-5";
 // Structs
 struct cmdOptions
 {
-   double log_cutoff, chi_cutoff;
-   long int max_length, size;
-   int filter, pc;
-   size_t min_words, max_words;
-   std::string pheno, kmers, output;
+   double log_cutoff;
+   double chi_cutoff;
+
+   long int max_length;
+   long int size;
+   int filter;
+   int pc;
+   int print_samples;
    unsigned int num_threads;
+   size_t min_words;
+   size_t max_words;
+
+   std::string pheno;
+   std::string kmers;
+   std::string output;
 };
 
 struct regression
@@ -60,6 +70,9 @@ struct regression
 // Function headers
 //    panCommon.cpp
 cmdOptions verifyCommandLine(boost::program_options::variables_map& vm, const std::vector<Sample>& samples);
+void verifyMDSOptions(cmdOptions& verified, boost::program_options::variables_map& vm);
+
+int continuousPhenotype (const std::vector<Sample>& sample_list);
 
 // panErr headers
 void badCommand(const std::string& command, const std::string& value);
@@ -73,15 +86,17 @@ arma::vec constructVecX(const Kmer& k, const std::vector<Sample>& samples);
 
 void writeMDS(const std::string& file_name, const arma::mat& MDS);
 arma::mat readMDS(const std::string& file_name);
+arma::mat readMDSList(const std::string& filename);
 
 int fileStat(const std::string& filename);
 
 // panFilter headers
-int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const arma::vec& y);
+int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const arma::vec& y, const int continuous_phenotype);
 int passBasicFilters(const Kmer& k, const int max_length, const int min_words, const int max_words);
-int passStatsFilters(const arma::vec& x, const arma::vec& y, double chi_cutoff);
+int passStatsFilters(const arma::vec& x, const arma::vec& y, const double chi_cutoff, const int continuous_phenotype);
 
 // panChiFilter headers
 double chiTest(arma::mat& table);
+double welchTwoSamplet(const arma::vec& x, const arma::vec& y);
 double normalPval(double testStatistic);
 

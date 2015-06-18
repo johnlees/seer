@@ -1,7 +1,7 @@
 /*
- * File: pangwasAssoc.cpp
+ * File: pangwasBinaryAssoc.cpp
  *
- * Implements chi^2 and regression association tests for pangwas
+ * Implements logistic regression association tests for pangwas
  *
  */
 
@@ -12,19 +12,7 @@ void logisticTest(Kmer& k, const arma::vec& y_train, const unsigned int nr)
 {
    // Train classifier
    arma::mat x_train = k.get_x();
-
-   regression fit;
-   if (nr != 1)
-   {
-      fit = logisticPval(y_train, x_train);
-   }
-   else
-   {
-      fit = newtonRaphson(y_train, x_train);
-   }
-
-   k.p_val(fit.p_val);
-   k.beta(fit.beta);
+   doLogit(k, y_train, x_train, nr);
 }
 
 // Logistic fit with covariates
@@ -32,15 +20,32 @@ void logisticTest(Kmer& k, const arma::vec& y_train, const unsigned int nr, cons
 {
    // Train classifier
    arma::mat x_train = arma::join_rows(k.get_x(), mds);
+   doLogit(k, y_train, x_train, nr);
+}
 
+void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train, const unsigned int nr)
+{
    regression fit;
-   if (nr != 1)
+   try
    {
-      fit = logisticPval(y_train, x_train);
+      if (nr != 1)
+      {
+         fit = logisticPval(y_train, x_train);
+      }
+      else
+      {
+         fit = newtonRaphson(y_train, x_train);
+      }
    }
-   else
+   // Methods will throw if a singular matrix is inverted
+   catch (std::exception& e)
    {
-      fit = newtonRaphson(y_train, x_train);
+      std::cerr << k.sequence() << "\n"
+                << "kmer convergence error: "
+                << e.what() << "\n";
+
+      fit.p_val = 0;
+      fit.beta = 0;
    }
 
    k.p_val(fit.p_val);
@@ -61,6 +66,7 @@ regression newtonRaphson(const arma::vec& y_train, const arma::mat& x_train)
    mlpack::regression::LinearRegression initial_fit(x_train.t(), y_train);
    parameter_iterations.push_back(initial_fit.Parameters());
 
+   // Alternatively just use:
    // parameter_iterations.push_back(arma::ones(x_train.n_cols + 1));
 
    arma::mat x_design = join_rows(arma::mat(x_train.n_rows,1,arma::fill::ones), x_train);
@@ -128,6 +134,7 @@ regression logisticPval(const arma::vec& y_train, const arma::mat& x_train)
 }
 
 // Returns var-covar matrix for logistic function
+// WARNING: This contains an inversion, which will throw on a singular matrix
 arma::mat varCovarMat(const arma::mat& x, const arma::mat& b)
 {
    // var-covar matrix = inv(I)

@@ -22,12 +22,21 @@ const unsigned int max_nr_iterations = 1000;
 int parseCommandLine (int argc, char *argv[], boost::program_options::variables_map& vm);
 void printHelp(boost::program_options::options_description& help);
 
-// pangwasAssoc headers
+// pangwasBinaryAssoc headers
 void logisticTest(Kmer& k, const arma::vec& y, const unsigned int nr);
 void logisticTest(Kmer& k, const arma::vec& y_train, const unsigned int nr, const arma::mat& mds);
+
+void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train, const unsigned int nr);
 
 regression logisticPval(const arma::vec& y_train, const arma::mat& x_train);
 regression newtonRaphson(const arma::vec& y_train, const arma::mat& x_train);
 arma::mat varCovarMat(const arma::mat& x, const arma::mat& b);
 arma::vec predictLogitProbs(const arma::mat& x, const arma::vec& b);
+
+// pangwasContinuousAssoc headers
+void linearTest(Kmer& k, const arma::vec& y_train);
+void linearTest(Kmer& k, const arma::vec& y_train, const arma::mat& mds);
+
+void doLinear(Kmer& k, const arma::vec& y_train, const arma::mat& x_train);
+arma::vec predictLinearProbs(const arma::mat& x, const arma::vec& b);
 

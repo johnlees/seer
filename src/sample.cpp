@@ -9,18 +9,23 @@
 
 const int default_pheno = 0;
 const std::string default_name = "";
+const int default_continuous = 0;
 
 Sample::Sample(int p, std::string n)
    :phenotype(p), name(n)
 {
    if (p != 0 && p != 1)
    {
-      throw std::runtime_error("Sample " + name + " has invalid phenotype " + std::to_string(p) + "\n");
+      continuous_pheno = 1;
+   }
+   else
+   {
+      continuous_pheno = 0;
    }
 }
 
 Sample::Sample()
-   :phenotype(default_pheno), name(default_name)
+   :phenotype(default_pheno), continuous_pheno(default_continuous), name(default_name)
 {
 }
 
