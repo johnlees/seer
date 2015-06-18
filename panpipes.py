@@ -144,7 +144,7 @@ for dsm in dsm_files:
         if args.LSF:
             pangwas_command = "bsub -o pangloss.step1.%J." + str(i) + ".o -e pangloss.step1.%J." + str(i) + ".e -n" + str(args.threads) + " -R \"span[hosts=1]\""
 
-        pangwas_command += "'pangwas -k " + str(dsm) + " -p " + str(args.pheno) + " --no_filtering --pval " + str(args.pval) + " --struct all_structure.dsm --threads " + str(args.threads) + " > pangwas." + str(i) + ".result'"
+        pangwas_command += "'pangwas -k " + str(dsm) + " -p " + str(args.pheno) + " --no_filtering --pval " + str(args.pval) + " --struct all_structure.dsm --threads " + str(args.threads) + " --print_samples > pangwas." + str(i) + ".result'"
 
         print(pangwas_command)
 
@@ -168,11 +168,16 @@ if args.LSF:
     jobs = []
 
 # TODO post-processing:
-# assembly of significant kmers
-# map back to references
 subprocess.check_call("cat pangwas.*.result > pangwas.result", shell=True)
 for i in range(1, len(dsm_files)):
     subprocess.check_call("rm pangwas." + str(i) + ".result", shell=True)
+
+# map back to references
+subprocess.call("map_back -k pangwas.result -r " + args.drafts + " > kmer_draft_locations.txt")
+
+# assembly of significant kmers
+if (args.assemble):
+    subprocess.call("VelvetOptimiser.pl --s 11 --e 71 --t 1 -f '-short -fasta ../../resultErytrhomycin.fa' --m -1 --k max --c tbp")
 
 # use blat by default
 # fall back to blast
