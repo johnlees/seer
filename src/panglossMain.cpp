@@ -12,6 +12,7 @@ std::default_random_engine rand_gen;
 
 // $1 file location, $2 file name, $3 file ending
 const std::regex file_format_e ("^(.+)\\/(.+)\\.([^\\.]+)$");
+const std::regex file_format_within_e ("^(.+)\\.([^\\.]+)$"); // When in same directory, but not with a ./ prefix
 
 int main (int argc, char *argv[])
 {
@@ -57,6 +58,13 @@ int main (int argc, char *argv[])
    // Normal operation
    if (!vm.count("mds_concat"))
    {
+      // Check compulsory paramters provided
+      if (!vm.count("kmers") || !vm.count("pheno"))
+      {
+         std::cerr << "Either -k and -p must be provided, or --mds_concat\n";
+         return 1;
+      }
+
       // Open .pheno file, parse into vector of samples
       std::vector<Sample> samples;
       readPheno(vm["pheno"].as<std::string>(), samples);
@@ -81,6 +89,11 @@ int main (int argc, char *argv[])
          else
          {
             output_file_name = std::regex_replace(parameters.kmers, file_format_e, std::string("$1/filtered.$2.gz"));
+            if (output_file_name == parameters.kmers) // If first match fails
+            {
+               output_file_name = std::regex_replace(parameters.kmers, file_format_within_e, std::string("filtered.$1.gz"));
+            }
+
          }
 
          filtered_file.open(output_file_name.c_str());
@@ -93,6 +106,10 @@ int main (int argc, char *argv[])
       else
       {
          dsm_file_name = std::regex_replace(parameters.kmers, file_format_e, std::string("$1/$2.dsm"));
+         if (dsm_file_name == parameters.kmers) // If first match fails
+         {
+            output_file_name = std::regex_replace(parameters.kmers, file_format_within_e, std::string("$1.dsm"));
+         }
       }
 
       // vector of subsampled kmers
