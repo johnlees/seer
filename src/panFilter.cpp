@@ -26,7 +26,7 @@ int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Samp
       }
       catch (std::exception& e)
       {
-         std::cerr << "kmer " + k.sequence() + " failed chisq test with error: " + e.what();
+         std::cerr << "kmer " + k.sequence() + " failed chisq test with error: " + e.what() + "\n";
          pass = 1;
       }
    }

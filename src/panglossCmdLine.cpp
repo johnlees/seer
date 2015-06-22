@@ -18,8 +18,8 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
    //Required options
    po::options_description required("Required options");
    required.add_options()
-    ("kmers,k", po::value<std::string>()->required(), "dsm kmer output file")
-    ("pheno,p", po::value<std::string>()->required(), ".pheno metadata");
+    ("kmers,k", po::value<std::string>(), "dsm kmer output file")
+    ("pheno,p", po::value<std::string>(), ".pheno metadata");
 
    po::options_description mds("MDS options");
    mds.add_options()
@@ -62,7 +62,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
          failed = 0;
 
          // Check input files exist, and can stat
-         if (!fileStat(vm["kmers"].as<std::string>()) || !fileStat(vm["pheno"].as<std::string>()))
+         if ((vm.count("kmers") && !fileStat(vm["kmers"].as<std::string>())) || (vm.count("pheno") && !fileStat(vm["pheno"].as<std::string>())))
          {
             failed = 1;
          }
