@@ -99,7 +99,7 @@ arma::vec constructVecX(const Kmer& k, const std::vector<Sample>& samples)
 
 void writeMDS(const std::string& file_name, const arma::mat& MDS)
 {
-   MDS.save(file_name);
+   MDS.save(file_name, arma::hdf5_binary);
 }
 
 arma::mat readMDS(const std::string& file_name)
