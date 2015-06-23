@@ -108,7 +108,7 @@ int main (int argc, char *argv[])
          dsm_file_name = std::regex_replace(parameters.kmers, file_format_e, std::string("$1/$2.dsm"));
          if (dsm_file_name == parameters.kmers) // If first match fails
          {
-            output_file_name = std::regex_replace(parameters.kmers, file_format_within_e, std::string("$1.dsm"));
+            dsm_file_name = std::regex_replace(parameters.kmers, file_format_within_e, std::string("$1.dsm"));
          }
       }
 

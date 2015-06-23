@@ -50,6 +50,7 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
    arma::mat dist(matSize, matSize);
 
 #ifndef NO_THREAD
+   // Create queue for distance calculations
    std::queue<std::future<distance_element>> distance_calculations;
 #endif
 
@@ -59,6 +60,7 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
       arma::vec ref_row = inMat.row(i);
       for (unsigned int j = i; j < matSize; j++)
       {
+         // Diagonal elements are zero
          if (i == j)
          {
             dist(i, j) = 0;
@@ -69,14 +71,18 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
             dist(i, j) = distanceFunction(ref_row, inMat.row(j));
             dist(j, i) = dist(i, j); // Set symmetric elements
 #else
+            // If fully threaded, wait for a calculation to finish before
+            // adding a new one
             if (distance_calculations.size() == threads)
             {
                distance_element d = distance_calculations.front().get();
                distance_calculations.pop();
 
                dist(d.row, d.col) = d.distance;
-               dist(d.col, d.row) = d.distance;
+               dist(d.col, d.row) = d.distance; // Set symmetric elements
             }
+
+            // Add in the new calculation
             arma::vec new_row = inMat.row(j);
             distance_calculations.push(std::async(threadDistance, i, j, std::cref(ref_row), std::cref(new_row)));
 #endif
@@ -84,6 +90,7 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
       }
    }
 
+   // Pop final calculations from queue
    while (distance_calculations.size() > 0)
    {
       distance_element d = distance_calculations.front().get();

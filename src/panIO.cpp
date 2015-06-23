@@ -125,12 +125,19 @@ arma::mat readMDSList(const std::string& filename)
    {
       throw std::runtime_error("Could not open mds list file " + filename + "\n");
    }
+   else
+   {
+      std::cerr << "Reading subsampled matrices from " + filename + "\n";
+   }
 
    std::string matrix_file;
    arma::mat combined_matrix;
+   int i = 0;
    while (ist >> matrix_file)
    {
-      combined_matrix = join_cols(combined_matrix, readMDS(matrix_file));
+      combined_matrix = join_rows(combined_matrix, readMDS(matrix_file));
+
+      std::cerr << "Joined matrix " << ++i << "\n";
    }
 
    return combined_matrix;
