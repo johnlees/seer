@@ -34,6 +34,6 @@ void printHelp(po::options_description& help);
 arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions, const unsigned int threads);
 arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int threads);
 
-distance_element threadDistance(const unsigned int i, const unsigned int j, const arma::vec& row_1, const arma::vec& row_2);
-double distanceFunction(const arma::vec& vec_1, const arma::vec& vec_2);
+distance_element threadDistance(const unsigned int i, const unsigned int j, const arma::rowvec row_1, const arma::rowvec row_2);
+double distanceFunction(const arma::rowvec& vec_1, const arma::rowvec& vec_2);
 
