@@ -62,7 +62,7 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
    // Loop through upper triangle
    for (unsigned int i = 0; i < matSize; ++i)
    {
-      arma::vec ref_row = inMat.row(i);
+      arma::rowvec ref_row = inMat.row(i);
       for (unsigned int j = i; j < matSize; j++)
       {
          // Diagonal elements are zero
@@ -88,13 +88,14 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
             }
 
             // Add in the new calculation
-            arma::vec new_row = inMat.row(j);
-            distance_calculations.push(std::async(threadDistance, i, j, std::cref(ref_row), std::cref(new_row)));
+            arma::rowvec new_row = inMat.row(j);
+            distance_calculations.push(std::async(threadDistance, i, j, ref_row, new_row));
 #endif
          }
       }
    }
 
+#ifndef NO_THREAD
    // Pop final calculations from queue
    while (distance_calculations.size() > 0)
    {
@@ -104,6 +105,7 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
       dist(d.row, d.col) = d.distance;
       dist(d.col, d.row) = d.distance;
    }
+#endif
 
 #ifdef PANGWAS_DEBUG
    auto end = std::chrono::steady_clock::now();
@@ -115,7 +117,7 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
    return dist;
 }
 
-distance_element threadDistance(const unsigned int i, const unsigned int j, const arma::vec& row_1, const arma::vec& row_2)
+distance_element threadDistance(const unsigned int i, const unsigned int j, const arma::rowvec row_1, const arma::rowvec row_2)
 {
    distance_element dist_el;
 
@@ -126,7 +128,7 @@ distance_element threadDistance(const unsigned int i, const unsigned int j, cons
    return dist_el;
 }
 
-double distanceFunction(const arma::vec& vec_1, const arma::vec& vec_2)
+double distanceFunction(const arma::rowvec& vec_1, const arma::rowvec& vec_2)
 {
    return accu(abs(vec_1 - vec_2));
 }
