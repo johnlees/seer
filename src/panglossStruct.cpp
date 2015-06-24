@@ -115,7 +115,7 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
    auto end = std::chrono::steady_clock::now();
 
    auto diff = end - start;
-   std::cerr << std::chrono::duration <double, std::seconds> (diff).count() << " s\n";
+   std::cerr << std::chrono::duration <double, std::chrono::seconds> (diff).count() << " s\n";
 #endif
 
    return dist;
