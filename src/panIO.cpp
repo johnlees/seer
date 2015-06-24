@@ -102,6 +102,11 @@ void writeMDS(const std::string& file_name, const arma::mat& MDS)
    MDS.save(file_name, arma::hdf5_binary);
 }
 
+void writeDistances(const std::string& file_name, const arma::mat& distances)
+{
+   distances.save(file_name, arma::csv_ascii);
+}
+
 arma::mat readMDS(const std::string& file_name)
 {
    arma::mat MDS;

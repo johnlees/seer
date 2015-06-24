@@ -124,6 +124,15 @@ void verifyMDSOptions(cmdOptions& verified, boost::program_options::variables_ma
          badCommand("size", std::to_string(vm["size"].as<long int>()));
       }
    }
+
+   if (vm.count("write_distances"))
+   {
+      verified.write_distances = 1;
+   }
+   else
+   {
+      verified.write_distances = 0;
+   }
 }
 
 // Check for continuous phenotype. If even one sample has neither 0 or 1 as

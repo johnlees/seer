@@ -7,7 +7,7 @@
 
 #include "pangloss.hpp"
 
-arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions, const unsigned int threads)
+arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions, const unsigned int threads, const std::string& distances_file)
 {
    /*
     * Metric MDS
@@ -22,6 +22,10 @@ arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions, con
 
    // Step 1)
    arma::mat P = arma::square(dissimiliarityMatrix(populationMatrix, threads));
+   if (!distances_file.empty())
+   {
+      writeDistances(distances_file, P);
+   }
 
    // Step 2)
    arma::mat J = arma::eye<arma::mat>(matSize, matSize)

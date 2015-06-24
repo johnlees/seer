@@ -53,6 +53,7 @@ struct cmdOptions
    int filter;
    int pc;
    int print_samples;
+   int write_distances;
    unsigned int num_threads;
    size_t min_words;
    size_t max_words;
@@ -86,6 +87,7 @@ arma::vec constructVecY(const std::vector<Sample>& samples);
 arma::vec constructVecX(const Kmer& k, const std::vector<Sample>& samples);
 
 void writeMDS(const std::string& file_name, const arma::mat& MDS);
+void writeDistances(const std::string& file_name, const arma::mat& distances);
 arma::mat readMDS(const std::string& file_name);
 arma::mat readMDSList(const std::string& filename);
 

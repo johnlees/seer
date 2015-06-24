@@ -79,7 +79,7 @@ int main (int argc, char *argv[])
 
       // Set up output files
       ogzstream filtered_file;
-      std::string output_file_name, dsm_file_name;
+      std::string output_file_name, dsm_file_name, distances_file_name;
       if (parameters.filter)
       {
          if (vm.count("output"))
@@ -102,6 +102,7 @@ int main (int argc, char *argv[])
       if (vm.count("output"))
       {
          dsm_file_name = parameters.output + ".dsm";
+         distances_file_name = parameters.output + "distances.csv";
       }
       else
       {
@@ -109,6 +110,12 @@ int main (int argc, char *argv[])
          if (dsm_file_name == parameters.kmers) // If first match fails
          {
             dsm_file_name = std::regex_replace(parameters.kmers, file_format_within_e, std::string("$1.dsm"));
+         }
+
+         distances_file_name = std::regex_replace(parameters.kmers, file_format_e, std::string("$1/$2.distances.csv"));
+         if (distances_file_name == parameters.kmers) // If first match fails
+         {
+            distances_file_name  = std::regex_replace(parameters.kmers, file_format_within_e, std::string("$1.distances.csv"));
          }
       }
 
@@ -179,8 +186,17 @@ int main (int argc, char *argv[])
       }
       else
       {
+
          // Run metric MDS, then output to file
-         writeMDS(dsm_file_name, metricMDS(subsampledMatrix, parameters.pc, parameters.num_threads));
+         if (parameters.write_distances)
+         {
+            writeMDS(dsm_file_name, metricMDS(subsampledMatrix, parameters.pc, parameters.num_threads, distances_file_name));
+         }
+         else
+         {
+            writeMDS(dsm_file_name, metricMDS(subsampledMatrix, parameters.pc, parameters.num_threads));
+         }
+
       }
 
       std::cerr << "Done.\n";
@@ -209,19 +225,29 @@ int main (int argc, char *argv[])
       cmdOptions mdsOptions;
       verifyMDSOptions(mdsOptions, vm);
 
-      std::string dsm_file_name;
+      std::string dsm_file_name, distances_file_name;
       if (fileStat(matrix_input))
       {
          if (vm.count("output"))
          {
             dsm_file_name = vm["output"].as<std::string>();
+            distances_file_name = vm["output"].as<std::string>() + "distances.csv";
          }
          else
          {
             dsm_file_name = matrix_input + ".dsm";
+            distances_file_name = matrix_input + "distances.csv";
          }
+
          // Run metric MDS, then output to file
-         writeMDS(dsm_file_name, metricMDS(readMDSList(matrix_input), mdsOptions.pc, mdsOptions.num_threads));
+         if (mdsOptions.write_distances)
+         {
+            writeMDS(dsm_file_name, metricMDS(readMDSList(matrix_input), mdsOptions.pc, mdsOptions.num_threads, distances_file_name));
+         }
+         else
+         {
+            writeMDS(dsm_file_name, metricMDS(readMDSList(matrix_input), mdsOptions.pc, mdsOptions.num_threads));
+         }
       }
       else
       {

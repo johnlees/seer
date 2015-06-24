@@ -31,7 +31,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm);
 void printHelp(po::options_description& help);
 
 // panglossStruct headers
-arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions, const unsigned int threads);
+arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions, const unsigned int threads, const std::string& distances_file = "");
 arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int threads);
 
 distance_element threadDistance(const unsigned int i, const unsigned int j, const arma::rowvec row_1, const arma::rowvec row_2);
