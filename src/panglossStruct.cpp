@@ -49,6 +49,11 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
    const unsigned int matSize = inMat.n_rows;
    arma::mat dist(matSize, matSize);
 
+#ifdef PANGWAS_DEBUG
+   // Time parallelisation
+   auto start = std::chrono::steady_clock::now();
+#endif
+
 #ifndef NO_THREAD
    // Create queue for distance calculations
    std::queue<std::future<distance_element>> distance_calculations;
@@ -99,6 +104,13 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
       dist(d.row, d.col) = d.distance;
       dist(d.col, d.row) = d.distance;
    }
+
+#ifdef PANGWAS_DEBUG
+   auto end = std::chrono::steady_clock::now();
+
+   auto diff = end - start;
+   std::cerr << std::chrono::duration <double, std::seconds> (diff).count() << " s\n";
+#endif
 
    return dist;
 }
