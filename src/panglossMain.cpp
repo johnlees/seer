@@ -231,12 +231,12 @@ int main (int argc, char *argv[])
          if (vm.count("output"))
          {
             dsm_file_name = vm["output"].as<std::string>();
-            distances_file_name = vm["output"].as<std::string>() + "distances.csv";
+            distances_file_name = vm["output"].as<std::string>() + ".distances.csv";
          }
          else
          {
             dsm_file_name = matrix_input + ".dsm";
-            distances_file_name = matrix_input + "distances.csv";
+            distances_file_name = matrix_input + ".distances.csv";
          }
 
          // Run metric MDS, then output to file

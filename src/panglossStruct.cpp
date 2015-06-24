@@ -22,6 +22,8 @@ arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions, con
 
    // Step 1)
    arma::mat P = arma::square(dissimiliarityMatrix(populationMatrix, threads));
+
+   // If supplied as an optional parameter, write distance matrix to file
    if (!distances_file.empty())
    {
       writeDistances(distances_file, P);
@@ -53,10 +55,8 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
    const unsigned int matSize = inMat.n_rows;
    arma::mat dist(matSize, matSize);
 
-#ifdef PANGWAS_DEBUG
    // Time parallelisation
-   auto start = std::chrono::steady_clock::now();
-#endif
+   std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 
 #ifndef NO_THREAD
    // Create queue for distance calculations
@@ -64,6 +64,8 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
 #endif
 
    // Loop through upper triangle
+   long int num_calculations = 0.5*matSize*(matSize + 1);
+   long int calc = 0;
    for (unsigned int i = 0; i < matSize; ++i)
    {
       arma::rowvec ref_row = inMat.row(i);
@@ -93,8 +95,13 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
 
             // Add in the new calculation
             arma::rowvec new_row = inMat.row(j);
-            distance_calculations.push(std::async(threadDistance, i, j, ref_row, new_row));
+            distance_calculations.push(std::async(std::launch::async, threadDistance, i, j, ref_row, new_row));
 #endif
+         }
+         if (++calc % 50 == 0)
+         {
+            std::cerr << calc << "/" << num_calculations << "\r";
+            std::cerr.flush();
          }
       }
    }
@@ -110,13 +117,12 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
       dist(d.col, d.row) = d.distance;
    }
 #endif
+   std::cerr << num_calculations << "/" << num_calculations << "\n";
 
-#ifdef PANGWAS_DEBUG
-   auto end = std::chrono::steady_clock::now();
-
-   auto diff = end - start;
-   std::cerr << std::chrono::duration <double, std::chrono::seconds> (diff).count() << " s\n";
-#endif
+   // Print time taken
+   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+   std::chrono::duration<double> diff = std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
+   std::cerr << "Distance matrix calculated in: " << diff.count() << " s\n";
 
    return dist;
 }
