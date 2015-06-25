@@ -2,7 +2,7 @@ PREFIX=${HOME}/software
 BINDIR=$(PREFIX)/bin
 
 CXX=icpc
-CXXFLAGS=-Wall -std=c++11
+CXXFLAGS=-Wall -g -std=c++11
 CPPFLAGS=-I$(PREFIX)/include -I/usr/include/libxml2 -I../gzstream
 LDLIBS=-L../gzstream -L$(PREFIX)/lib -lhdf5 -lgzstream -lz -lmlpack -larmadillo -lboost_program_options -mkl
 
