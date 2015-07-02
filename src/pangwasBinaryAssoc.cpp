@@ -63,13 +63,21 @@ regression newtonRaphson(const arma::vec& y_train, const arma::mat& x_train)
 
    // Get starting point from a linear regression, which is fast
    // and will reduce number of n-r iterations
-   mlpack::regression::LinearRegression initial_fit(x_train.t(), y_train);
-   parameter_iterations.push_back(initial_fit.Parameters());
-
-   // Alternatively just use:
-   // parameter_iterations.push_back(arma::ones(x_train.n_cols + 1));
-
+   // Set up design matrix, and calculate (X'X)^-1
    arma::mat x_design = join_rows(arma::mat(x_train.n_rows,1,arma::fill::ones), x_train);
+   try
+   {
+      arma::mat inv_xxt = inv_sympd(x_design*x_design.t());
+
+      // Regress beta: b = (X'X)^-1*Xy
+      parameter_iterations.push_back(inv_xxt * x_design * y_train);
+   }
+   // Method will throw if a singular matrix is inverted
+   catch (std::exception& e)
+   {
+      // Alternatively just use:
+      parameter_iterations.push_back(arma::ones(x_train.n_cols + 1));
+   }
 
    for (unsigned int i = 0; i < max_nr_iterations; ++i)
    {
@@ -107,10 +115,40 @@ regression newtonRaphson(const arma::vec& y_train, const arma::mat& x_train)
 regression logisticPval(const arma::vec& y_train, const arma::mat& x_train)
 {
    regression parameters;
-   mlpack::regression::LogisticRegression<> fit(x_train.t(), y_train);
+
+   arma::mat x_design = join_rows(arma::mat(x_train.n_rows,1,arma::fill::ones), x_train);
+   column_vector starting_point(x_design.n_cols);
+/*   try
+   {
+      arma::mat inv_xxt = inv_sympd(x_design*x_design.t());
+
+      // Regress beta: b = (X'X)^-1*Xy
+      starting_point = arma_to_dlib(inv_xxt * x_design * y_train);
+   }
+   // Method will throw if a singular matrix is inverted
+   catch (std::exception& e)
+   {
+      // Alternatively just use:
+      for (size_t i = 0; i < x_design.n_cols; ++i)
+      {
+         starting_point(i) = 1;
+      }
+   }
+*/
+   for (size_t i = 0; i < x_design.n_cols; ++i)
+   {
+      starting_point(i) = 1;
+   }
+
+   // Use BFGS optimiser in dlib to maximise likelihood function by chaging the
+   // b vector, which will end in starting_point
+   dlib::find_max(dlib::bfgs_search_strategy(),
+                  dlib::objective_delta_stop_strategy(convergence_limit),
+                  LogitLikelihood(x_train, y_train), LogitLikelihoodGradient(x_train, y_train),
+                  starting_point, -1);
 
    // Extract beta
-   arma::vec b_vector = fit.Parameters();
+   arma::vec b_vector = dlib_to_arma(starting_point);
    double b_1 = b_vector(1);
    parameters.beta = b_1;
 
@@ -122,7 +160,7 @@ regression logisticPval(const arma::vec& y_train, const arma::mat& x_train)
    // In the special case of a logistic regression, abs can be taken rather
    // than ^2 as responses are 0 or 1
    //
-   double W = std::abs(b_1) / pow(varCovarMat(x_train, b_vector)(1,1), 0.5); // null hypothesis b_1 = 0
+   double W = std::abs(b_1) / pow(varCovarMat(x_design, b_vector)(1,1), 0.5); // null hypothesis b_1 = 0
    parameters.p_val = normalPval(W);
 
 #ifdef PANGWAS_DEBUG
@@ -142,11 +180,10 @@ arma::mat varCovarMat(const arma::mat& x, const arma::mat& b)
    // I = d^2/d(b^2)[log L]
    //
    // see http://czep.net/stat/mlelr.pdf
-   arma::mat x_design = join_rows(arma::mat(x.n_rows,1,arma::fill::ones), x);
 
    // First get logit of x values using parameters from fit, and transform to
    // p(1-p)
-   arma::vec y_pred = predictLogitProbs(x_design, b);
+   arma::vec y_pred = predictLogitProbs(x, b);
    arma::vec y_trans = y_pred % (1 - y_pred);
 
    // Fill elements of I, which are sums of element by element vector multiples
@@ -156,7 +193,7 @@ arma::mat varCovarMat(const arma::mat& x, const arma::mat& b)
    {
       for (unsigned int j = i; j < j_max; j++)
       {
-         I(i,j) = accu(y_trans % x_design.col(i) % x_design.col(j));
+         I(i,j) = accu(y_trans % x.col(i) % x.col(j));
          if (i != j)
          {
             I(j,i) = I(i,j); // I is symmetric - only need to calculate upper triangle
@@ -175,4 +212,3 @@ arma::vec predictLogitProbs(const arma::mat& x, const arma::vec& b)
 
    return y;
 }
-

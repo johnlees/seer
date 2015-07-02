@@ -6,16 +6,16 @@
  */
 
 // Common headers
-#include "pancommon.hpp"
+//#include "pancommon.hpp"
+#include "logitFunction.hpp" // This includes pancommon.hpp
 
-// mlpack headers
-#include <mlpack/methods/linear_regression/linear_regression.hpp>
-#include <mlpack/methods/logistic_regression/logistic_regression.hpp>
+// dlib headers
+#include <dlib/optimization.h>
 
 // Constants
 //    Default options
 const std::string pval_default = "10e-8";
-const double convergence_limit = 10e-20;
+const double convergence_limit = 10e-8;
 const unsigned int max_nr_iterations = 1000;
 
 // pangwasCmdLine headers

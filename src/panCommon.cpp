@@ -161,3 +161,31 @@ int continuousPhenotype (const std::vector<Sample>& sample_list)
 
    return cont_pheno;
 }
+
+// Conversion functions required as code is a mix of dlib and armadillo
+// matrices
+// This could obviously be improved...
+arma::vec dlib_to_arma(const column_vector& dlib_vec)
+{
+   arma::vec converted(dlib_vec.nr());
+
+   for (size_t i = 0; i < dlib_vec.nr(); ++i)
+   {
+      converted(i) = dlib_vec(i);
+   }
+
+   return converted;
+}
+
+column_vector arma_to_dlib(const arma::vec& arma_vec)
+{
+   column_vector converted;
+   converted.set_size(arma_vec.n_elem);
+
+   for (size_t i = 0; i < arma_vec.n_elem; ++i)
+   {
+      converted(i) = arma_vec(i);
+   }
+
+   return converted;
+}

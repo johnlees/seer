@@ -27,8 +27,8 @@ struct distance_element
 };
 
 // panglossCmdLine headers
-int parseCommandLine (int argc, char *argv[], po::variables_map& vm);
-void printHelp(po::options_description& help);
+int parseCommandLine (int argc, char *argv[], boost::program_options::variables_map& vm);
+void printHelp(boost::program_options::options_description& help);
 
 // panglossStruct headers
 arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions, const unsigned int threads, const std::string& distances_file = "");

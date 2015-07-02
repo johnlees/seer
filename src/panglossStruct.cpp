@@ -140,5 +140,7 @@ distance_element threadDistance(const unsigned int i, const unsigned int j, cons
 
 double distanceFunction(const arma::rowvec& vec_1, const arma::rowvec& vec_2)
 {
-   return accu(abs(vec_1 - vec_2));
+   // Slow
+   // return accu(abs(vec_1 - vec_2));
+   return dot(vec_1 - vec_2, vec_1 - vec_2);
 }

@@ -29,8 +29,9 @@
 #include <boost/math/distributions/normal.hpp>
 #include <boost/math/distributions/students_t.hpp>
 
-// Armadillo/mlpack headers
-#include <mlpack/core.hpp> // this includes armadillo
+// Armadillo/dlib headers
+#include <armadillo>
+#include <dlib/matrix.h>
 
 // Classes
 #include "kmer.hpp"
@@ -41,6 +42,8 @@
 const double maf_default = 0.01;
 const long int max_length_default = 100;
 const std::string chi2_default = "10e-5";
+
+typedef dlib::matrix<double,0,1> column_vector;
 
 // Structs
 struct cmdOptions
@@ -73,6 +76,9 @@ struct regression
 //    panCommon.cpp
 cmdOptions verifyCommandLine(boost::program_options::variables_map& vm, const std::vector<Sample>& samples);
 void verifyMDSOptions(cmdOptions& verified, boost::program_options::variables_map& vm);
+
+arma::vec dlib_to_arma(const column_vector& dlib_vec);
+column_vector arma_to_dlib(const arma::vec& arma_vec);
 
 int continuousPhenotype (const std::vector<Sample>& sample_list);
 
