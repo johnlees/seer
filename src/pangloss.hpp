@@ -19,7 +19,7 @@ const int pc_default = 3;
 const long int size_default = 1000000;
 
 // Structs
-struct distance_element
+struct DistanceElement
 {
    unsigned int row;
    unsigned int col;
@@ -34,6 +34,6 @@ void printHelp(boost::program_options::options_description& help);
 arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions, const unsigned int threads, const std::string& distances_file = "");
 arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int threads);
 
-distance_element threadDistance(const unsigned int i, const unsigned int j, const arma::rowvec row_1, const arma::rowvec row_2);
+std::vector<DistanceElement> threadDistance(std::vector<DistanceElement> element_list, const arma::mat& rectangular_matrix);
 double distanceFunction(const arma::rowvec& vec_1, const arma::rowvec& vec_2);
 

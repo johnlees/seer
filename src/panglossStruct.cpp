@@ -53,71 +53,83 @@ arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions, con
 arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int threads)
 {
    const unsigned int matSize = inMat.n_rows;
-   arma::mat dist(matSize, matSize);
+   arma::mat dist = arma::zeros<arma::mat>(matSize, matSize);
 
    // Time parallelisation
    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 
 #ifndef NO_THREAD
    // Create queue for distance calculations
-   std::queue<std::future<distance_element>> distance_calculations;
-#endif
+   std::queue<std::future<std::vector<DistanceElement>>> distance_calculations;
 
-   // Loop through upper triangle
-   long int num_calculations = 0.5*matSize*(matSize + 1);
-   long int calc = 0;
+   // Set up number of jobs per thread
+   const unsigned long int num_calculations = 0.5*matSize*(matSize - 1);
+   const unsigned long int calc_per_thread = (unsigned long int)num_calculations / threads;
+   const unsigned int num_big_threads = num_calculations % threads;
+
+   // Keep track of row and column outside of outer loop
+   unsigned int row = 0;
+   unsigned int col = 0;
+   for (unsigned int thread_idx = 0; thread_idx < threads; ++thread_idx) // Loop over threads
+   {
+      // First 'big' threads have an extra job
+      unsigned long int thread_jobs;
+      if (distance_calculations.size() < num_big_threads)
+      {
+         thread_jobs = calc_per_thread + 1;
+      }
+      else
+      {
+         thread_jobs = calc_per_thread;
+      }
+
+      // Each thread is assigned elements to calculated scanning left to right,
+      // top to bottom on the upper triangle of the matrix
+      std::vector<DistanceElement> thread_elements;
+      thread_elements.reserve(thread_jobs);
+      for (unsigned int element = 0; element < calc_per_thread; ++element)
+      {
+         DistanceElement d;
+         d.row = row;
+         d.col = ++col;
+
+         thread_elements.push_back(d);
+
+         if (col + 1 == matSize)
+         {
+            ++row;
+            col = row;
+         }
+      }
+
+      // Set the thread off
+      distance_calculations.push(std::async(std::launch::async, threadDistance, thread_elements, std::cref(inMat)));
+   }
+
+   // Wait for thread results to return, and put the results in the distance
+   // matrix
+   while(!distance_calculations.empty())
+   {
+      std::vector<DistanceElement> distance_elements = distance_calculations.front().get();
+      distance_calculations.pop();
+
+      for(std::vector<DistanceElement>::iterator it = distance_elements.begin() ; it < distance_elements.end(); ++it)
+      {
+         dist(it->row, it->col) = it->distance;
+         dist(it->col, it->row) = it->distance;
+      }
+   }
+#else
    for (unsigned int i = 0; i < matSize; ++i)
    {
       arma::rowvec ref_row = inMat.row(i);
-      for (unsigned int j = i; j < matSize; j++)
+      for (unsigned int j = i + 1; j < matSize; j++)
       {
-         // Diagonal elements are zero
-         if (i == j)
-         {
-            dist(i, j) = 0;
-         }
-         else
-         {
-#ifdef NO_THREAD
-            dist(i, j) = distanceFunction(ref_row, inMat.row(j));
-            dist(j, i) = dist(i, j); // Set symmetric elements
-#else
-            // If fully threaded, wait for a calculation to finish before
-            // adding a new one
-            if (distance_calculations.size() == threads)
-            {
-               distance_element d = distance_calculations.front().get();
-               distance_calculations.pop();
-
-               dist(d.row, d.col) = d.distance;
-               dist(d.col, d.row) = d.distance; // Set symmetric elements
-            }
-
-            // Add in the new calculation
-            arma::rowvec new_row = inMat.row(j);
-            distance_calculations.push(std::async(std::launch::async, threadDistance, i, j, ref_row, new_row));
-#endif
-         }
-         if (++calc % 50 == 0)
-         {
-            std::cerr << calc << "/" << num_calculations << "\r";
-            std::cerr.flush();
-         }
+         dist(i, j) = distanceFunction(ref_row, inMat.row(j));
+         dist(j, i) = dist(i, j); // Set symmetric elements
       }
    }
-
-#ifndef NO_THREAD
-   // Pop final calculations from queue
-   while (distance_calculations.size() > 0)
-   {
-      distance_element d = distance_calculations.front().get();
-      distance_calculations.pop();
-
-      dist(d.row, d.col) = d.distance;
-      dist(d.col, d.row) = d.distance;
-   }
 #endif
-   std::cerr << num_calculations << "/" << num_calculations << "\n";
 
    // Print time taken
    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
@@ -127,15 +139,14 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
    return dist;
 }
 
-distance_element threadDistance(const unsigned int i, const unsigned int j, const arma::rowvec row_1, const arma::rowvec row_2)
+std::vector<DistanceElement> threadDistance(std::vector<DistanceElement> element_list, const arma::mat& rectangular_matrix)
 {
-   distance_element dist_el;
+   for(std::vector<DistanceElement>::iterator it = element_list.begin() ; it < element_list.end(); ++it)
+   {
+      it->distance = distanceFunction(rectangular_matrix.row(it->row), rectangular_matrix.row(it->col));
+   }
 
-   dist_el.row = i;
-   dist_el.col = j;
-   dist_el.distance = distanceFunction(row_1, row_2);
-
-   return dist_el;
+   return element_list;
 }
 
 double distanceFunction(const arma::rowvec& vec_1, const arma::rowvec& vec_2)
