@@ -17,6 +17,7 @@ arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions, con
     * 3) B = -0.5JP^2J
     * 4) Decompose B into eigenvalues
     * 5) MDS components = eigenvectors * eigenvalues
+    * 6) Normalise components
     */
    const unsigned int matSize = populationMatrix.n_rows;
 
@@ -46,7 +47,22 @@ arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions, con
    // Eigenvalues returned are sorted ascending, so want to reverse order
    arma::mat mds = fliplr(eigvec * diagmat(sqrt(eigval)));
 
-   return mds.cols(0, dimensions - 1);
+   // Step 6)
+   // All values will lie in the interval [-1,1]
+   arma::mat norm_mds(matSize, dimensions);
+   for (int i = 0; i < dimensions; ++i)
+   {
+      if (pow(max(mds.col(i)), 2) > pow(min(mds.col(i)), 2))
+      {
+         norm_mds.col(i) = mds.col(i)/max(mds.col(i));
+      }
+      else
+      {
+         norm_mds.col(i) = mds.col(i)/fabs(min(mds.col(i)));
+      }
+   }
+
+   return norm_mds;
 }
 
 // Distance between all rows. 0/1 elements only

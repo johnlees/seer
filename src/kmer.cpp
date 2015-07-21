@@ -10,6 +10,7 @@
 const std::string seq_default = "";
 const std::vector<std::string> occ_default;
 const double pvalue_default = 1;
+const double chi_pvalue_default = 1;
 const double beta_default = 0;
 const int position_default = 0;
 
@@ -21,13 +22,13 @@ Kmer::Kmer(std::string sequence, std::vector<std::string> occurrences, double pv
 
 // Initialise without calculated information
 Kmer::Kmer(std::string sequence, std::vector<std::string> occurrences)
-   :word(sequence), occurrences(occurrences), x_set(0), pvalue(pvalue_default), b(beta_default), position(position_default)
+   :word(sequence), occurrences(occurrences), x_set(0), chi_pvalue(chi_pvalue_default), pvalue(pvalue_default), b(beta_default), position(position_default)
 {
 }
 
 // Initialise with default info only
 Kmer::Kmer()
-   :word(seq_default), occurrences(occ_default), x_set(0), pvalue(pvalue_default), b(beta_default), position(position_default)
+   :word(seq_default), occurrences(occ_default), x_set(0), chi_pvalue(chi_pvalue_default), pvalue(pvalue_default), b(beta_default), position(position_default)
 {
 }
 
@@ -40,7 +41,7 @@ long int Kmer::map(std::string& ref_file)
 // Output
 std::ostream& operator<<(std::ostream &os, const Kmer& k)
 {
-   return os << k.sequence() << "\t" << std::scientific << k.p_val() << "\t" << k.beta() << "\n";
+   return os << k.sequence() << "\t" << std::scientific << k.chi_p_val() << "\t" << k.p_val() << "\t" << k.beta() << "\n";
 }
 
 // Input

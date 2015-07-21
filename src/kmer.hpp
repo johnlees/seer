@@ -27,10 +27,12 @@ class Kmer
       arma::vec get_x() const { return x; }
       int has_x() const { return x_set; }
       double p_val() const { return pvalue; }
+      double chi_p_val() const { return chi_pvalue; }
       double beta() const { return b; }
 
       //Modifying operations
       void p_val(double p) { pvalue = p; }
+      void chi_p_val(double _chi_pvalue) { chi_pvalue = _chi_pvalue; }
       void beta(double new_b) { b = new_b; }
       void add_x(arma::vec new_x) { x = new_x; x_set = 1; }
       long int map(std::string& ref_file);
@@ -41,6 +43,7 @@ class Kmer
       arma::vec x;
       int x_set;
       double pvalue;
+      double chi_pvalue;
       double b;
       long int position;
 };

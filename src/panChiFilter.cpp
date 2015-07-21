@@ -8,9 +8,43 @@
 #include "pancommon.hpp"
 
 // Basic chi^2 test, using contingency table
-double chiTest(arma::mat& table)
+double chiTest(const arma::vec& x, const arma::vec& y)
 {
    double chisq = 0;
+
+   // Contigency table
+   //         unaffected affected
+   // present a          b
+   // absent  c          d
+   //
+   // Use doubles for compatibility with det function in arma::mat
+   double a = 0, b = 0, c = 0, d = 0;
+
+   arma::vec::const_iterator j = y.begin();
+   for (arma::vec::const_iterator i = x.begin(); i!=x.end(); ++i)
+   {
+      if (*j == 0) {
+         if (*i == 0){
+            c++;
+         } else {
+            a++;
+         }
+      } else {
+         if (*i == 0){
+            d++;
+         } else {
+            b++;
+         }
+      }
+      j++;
+   }
+
+   arma::mat::fixed<2, 2> table = {a, b, c, d};
+#ifdef PANGWAS_DEBUG
+   arma::Mat<int>::fixed<2, 2> tab_out = {int (a), int (b), int (c), int(d)};
+   std::cerr << tab_out << "\n";
+#endif
+
    int N = accu(table);
 
    if (N == 0)

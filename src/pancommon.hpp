@@ -105,7 +105,7 @@ int passBasicFilters(const Kmer& k, const int max_length, const int min_words, c
 int passStatsFilters(const arma::vec& x, const arma::vec& y, const double chi_cutoff, const int continuous_phenotype);
 
 // panChiFilter headers
-double chiTest(arma::mat& table);
+double chiTest(const arma::vec& x, const arma::vec& y);
 double welchTwoSamplet(const arma::vec& x, const arma::vec& y);
 double normalPval(double testStatistic);
 
