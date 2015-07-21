@@ -88,7 +88,7 @@ cmdOptions verifyCommandLine(boost::program_options::variables_map& vm, const st
 void verifyMDSOptions(cmdOptions& verified, boost::program_options::variables_map& vm)
 {
    // Number of threads is also needed by both
-#ifndef NO_THREADS
+#ifndef NO_THREAD
    if (vm.count("threads") && vm["threads"].as<int>() > 0)
    {
       verified.num_threads = vm["threads"].as<int>();
