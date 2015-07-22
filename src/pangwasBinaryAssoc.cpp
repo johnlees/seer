@@ -40,8 +40,7 @@ void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train, const 
    // Methods will throw if a singular matrix is inverted
    catch (std::exception& e)
    {
-      std::cerr << k.sequence() << "\n"
-                << "kmer convergence error: "
+      std::cerr << "kmer " + k.sequence() + " convergence error: "
                 << e.what() << "\n";
 
       fit.p_val = 0;

@@ -16,7 +16,7 @@ const int position_default = 0;
 
 // Initialisation
 Kmer::Kmer(std::string sequence, std::vector<std::string> occurrences, double pvalue, double beta, long int position)
-   :word(sequence), occurrences(occurrences), x_set(0), pvalue(pvalue), b(beta), position(position)
+   :word(sequence), occurrences(occurrences), x_set(0), chi_pvalue(chi_pvalue_default), pvalue(pvalue), b(beta), position(position)
 {
 }
 
