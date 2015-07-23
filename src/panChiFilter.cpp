@@ -99,8 +99,8 @@ double welchTwoSamplet(const arma::vec& x, const arma::vec& y)
 // Returns p-value for a test statistic that is >0 and standard normally distributed
 double normalPval(double testStatistic)
 {
-   boost::math::normal s;
-
-   double p_val = 2 * (1 - boost::math::cdf(s, testStatistic));
+   // cdf = 0.5 * erfc(-(x-m)/(s*sqrt(2)))
+   // p = 2 * (1 - cdf)
+   long double p_val = 2 - erfc(-(testStatistic)/(pow(2 ,0.5)));
    return p_val;
 }
