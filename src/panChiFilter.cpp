@@ -7,6 +7,8 @@
 
 #include "pancommon.hpp"
 
+const double normalArea = pow(2*M_PI, -0.5);
+
 // Basic chi^2 test, using contingency table
 double chiTest(const arma::vec& x, const arma::vec& y)
 {
@@ -99,8 +101,27 @@ double welchTwoSamplet(const arma::vec& x, const arma::vec& y)
 // Returns p-value for a test statistic that is >0 and standard normally distributed
 double normalPval(double testStatistic)
 {
-   boost::math::normal s;
+   double p_val = 0;
+   if (testStatistic < 5)
+   {
+      boost::math::normal s;
 
-   double p_val = 2 * (1 - boost::math::cdf(s, testStatistic));
+      p_val = 2 * (1 - boost::math::cdf(s, testStatistic));
+   }
+   else
+   {
+      // For large z need to use a bound
+      // See http://stats.stackexchange.com/questions/13690/how-to-compute-the-probability-associated-with-absurdly-large-z-scores
+      //
+      // Upper bound
+      // S(z) <= phi(z)/z
+      // cdf = 1-(0.5 * S(z))
+      // At z = 5 correct to +/- 2.5%
+#ifdef PANGWAS_DEBUG
+      std::cerr << "using erfc bound rather than 'exact' function\n";
+#endif
+      p_val = 2 * exp(-0.5*pow(testStatistic,2))*normalArea/testStatistic;
+   }
+
    return p_val;
 }
