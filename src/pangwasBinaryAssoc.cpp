@@ -136,7 +136,7 @@ regression logisticPval(const arma::vec& y_train, const arma::mat& x_train)
 */
    for (size_t i = 0; i < x_design.n_cols; ++i)
    {
-      starting_point(i) = 1;
+      starting_point(i) = 0;
    }
 
    // Use BFGS optimiser in dlib to maximise likelihood function by chaging the
