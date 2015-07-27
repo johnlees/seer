@@ -55,7 +55,7 @@ int passBasicFilters(const Kmer& k, const int max_length, const int min_words, c
    return passed;
 }
 
-int passStatsFilters(const arma::vec& x, const arma::vec& y, const double chi_cutoff, const int continuous_phenotype)
+int passStatsFilters(const arma::vec& x, const arma::vec& y, const boost::multiprecision::mpfr_float_500 chi_cutoff, const int continuous_phenotype)
 {
    int passed = 1;
 

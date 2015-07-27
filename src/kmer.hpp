@@ -9,11 +9,13 @@
 
 #include <armadillo>
 
+#include <boost/multiprecision/mpfr.hpp>
+
 class Kmer
 {
    public:
       // Initialisation
-      Kmer(std::string sequence, std::vector<std::string> occurrences, double pvalue, double beta, long int position);
+      Kmer(std::string sequence, std::vector<std::string> occurrences, boost::multiprecision::mpfr_float_500 pvalue, boost::multiprecision::mpfr_float_500 chi_pvalue, double beta, long int position);
       Kmer(std::string sequence, std::vector<std::string> occurrences); // Initialise without calculated information
       Kmer(); // defaults
 
@@ -26,13 +28,13 @@ class Kmer
       long int get_position() const { return position; }
       arma::vec get_x() const { return x; }
       int has_x() const { return x_set; }
-      double p_val() const { return pvalue; }
-      double chi_p_val() const { return chi_pvalue; }
+      boost::multiprecision::mpfr_float_500 p_val() const { return pvalue; }
+      boost::multiprecision::mpfr_float_500 chi_p_val() const { return chi_pvalue; }
       double beta() const { return b; }
 
       //Modifying operations
-      void p_val(double p) { pvalue = p; }
-      void chi_p_val(double _chi_pvalue) { chi_pvalue = _chi_pvalue; }
+      void p_val(boost::multiprecision::mpfr_float_500 p) { pvalue = p; }
+      void chi_p_val(boost::multiprecision::mpfr_float_500 _chi_pvalue) { chi_pvalue = _chi_pvalue; }
       void beta(double new_b) { b = new_b; }
       void add_x(arma::vec new_x) { x = new_x; x_set = 1; }
       long int map(std::string& ref_file);
@@ -42,8 +44,8 @@ class Kmer
       std::vector<std::string> occurrences;
       arma::vec x;
       int x_set;
-      double pvalue;
-      double chi_pvalue;
+      boost::multiprecision::mpfr_float_500 chi_pvalue;
+      boost::multiprecision::mpfr_float_500 pvalue;
       double b;
       long int position;
 };

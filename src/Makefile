@@ -4,7 +4,7 @@ BINDIR=$(PREFIX)/bin
 CXX=icpc
 CXXFLAGS=-Wall -O3 -parallel -ipo -std=c++11
 CPPFLAGS=-I$(PREFIX)/include -I../gzstream -I../dlib -D DLIB_NO_GUI_SUPPORT=1 -D DLIB_USE_BLAS=1 -D DLIB_USE_LAPACK=1
-LDLIBS=-L../gzstream -L$(PREFIX)/lib -lhdf5 -lgzstream -lz -larmadillo -lboost_program_options -mkl
+LDLIBS=-L../gzstream -L$(PREFIX)/lib -lhdf5 -lgzstream -lz -larmadillo -lboost_program_options -lgmpfrxx -lmpfr -lgmpxx -lgmp -mkl
 
 PROGRAMS=pangwas pangloss map_back
 

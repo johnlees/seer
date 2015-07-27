@@ -26,7 +26,8 @@
 
 // Boost headers
 #include <boost/program_options.hpp>
-#include <boost/math/distributions/normal.hpp>
+#include <boost/multiprecision/mpfr.hpp>
+#include <boost/math/bindings/mpfr.hpp>
 #include <boost/math/distributions/students_t.hpp>
 
 // Armadillo/dlib headers
@@ -48,8 +49,8 @@ typedef dlib::matrix<double,0,1> column_vector;
 // Structs
 struct cmdOptions
 {
-   double log_cutoff;
-   double chi_cutoff;
+   boost::multiprecision::mpfr_float_500 log_cutoff;
+   boost::multiprecision::mpfr_float_500 chi_cutoff;
 
    long int max_length;
    long int size;
@@ -68,7 +69,7 @@ struct cmdOptions
 
 struct regression
 {
-   double p_val;
+   boost::multiprecision::mpfr_float_500 p_val;
    double beta;
 };
 
@@ -102,10 +103,10 @@ int fileStat(const std::string& filename);
 // panFilter headers
 int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const arma::vec& y, const int continuous_phenotype);
 int passBasicFilters(const Kmer& k, const int max_length, const int min_words, const int max_words);
-int passStatsFilters(const arma::vec& x, const arma::vec& y, const double chi_cutoff, const int continuous_phenotype);
+int passStatsFilters(const arma::vec& x, const arma::vec& y, const boost::multiprecision::mpfr_float_500 chi_cutoff, const int continuous_phenotype);
 
 // panChiFilter headers
-double chiTest(const arma::vec& x, const arma::vec& y);
-double welchTwoSamplet(const arma::vec& x, const arma::vec& y);
-double normalPval(double testStatistic);
+boost::multiprecision::mpfr_float_500 chiTest(const arma::vec& x, const arma::vec& y);
+boost::multiprecision::mpfr_float_500 welchTwoSamplet(const arma::vec& x, const arma::vec& y);
+boost::multiprecision::mpfr_float_500 normalPval(double testStatistic);
 

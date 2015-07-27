@@ -6,9 +6,10 @@
  */
 
 #include "pancommon.hpp"
+#include <boost/math/special_functions/erf.hpp>
 
 // Basic chi^2 test, using contingency table
-double chiTest(const arma::vec& x, const arma::vec& y)
+boost::multiprecision::mpfr_float_500 chiTest(const arma::vec& x, const arma::vec& y)
 {
    double chisq = 0;
 
@@ -60,7 +61,7 @@ double chiTest(const arma::vec& x, const arma::vec& y)
    }
 
    // For df = 1, as here, chi^2 == N(0,1)^2 (standard normal dist.)
-   double p_value = normalPval(pow(chisq, 0.5));
+   boost::multiprecision::mpfr_float_500 p_value = normalPval(pow(chisq, 0.5));
 #ifdef PANGWAS_DEBUG
    std::cerr << "chisq:" << chisq << "\n";
    std::cerr << "chisq p: " << p_value << "\n";
@@ -69,7 +70,7 @@ double chiTest(const arma::vec& x, const arma::vec& y)
 }
 
 // Welch two sample t-test, for continuous phenotypes
-double welchTwoSamplet(const arma::vec& x, const arma::vec& y)
+boost::multiprecision::mpfr_float_500 welchTwoSamplet(const arma::vec& x, const arma::vec& y)
 {
    // Subset into present and absent groups
    arma::vec group1 = y.elem(find(x==0));
@@ -87,7 +88,7 @@ double welchTwoSamplet(const arma::vec& x, const arma::vec& y)
 
    // Calculate p-value from t distribution
    boost::math::students_t t_dist(df);
-   double p_val = 2 * (1 - boost::math::cdf(t_dist, t));
+   boost::multiprecision::mpfr_float_500 p_val = 2 * (1 - boost::math::cdf(t_dist, t));
 #ifdef PANGWAS_DEBUG
    std::cerr << "welch t:" << t << "df:" << df << "\n";
    std::cerr << "welch p-val:" << p_val << "\n";
@@ -97,10 +98,11 @@ double welchTwoSamplet(const arma::vec& x, const arma::vec& y)
 }
 
 // Returns p-value for a test statistic that is >0 and standard normally distributed
-double normalPval(double testStatistic)
+boost::multiprecision::mpfr_float_500 normalPval(double testStatistic)
 {
+   boost::multiprecision::mpfr_float_500 z = testStatistic;
    // cdf = 0.5 * erfc(-(x-m)/(s*sqrt(2)))
    // p = 2 * (1 - cdf)
-   long double p_val = 2 - erfc(-(testStatistic)/(pow(2 ,0.5)));
+   boost::multiprecision::mpfr_float_500 p_val = 2 - boost::math::erfc(-(z)/(pow(2 ,0.5)));
    return p_val;
 }

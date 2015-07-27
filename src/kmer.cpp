@@ -9,13 +9,13 @@
 
 const std::string seq_default = "";
 const std::vector<std::string> occ_default;
-const double pvalue_default = 1;
-const double chi_pvalue_default = 1;
+const boost::multiprecision::mpfr_float_500 pvalue_default = 1;
+const boost::multiprecision::mpfr_float_500 chi_pvalue_default = 1;
 const double beta_default = 0;
 const int position_default = 0;
 
 // Initialisation
-Kmer::Kmer(std::string sequence, std::vector<std::string> occurrences, double pvalue, double beta, long int position)
+Kmer::Kmer(std::string sequence, std::vector<std::string> occurrences, boost::multiprecision::mpfr_float_500 pvalue, boost::multiprecision::mpfr_float_500 chi_pvalue, double beta, long int position)
    :word(sequence), occurrences(occurrences), x_set(0), chi_pvalue(chi_pvalue_default), pvalue(pvalue), b(beta), position(position)
 {
 }
