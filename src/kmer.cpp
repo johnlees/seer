@@ -7,28 +7,23 @@
 
 #include "kmer.hpp"
 
-const std::string seq_default = "";
-const std::vector<std::string> occ_default;
-const double pvalue_default = 1;
-const double chi_pvalue_default = 1;
-const double beta_default = 0;
-const int position_default = 0;
+
 
 // Initialisation
 Kmer::Kmer(std::string sequence, std::vector<std::string> occurrences, double pvalue, double beta, long int position)
-   :word(sequence), occurrences(occurrences), x_set(0), chi_pvalue(chi_pvalue_default), pvalue(pvalue), b(beta), position(position)
+   :word(sequence), occurrences(occurrences), x_set(0), pvalue(pvalue), chi_pvalue(kmer_chi_pvalue_default), b(beta), position(position)
 {
 }
 
 // Initialise without calculated information
 Kmer::Kmer(std::string sequence, std::vector<std::string> occurrences)
-   :word(sequence), occurrences(occurrences), x_set(0), chi_pvalue(chi_pvalue_default), pvalue(pvalue_default), b(beta_default), position(position_default)
+   :word(sequence), occurrences(occurrences), x_set(0), pvalue(kmer_pvalue_default), chi_pvalue(kmer_chi_pvalue_default), b(kmer_beta_default), position(kmer_position_default)
 {
 }
 
 // Initialise with default info only
 Kmer::Kmer()
-   :word(seq_default), occurrences(occ_default), x_set(0), chi_pvalue(chi_pvalue_default), pvalue(pvalue_default), b(beta_default), position(position_default)
+   :word(kmer_seq_default), occurrences(kmer_occ_default), x_set(0), pvalue(kmer_pvalue_default), chi_pvalue(kmer_chi_pvalue_default), b(kmer_beta_default), position(kmer_position_default)
 {
 }
 

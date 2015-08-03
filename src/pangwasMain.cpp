@@ -130,13 +130,16 @@ int main (int argc, char *argv[])
 
          if (kmer_lines[0].p_val() < parameters.log_cutoff)
          {
-            if (continuous_phenotype)
+            if (kmer_lines[0].chi_p_val() == kmer_chi_pvalue_default)
             {
-               kmer_lines[0].chi_p_val(welchTwoSamplet(kmer_lines[0].get_x(), y));
-            }
-            else
-            {
-               kmer_lines[0].chi_p_val(chiTest(kmer_lines[0].get_x(), y));
+               if (continuous_phenotype)
+               {
+                  kmer_lines[0].chi_p_val(welchTwoSamplet(kmer_lines[0].get_x(), y));
+               }
+               else
+               {
+                  kmer_lines[0].chi_p_val(chiTest(kmer_lines[0].get_x(), y));
+               }
             }
 
             std::cout << kmer_lines[0];
@@ -198,13 +201,16 @@ int main (int argc, char *argv[])
          // Print in order when all threads complete
          if (kmer_lines[i].p_val() < parameters.log_cutoff)
          {
-            if (continuous_phenotype)
+            if (kmer_lines[i].chi_p_val() == kmer_chi_pvalue_default)
             {
-               kmer_lines[0].chi_p_val(welchTwoSamplet(kmer_lines[0].get_x(), y));
-            }
-            else
-            {
-               kmer_lines[0].chi_p_val(chiTest(kmer_lines[0].get_x(), y));
+               if (continuous_phenotype)
+               {
+                  kmer_lines[i].chi_p_val(welchTwoSamplet(kmer_lines[i].get_x(), y));
+               }
+               else
+               {
+                  kmer_lines[i].chi_p_val(chiTest(kmer_lines[i].get_x(), y));
+               }
             }
 
             std::cout << kmer_lines[i];

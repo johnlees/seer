@@ -9,6 +9,13 @@
 
 #include <armadillo>
 
+const std::string kmer_seq_default = "";
+const std::vector<std::string> kmer_occ_default;
+const double kmer_pvalue_default = 1;
+const double kmer_chi_pvalue_default = 1;
+const double kmer_beta_default = 0;
+const int kmer_position_default = 0;
+
 class Kmer
 {
    public:
