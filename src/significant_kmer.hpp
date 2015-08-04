@@ -11,6 +11,8 @@
 #include <iterator>
 #include <algorithm>
 
+const unsigned int ignored_fields = 3;
+
 // kmers have a sequence, and a list of samples they appear in
 class Significant_kmer
 {
