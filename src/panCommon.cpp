@@ -40,6 +40,50 @@ cmdOptions verifyCommandLine(boost::program_options::variables_map& vm, const st
    {
       verified.filter = 0;
    }
+   else
+   {
+      // Error check filtering options
+      if(vm.count("positive_only"))
+      {
+         verified.positive = 1;
+      }
+      else
+      {
+         verified.positive = 0;
+      }
+
+      verified.min_words = 0;
+      if (vm.count("min_words"))
+      {
+         int min_words_in = vm["min_words"].as<int>();
+         if (min_words_in >= 0)
+         {
+            verified.min_words = min_words_in;
+         }
+         else
+         {
+            badCommand("min_words", std::to_string(min_words_in));
+         }
+      }
+      else
+      {
+         double maf_in = vm["maf"].as<double>();
+         if (maf_in >= 0)
+         {
+            verified.min_words = static_cast<unsigned int>(samples.size() * maf_in);
+         }
+         else
+         {
+            badCommand("maf", std::to_string(maf_in));
+         }
+      }
+
+      if (verified.min_words > samples.size())
+      {
+         badCommand("min_words/maf", std::to_string(verified.min_words));
+      }
+      verified.max_words = samples.size() - verified.min_words;
+   }
 
    verified.print_samples = 0;
    if (vm.count("print_samples"))
@@ -47,38 +91,7 @@ cmdOptions verifyCommandLine(boost::program_options::variables_map& vm, const st
       verified.print_samples = 1;
    }
 
-   // Error check cmd line options
-   verified.min_words = 0;
-   if (vm.count("min_words"))
-   {
-      int min_words_in = vm["min_words"].as<int>();
-      if (min_words_in >= 0)
-      {
-         verified.min_words = min_words_in;
-      }
-      else
-      {
-         badCommand("min_words", std::to_string(min_words_in));
-      }
-   }
-   else
-   {
-      double maf_in = vm["maf"].as<double>();
-      if (maf_in >= 0)
-      {
-         verified.min_words = static_cast<unsigned int>(samples.size() * maf_in);
-      }
-      else
-      {
-         badCommand("maf", std::to_string(maf_in));
-      }
-   }
-
-   if (verified.min_words > samples.size())
-   {
-      badCommand("min_words/maf", std::to_string(verified.min_words));
-   }
-   verified.max_words = samples.size() - verified.min_words;
+   
 
    return verified;
 }

@@ -54,6 +54,7 @@ struct cmdOptions
    long int max_length;
    long int size;
    int filter;
+   int positive;
    int pc;
    int print_samples;
    int write_distances;
@@ -102,7 +103,7 @@ int fileStat(const std::string& filename);
 // panFilter headers
 int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const arma::vec& y, const int continuous_phenotype);
 int passBasicFilters(const Kmer& k, const int max_length, const int min_words, const int max_words);
-int passStatsFilters(const arma::vec& x, const arma::vec& y, const double chi_cutoff, const int continuous_phenotype);
+int passStatsFilters(const arma::vec& x, const arma::vec& y, const double chi_cutoff, const int continuous_phenotype, const int positive_only);
 
 // panChiFilter headers
 double chiTest(const arma::vec& x, const arma::vec& y);
