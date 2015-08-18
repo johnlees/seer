@@ -4,7 +4,8 @@ BINDIR=$(PREFIX)/bin
 CXX=icpc
 CXXFLAGS=-Wall -O3 -parallel -ipo -std=c++11
 CPPFLAGS=-I$(PREFIX)/include -I../gzstream -I../dlib -D DLIB_NO_GUI_SUPPORT=1 -D DLIB_USE_BLAS=1 -D DLIB_USE_LAPACK=1
-LDLIBS=-L../gzstream -L$(PREFIX)/lib -lhdf5 -lgzstream -lz -larmadillo -lboost_program_options -mkl
+SEER_LDLIBS=-L../gzstream -L$(PREFIX)/lib -lhdf5 -lgzstream -lz -larmadillo -lboost_program_options -mkl
+MAP_LDLIBS=-L$(PREFIX)/lib -lboost_program_options -mkl
 
 PROGRAMS=pangwas pangloss map_back
 
@@ -24,13 +25,13 @@ install: all
 	install $(PROGRAMS) $(BINDIR)
 
 pangwas: $(PANGWAS_OBJECTS)
-	$(LINK.cpp) $^ $(LDLIBS) -o $@
+	$(LINK.cpp) $^ $(SEER_LDLIBS) -o $@
 
 pangloss: $(PANGLOSS_OBJECTS)
-	$(LINK.cpp) $^ $(LDLIBS) -o $@
+	$(LINK.cpp) $^ $(SEER_LDLIBS) -o $@
 
 map_back: $(MAP_OBJECTS)
-	$(LINK.cpp) $^ $(LDLIBS) -o $@
+	$(LINK.cpp) $^ $(MAP_LDLIBS) -o $@
 
 .PHONY: all test clean install
 
