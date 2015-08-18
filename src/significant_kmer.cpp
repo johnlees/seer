@@ -31,10 +31,10 @@ std::istream& operator>>(std::istream &is, Significant_kmer& sk)
    line_stream >> sequence;
 
    // Ignore fields with p-values, betas etc. Number to ignore set in header
-   // file
-   for (unsigned int i = 0; i < ignored_fields; ++i)
+   // file. Add one to this as first tab will be matched by ignore
+   for (unsigned int i = 0; i < ignored_fields + 1; ++i)
    {
-      line_stream.ignore(std::numeric_limits<std::streamsize>::max(), ' ');
+      line_stream.ignore(std::numeric_limits<std::streamsize>::max(), '\t');
    }
 
    // Read remainder of line, which is sample names, in the same way they were
