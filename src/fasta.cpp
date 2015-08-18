@@ -105,7 +105,6 @@ void Fasta::printMappings(std::ostream &os, const std::string& search)
       {
          os << "\t" << Fasta::name << ":" << it->sequence_name << ":" << it->position;
       }
-      os << "\n";
    }
 }
 

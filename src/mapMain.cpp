@@ -69,12 +69,13 @@ int main (int argc, char *argv[])
                   }
                }
             }
+
+            std::cerr << "\n";
          }
       }
-
-      std::cerr << "Done.\n";
    }
 
+   std::cerr << "Done.\n";
 }
 
 // Stores all fasta sequences in a vector of Fasta objects
