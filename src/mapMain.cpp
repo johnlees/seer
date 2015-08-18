@@ -69,13 +69,14 @@ int main (int argc, char *argv[])
                   }
                }
             }
-
+            // Tab between every sample, line break after every kmer
             std::cout << "\n";
          }
       }
+
+      std::cerr << "Done.\n";
    }
 
-   std::cerr << "Done.\n";
 }
 
 // Stores all fasta sequences in a vector of Fasta objects
