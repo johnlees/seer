@@ -56,7 +56,7 @@ int main (int argc, char *argv[])
 
             for (std::vector<Fasta>::iterator all_names_it = sequence_cache.begin(); all_names_it != sequence_cache.end(); ++all_names_it)
             {
-               // For each sample we know the sample is in, print all matches to
+               // For each sample we know the kmer is in, print all matches to
                // the kmer
                if (all_names_it->get_name() == *search_names_it)
                {
@@ -70,7 +70,7 @@ int main (int argc, char *argv[])
                }
             }
 
-            std::cerr << "\n";
+            std::cout << "\n";
          }
       }
    }
