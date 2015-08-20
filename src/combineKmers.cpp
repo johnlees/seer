@@ -17,27 +17,8 @@
 
 #include "combineKmers.hpp"
 
-#ifndef H5_NO_NAMESPACE
-    using namespace H5;
-#endif
-
-const H5std_string FILE_NAME( "SE001_dsk.h5" );
-
 int main (int argc, char *argv[])
 {
-   H5File dsk_file(FILE_NAME, H5F_ACC_RDONLY);
-
-   int kmer_size = stoi(readH5StrAttr(dsk_file, "dsk", "kmer_size"));
-   int nb_partitions = stoi(readH5StrAttr(dsk_file, dsk_group_name, "nb_partitions"));
-
-   Group solid_group(dsk_file.openGroup(dsk_group_name));
-   for (int i = 0; i < nb_partitions; ++i)
-   {
-      DataSet kmer_data(solid_group.openDataSet(std::to_string(i)));
-   }
-
-   return(0);
-
    std::vector<std::string> filenames;
    // TODO test only
    // Read file with references and sample names
@@ -76,23 +57,3 @@ int main (int argc, char *argv[])
    return(0);
 }
 
-// Reads an attribute from a group stored as a string
-std::string readH5StrAttr(const H5File& h5_file, const std::string group_name, const std::string attr_name)
-{
-   StrType datatype(0, H5T_VARIABLE);
-
-   std::string read_str;
-   try
-   {  // to determine if the dataset exists in the group
-      Group group(h5_file.openGroup(group_name));
-      Attribute attribute(group.openAttribute(attr_name));
-
-      attribute.read(datatype, read_str);
-   }
-   catch( AttributeIException not_found_error )
-   {
-      throw std::runtime_error("Attribute: " + attr_name + "could not be found.");
-   }
-
-   return read_str;
-}
