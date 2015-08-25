@@ -4,42 +4,68 @@
  *
  */
 
-// TODO Will need to separate this out into subs and classes
-// Class: kmer_union. Contains map and kmer_size. Methods are print and add
-// Class: h5_file
+
 //
 // Consider transforming bases to a more compact representation
 //
 // Just use sample index vs. use full sample name
 //
-// TODO gzip output
 // TODO read dsk output directly
 
 #include "combineKmers.hpp"
 
 int main (int argc, char *argv[])
 {
-   std::vector<std::string> filenames;
-   // TODO test only
-   // Read file with references and sample names
-   filenames.push_back("SE001_dsk.txt");
-   filenames.push_back("SE002_dsk.txt");
+   // Program description
+   std::cerr << "combineKmers: basic algorithm to combine kmer counts across samples\n";
+
+   // Do parsing and checking of command line params
+   // If no input options, give quick usage rather than full help
+   boost::program_options::variables_map vm;
+   if (argc == 1)
+   {
+      std::cerr << "Usage: combineKmers -s samples.txt -o all_kmers --min_samples 2\n\n"
+         << "For full option details run combineKmers -h\n";
+      return 0;
+   }
+   else if (parseCommandLine(argc, argv, vm))
+   {
+      return 1;
+   }
+
+   // Read in list of sample kmer files and their names
+   std::vector<std::tuple<std::string, std::string> > samples = readSamples(vm["samples"].as<std::string>());
+   size_t min_samples = checkMin(samples.size(), vm["min_samples"].as<size_t>());
+
+   // Open the output file before counting kmers
+   ogzstream out_file((vm["output"].as<std::string>() + ".gz").c_str());
 
    // Map to store kmers
    std::unordered_map<std::string, std::vector<std::string> > kmer_union;
 
    // Add kmers to map
    std::cerr << "Reading and mapping kmers..." << std::endl;
-   for (unsigned int i = 0; i < filenames.size(); ++i)
+   for (unsigned int i = 0; i < samples.size(); ++i)
    {
-      std::ifstream kmer_counts(filenames[i].c_str());
+      std::string sample_name, filename;
+      std::tie(sample_name, filename) = samples[i];
 
-      std::string kmer, abundance;
-      while (kmer_counts)
+      std::ifstream kmer_counts(filename.c_str());
+
+      if (kmer_counts)
       {
-         kmer_counts >> kmer >> abundance;
+         std::string kmer, abundance;
+         while (kmer_counts)
+         {
+            kmer_counts >> kmer >> abundance;
 
-         kmer_union[kmer].push_back(filenames[i] + ":" + abundance);
+            kmer_union[kmer].push_back(sample_name + ":" + abundance);
+         }
+      }
+      else
+      {
+         std::cerr << "Could not open " + filename << std::endl;
+         std::cerr << "Skipping..." << std::endl;
       }
    }
 
@@ -47,9 +73,12 @@ int main (int argc, char *argv[])
    std::cerr << "Printing union of kmers" << std::endl;
    for(auto it = kmer_union.cbegin(); it != kmer_union.cend(); ++it)
    {
-      std::cout << it->first << "\t";
-      std::copy(it->second.begin(), it->second.end(), std::ostream_iterator<std::string>(std::cout, " "));
-      std::cout << std::endl;
+      if (it->second.size() >= min_samples)
+      {
+         out_file << it->first << " ";
+         std::copy(it->second.begin(), it->second.end(), std::ostream_iterator<std::string>(out_file, " "));
+         out_file << std::endl;
+      }
    }
 
    std::cerr << "Done." << std::endl;

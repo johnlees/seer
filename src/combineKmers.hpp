@@ -8,14 +8,18 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <tuple>
 #include <unordered_map>
 #include <iterator>
 
 // Library includes
-#include <H5Cpp.h>
-
-// Global defaults
-
+#include <boost/program_options.hpp>
+#include <gzstream.h>
 
 // Function prototypes
+int parseCommandLine (int argc, char *argv[], boost::program_options::variables_map& vm);
+void printHelp(boost::program_options::options_description& help);
+
+std::vector<std::tuple<std::string, std::string> > readSamples(const std::string& sample_file);
+size_t checkMin(const size_t num_samples, const size_t input_min_samples);
 
