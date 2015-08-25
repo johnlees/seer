@@ -54,6 +54,9 @@ int main (int argc, char *argv[])
 
       if (kmer_counts)
       {
+         std::cerr << "File " << i + 1 << "/" << samples.size() << "\r";
+         std::cerr.flush();
+
          std::string kmer, abundance;
          while (kmer_counts)
          {
@@ -68,6 +71,7 @@ int main (int argc, char *argv[])
          std::cerr << "Skipping..." << std::endl;
       }
    }
+   std::cerr << std::endl;
 
    // Print results
    std::cerr << "Printing union of kmers" << std::endl;
