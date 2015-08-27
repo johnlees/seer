@@ -95,16 +95,19 @@ std::vector<Mapping> Fasta::hasSeq(const std::string& search)
 
 // Prints results to hasSeq
 // a nicer output than hasSeq: use this function
-void Fasta::printMappings(std::ostream &os, const std::string& search)
+void Fasta::printMappings(std::ostream &os, const std::string search, std::mutex& mtx)
 {
    std::vector<Mapping> hits = hasSeq(search);
 
    if (hits.size() > 0)
    {
+      // Lock use of std::out to make sure output isn't mangled
+      mtx.lock();
       for (std::vector<Mapping>::iterator it = hits.begin(); it != hits.end(); ++it)
       {
          os << "\t" << Fasta::name << ":" << it->sequence_name << ":" << it->position;
       }
+      mtx.unlock();
    }
 }
 

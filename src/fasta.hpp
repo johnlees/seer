@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <vector>
 #include <iterator>
+#include <mutex>
 
 // Container for a successful mapping result
 struct Mapping
@@ -26,7 +27,7 @@ class Fasta
 
       // Complex operations
       std::vector<Mapping> hasSeq(const std::string& search);
-      void printMappings(std::ostream &os, const std::string& search);
+      void printMappings(std::ostream &os, const std::string search, std::mutex& mtx);
 
       // nonmodifying operations
       std::string get_name() const { return name; }

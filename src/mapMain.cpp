@@ -26,6 +26,13 @@ int main (int argc, char *argv[])
       return 1;
    }
 
+   // Set number of threads
+   size_t num_threads = vm["threads"].as<size_t>();
+   if (num_threads < 1)
+   {
+      num_threads = 1;
+   }
+
    // Read all sequences into memory as Fasta objects
    std::cerr << "Reading reference sequences into memory...\n";
    std::vector<Fasta> sequence_cache = readSequences(vm["references"].as<std::string>());
@@ -39,6 +46,10 @@ int main (int argc, char *argv[])
    }
    else
    {
+      // Set up list of threads, and mutex lock on std out
+      std::mutex out_mtx;
+      std::list<std::future<void>> threads;
+
       Significant_kmer sig_kmer;
       while(kmer_file)
       {
@@ -47,6 +58,8 @@ int main (int argc, char *argv[])
          // Check the read into sig_kmer hasn't reached end of file
          if (!kmer_file.eof())
          {
+            assert(num_threads >= 1);
+
             std::cout << sig_kmer.sequence();
 
             // sig_kmer samples and sample cache are sorted in the same order, so
@@ -60,7 +73,25 @@ int main (int argc, char *argv[])
                // the kmer
                if (all_names_it->get_name() == *search_names_it)
                {
-                  all_names_it->printMappings(std::cout, sig_kmer.sequence());
+                  // Check if four searches are running. If so, wait for the
+                  // next one to finish. Wait (for a max of 100ms) so this
+                  // thread doesn't consume processing
+                  auto list_it = threads.begin();
+                  while (threads.size() == num_threads)
+                  {
+                     auto status = list_it->wait_for(std::chrono::milliseconds(thread_wait));
+                     if (status == std::future_status::ready)
+                     {
+                        threads.erase(list_it);
+                     }
+
+                     ++list_it;
+                  }
+
+                  // Start a new thread asynchronously, at the back of the
+                  // queue
+                  threads.push_back(std::async(std::launch::async,
+                           &Fasta::printMappings, *all_names_it, std::ref(std::cout), sig_kmer.sequence(), std::ref(out_mtx)));
 
                   ++search_names_it;
                   if (search_names_it == search_names.end())
@@ -70,7 +101,7 @@ int main (int argc, char *argv[])
                }
             }
             // Tab between every sample, line break after every kmer
-            std::cout << "\n";
+            std::cout << std::endl;
          }
       }
 

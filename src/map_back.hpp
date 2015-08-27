@@ -8,12 +8,17 @@
 // C/C++/C++11 headers
 #include <iostream>
 #include <fstream>
-#include <cmath>
 #include <cstdlib>
 #include <string>
 #include <iterator>
 #include <vector>
+#include <functional>
 #include <stdexcept>
+#include <future>
+#include <thread>
+#include <chrono>
+#include <list>
+#include <assert.h>
 
 // Boost headers
 #include <boost/program_options.hpp>
@@ -23,6 +28,7 @@
 #include "significant_kmer.hpp"
 
 // Constants
+const int thread_wait = 100; //time to wait for each thread in ms
 
 // Structs
 
