@@ -85,11 +85,27 @@ if you wish to compile from source
 
 Usage
 =============
-The wrapper script is panpipes.py, in the top level directory. Main programs are installed into bin.
+The wrapper script is crystal_ball.py, in the top level directory. Main programs are installed into bin.
+
+Count your kmers
+--------------
+First you'll need to count the kmers which are present in your samples, which is best done from fasta files of assembled reads. If possible, we recommend the use of [distributed string mining](https://github.com/HIITMetagenomics/dsm-framework) as this is memory efficient and selects kmer size based on entropy, rather than being a fixed arbitrary word length.
+
+If this is not possible, use [dsk](http://minia.genouest.org/dsk/) to count your kmers, followed by the combineKmers program we provide:
+
+    dsk -file sample1_contigs.fa -abundance-min 1 -out sample1_dsk
+    dsk2ascii -file sample1_dsk.h5 -out sample1_dsk.txt
+    ./combineKmers -r 21mer_samples.txt -o all_21mers_new --min_samples 2
+
+The final step is fairly memory intensive. Taking the union of 21mers in 3000 samples took around 25Gb of RAM and about 90 minutes, however this step only needs to be completed once.
+
+If using dsk, we've found using kmers between 21 and 41 seems to work well.
+
+The output of both these methods can be read directly by kmds and seer.
 
 kmds
 --------------
-First, filter kmers and create a matrix representing population structure with kmds
+Next, filter kmers and create a matrix representing population structure with kmds
 
     ./kmds -k dsm_input.txt.gz --pheno metadata.pheno -o filtered
 
@@ -115,6 +131,34 @@ To use the kmds output, and increase execution speed
 
     ./seer -k filtered.gz --pheno metadata.pheno --struct filtered.dsm --no_filtering --threads 4
 
+The same filtering options as in kmds are available, as well a filtering on the adjusted p-value
+
+Interpreting the output
+--------------
+Run the post analysis program filter_seer
+
+Run map_back to find the position of significant kmers, in the assemblies they are from
+
+    ./map_back -k seer.sorted.k31.txt -r references.txt --threads 4
+
+Run blat or blast on the significant kmers
+
+    cut -f 1 seer.sorted.k31.txt | awk '{print ">"NR"\n"$1}' > seer.sorted.k31.fa
+    blat -noHead -stepSize=2 -minScore=15 reference.fa seer.sorted.k31.fa seer.k31.blat.psl
+    blast -task blastn-short -subject reference.fa -query seer.sorted.k31.fa -outfmt 6 seer.k31.blast.txt
+
+Reduce this to the top hits
+
+    ./scripts/blast_top_hits.pl --input seer.k31.blat.psl --mode blat --full_query > top_hits.txt
+
+If you have [bedops](http://bedops.readthedocs.org/en/latest/index.html) and [bedtools](http://bedtools.readthedocs.org/en/latest/) you can annotate the position of these hits, for example
+
+    psl2bed < seer.k31.blat.psl > seer.k31.blat.bed
+    gff2bed < reference.gff > reference.bed
+    bedtools intersect -a seer.k31.blat.bed -b reference.bed -wb
+    bedtools intersect -a seer.k31.blat.bed -b reference.bed -c | sort -n -r -t $'\t' -k11,11
+
+
 Troubleshooting
 =============
 
@@ -128,9 +172,18 @@ General
 Make sure you've got the gcc libstdc++ v4.9 or higher available. The
 default on your OS may be a much lower version than this
 
+**Analysis is slow**
+
+Most steps can be effectively parallelised in two ways. Increase the threading of the step with --threads, and/or split the input files and run each command independently on each input file.
+
+    split -n l/15 all_31mers 31mers
+
+will split the input file all_31mers into 15 pieces which can be analysed independently. Use 'cat' to combine the results.
+
 kmds
 -------------
 **This takes ages to run**
+
 First, split up your input files into say 16 pieces, then subsample each
 one in its own process using --no_mds and --size.
 
@@ -145,6 +198,7 @@ appropriate, but as low as 0.1% should work.
 seer
 -------------
 **The p-values are slightly different from what I expect**
+
 For very small p-values (when W > 5) an upper bound is calculated rather
 than the exact p-value for robustness and computational speed. This
 bound is accurate to +/- W^(-2) %
@@ -153,6 +207,7 @@ If you need the exact value, checkout the erfc branch which uses
 arbitrary precision floats and doesn't rely on this bound.
 
 **I get p-values of 0**
+
 p-value is too small to represent as a float (<10E-308). At this point
 it is a bit meaningless to assign a value, but essentially the data
 exactly fits the regression.
@@ -161,6 +216,7 @@ Biologically, either the effect size is enormous, or more likely the
 phenotype is monophyletic (see below).
 
 **I get the error message: 'inv_sympd(): matrix appears to be singular'**
+
 The optimiser may not have converged, check previous error messages and
 see the note about this below.
 
@@ -175,6 +231,7 @@ which sequence elements may be related to it. See the paper for more
 explanation on this
 
 **I get the error message: 'kmer convergence error: The objective function generated non-finite outputs'**
+
 The mds structure is probably poorly scaled compared to the kmers. kmers
 presence and absence is coded as 1 and 0 respectively.
 
@@ -185,3 +242,4 @@ scaled to values in the range [-1,1].
 These matrices are stored in hdf5 format, so you can use these tools to
 inspect them, and if necessary rescale them. Most convenient is the
 R package [rhdf5](http://www.bioconductor.org/packages/release/bioc/html/rhdf5.html).
+
