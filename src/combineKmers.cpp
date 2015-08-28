@@ -42,6 +42,7 @@ int main (int argc, char *argv[])
    ogzstream out_file((vm["output"].as<std::string>() + ".gz").c_str());
 
    // Map to store kmers
+   // TODO this would be neater if written with objects
    std::unordered_map<std::string, std::vector<std::tuple<int, int>>> kmer_union;
 
    // Add kmers to map
@@ -84,13 +85,13 @@ int main (int argc, char *argv[])
    {
       if (kmer_it->second.size() >= min_samples)
       {
-         out_file << kmer_it->first << " ";
+         out_file << kmer_it->first;
          for (auto sample_it = kmer_it->second.cbegin(); sample_it != kmer_it->second.cend(); ++sample_it)
          {
             int sample, abundance;
             std::tie (sample, abundance) = *sample_it;
 
-            out_file << sample_names[sample] + ":" + std::to_string(abundance);
+            out_file << " " << sample_names[sample] + ":" + std::to_string(abundance);
          }
          out_file << std::endl;
       }
