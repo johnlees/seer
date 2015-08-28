@@ -35,13 +35,14 @@ int main (int argc, char *argv[])
 
    // Read in list of sample kmer files and their names
    std::vector<std::tuple<std::string, std::string> > samples = readSamples(vm["samples"].as<std::string>());
+   std::unordered_map<int, std::string> sample_names;
    size_t min_samples = checkMin(samples.size(), vm["min_samples"].as<int>());
 
    // Open the output file before counting kmers
    ogzstream out_file((vm["output"].as<std::string>() + ".gz").c_str());
 
    // Map to store kmers
-   std::unordered_map<std::string, std::vector<std::string> > kmer_union;
+   std::unordered_map<std::string, std::vector<std::tuple<int, int>>> kmer_union;
 
    // Add kmers to map
    std::cerr << "Reading and mapping kmers..." << std::endl;
@@ -49,6 +50,10 @@ int main (int argc, char *argv[])
    {
       std::string sample_name, filename;
       std::tie(sample_name, filename) = samples[i];
+
+      // Rather than storing lots of copies of sample names as strings, just
+      // store hash keys
+      sample_names[i] = sample_name;
 
       std::ifstream kmer_counts(filename.c_str());
 
@@ -62,7 +67,7 @@ int main (int argc, char *argv[])
          {
             kmer_counts >> kmer >> abundance;
 
-            kmer_union[kmer].push_back(sample_name + ":" + abundance);
+            kmer_union[kmer].push_back(std::make_tuple(i, stoi(abundance)));
          }
       }
       else
@@ -75,12 +80,18 @@ int main (int argc, char *argv[])
 
    // Print results
    std::cerr << "Printing union of kmers" << std::endl;
-   for(auto it = kmer_union.cbegin(); it != kmer_union.cend(); ++it)
+   for(auto kmer_it = kmer_union.cbegin(); kmer_it != kmer_union.cend(); ++kmer_it)
    {
-      if (it->second.size() >= min_samples)
+      if (kmer_it->second.size() >= min_samples)
       {
-         out_file << it->first << " ";
-         std::copy(it->second.begin(), it->second.end(), std::ostream_iterator<std::string>(out_file, " "));
+         out_file << kmer_it->first << " ";
+         for (auto sample_it = kmer_it->second.cbegin(); sample_it != kmer_it->second.cend(); ++sample_it)
+         {
+            int sample, abundance;
+            std::tie (sample, abundance) = *sample_it;
+
+            out_file << sample_names[sample] + ":" + std::to_string(abundance);
+         }
          out_file << std::endl;
       }
    }
