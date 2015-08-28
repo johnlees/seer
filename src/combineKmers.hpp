@@ -21,5 +21,5 @@ int parseCommandLine (int argc, char *argv[], boost::program_options::variables_
 void printHelp(boost::program_options::options_description& help);
 
 std::vector<std::tuple<std::string, std::string> > readSamples(const std::string& sample_file);
-size_t checkMin(const size_t num_samples, const size_t input_min_samples);
+size_t checkMin(const size_t num_samples, const int input_min_samples);
 

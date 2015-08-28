@@ -35,7 +35,7 @@ int main (int argc, char *argv[])
 
    // Read in list of sample kmer files and their names
    std::vector<std::tuple<std::string, std::string> > samples = readSamples(vm["samples"].as<std::string>());
-   size_t min_samples = checkMin(samples.size(), vm["min_samples"].as<size_t>());
+   size_t min_samples = checkMin(samples.size(), vm["min_samples"].as<int>());
 
    // Open the output file before counting kmers
    ogzstream out_file((vm["output"].as<std::string>() + ".gz").c_str());

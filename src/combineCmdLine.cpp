@@ -21,7 +21,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
 
    po::options_description other("Other options");
    other.add_options()
-    ("min_samples", po::value<size_t>()->default_value(1), "minimum number of samples kmer must occur in to be printed")
+    ("min_samples", po::value<int>()->default_value(1), "minimum number of samples kmer must occur in to be printed")
     ("help,h", "full help message");
 
    po::options_description all;

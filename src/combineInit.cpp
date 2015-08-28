@@ -33,11 +33,11 @@ std::vector<std::tuple<std::string, std::string> > readSamples(const std::string
    return samples;
 }
 
-size_t checkMin(const size_t num_samples, const size_t input_min_samples)
+size_t checkMin(const size_t num_samples, const int input_min_samples)
 {
    size_t return_min = input_min_samples;
 
-   if (input_min_samples < 1 || input_min_samples > num_samples)
+   if (input_min_samples < 1 || return_min > num_samples)
    {
       return_min = 1;
    }
