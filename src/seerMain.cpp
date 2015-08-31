@@ -55,7 +55,6 @@ int main (int argc, char *argv[])
       }
    }
 
-#ifndef NO_THREAD
    // Disambiguate overloaded logistic functions by the type of parameter they
    // take
    void (*mdsLogitFunc)(Kmer&, const arma::vec&, const unsigned int nr, const arma::mat&) = &logisticTest;
@@ -63,7 +62,6 @@ int main (int argc, char *argv[])
 
    void (*mdsLinearFunc)(Kmer&, const arma::vec&, const arma::mat&) = &linearTest;
    void (*linearFunc)(Kmer&, const arma::vec&) = &linearTest;
-#endif
 
    // Error check command line options
    cmdOptions parameters = verifyCommandLine(vm, samples);
@@ -102,66 +100,7 @@ int main (int argc, char *argv[])
          }
       }
 
-#ifdef NO_THREAD
-      if (kmer_lines.size() == 1)
-      {
-         if (use_mds)
-         {
-            if (continuous_phenotype)
-            {
-               linearTest(kmer_lines[0], y, mds);
-            }
-            else
-            {
-               logisticTest(kmer_lines[0], y, nr_opt, mds);
-            }
-         }
-         else
-         {
-            if (continuous_phenotype)
-            {
-               linearTest(kmer_lines[0], y);
-            }
-            else
-            {
-               logisticTest(kmer_lines[0], y, nr_opt);
-            }
-         }
-
-         if (kmer_lines[0].p_val() < parameters.log_cutoff)
-         {
-            // Caclculate chisq value if not already done so in filtering
-            if (kmer_lines[0].chi_p_val() == kmer_chi_pvalue_default)
-            {
-               if (continuous_phenotype)
-               {
-                  kmer_lines[0].chi_p_val(welchTwoSamplet(kmer_lines[0].get_x(), y));
-               }
-               else
-               {
-                  kmer_lines[0].chi_p_val(chiTest(kmer_lines[0].get_x(), y));
-               }
-            }
-
-            std::cout << kmer_lines[0];
-            if (parameters.print_samples)
-            {
-               std::vector<std::string> samples_found = kmer_lines[0].occurrence_vector();
-               std::cout << "\t";
-               // Doing this for all samples leaves trailing whitespace, so
-               // write the last sample separately
-               if (samples_found.size() > 1)
-               {
-                  std::copy(samples_found.begin(), samples_found.end() - 1, std::ostream_iterator<std::string>(std::cout, "\t"));
-               }
-               std::cout << *samples_found.end();
-            }
-            std::cout << "\n";
-         }
-      }
-#else
       // Thread from here...
-      // TODO if slow, can thread with multiple tests per thread
       std::vector<std::thread> threads;
       threads.reserve(kmer_lines.size());
 
@@ -233,10 +172,8 @@ int main (int argc, char *argv[])
          }
       }
       // ...to here
-#endif
    }
 
    std::cerr << "Done.\n";
-
 }
 

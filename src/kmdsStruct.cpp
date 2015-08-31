@@ -74,7 +74,6 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
    // Time parallelisation
    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 
-#ifndef NO_THREAD
    // Create queue for distance calculations
    std::queue<std::future<std::vector<DistanceElement>>> distance_calculations;
 
@@ -135,17 +134,6 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
          dist(it->col, it->row) = it->distance;
       }
    }
-#else
-   for (unsigned int i = 0; i < matSize; ++i)
-   {
-      arma::rowvec ref_row = inMat.row(i);
-      for (unsigned int j = i + 1; j < matSize; j++)
-      {
-         dist(i, j) = distanceFunction(ref_row, inMat.row(j));
-         dist(j, i) = dist(i, j); // Set symmetric elements
-      }
-   }
-#endif
 
    // Print time taken
    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
