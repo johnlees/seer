@@ -139,7 +139,7 @@ int main (int argc, char *argv[])
             // apply filters here
             if (!parameters.filter)
             {
-               k.add_x(constructVecX(k, samples));
+               k.add_x(constructVecX(k, samples), samples.size());
             }
             else if (passFilters(parameters, k, samples, y, continuous_phenotype))
             {

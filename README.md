@@ -133,6 +133,10 @@ To use the kmds output, and increase execution speed
 
 The same filtering options as in kmds are available, as well a filtering on the adjusted p-value
 
+Output columns are sequence of element, frequency in sample set,
+uncorrected p-value, corrected p-value, odds-ratio of effect size and
+optionally samples the sequence element appears in
+
 Interpreting the output
 --------------
 Run the post analysis program filter_seer

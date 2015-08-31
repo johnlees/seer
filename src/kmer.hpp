@@ -4,6 +4,7 @@
  */
 
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <vector>
 
@@ -14,13 +15,13 @@ const std::vector<std::string> kmer_occ_default;
 const double kmer_pvalue_default = 1;
 const double kmer_chi_pvalue_default = 1;
 const double kmer_beta_default = 0;
-const int kmer_position_default = 0;
+const double kmer_maf_default = 0;
 
 class Kmer
 {
    public:
       // Initialisation
-      Kmer(std::string sequence, std::vector<std::string> occurrences, double pvalue, double beta, long int position);
+      Kmer(std::string sequence, std::vector<std::string> occurrences, double pvalue, double beta, double maf);
       Kmer(std::string sequence, std::vector<std::string> occurrences); // Initialise without calculated information
       Kmer(); // defaults
 
@@ -30,19 +31,19 @@ class Kmer
       int num_occurrences() const { return occurrences.size(); }
       std::string occurrence(int i) const { return occurrences[i]; }
       std::vector<std::string> occurrence_vector() const { return occurrences; }
-      long int get_position() const { return position; }
       arma::vec get_x() const { return x; }
       int has_x() const { return x_set; }
       double p_val() const { return pvalue; }
       double chi_p_val() const { return chi_pvalue; }
       double beta() const { return b; }
+      double get_maf() const { return maf; }
 
       //Modifying operations
-      void p_val(double p) { pvalue = p; }
-      void chi_p_val(double _chi_pvalue) { chi_pvalue = _chi_pvalue; }
-      void beta(double new_b) { b = new_b; }
-      void add_x(arma::vec new_x) { x = new_x; x_set = 1; }
-      long int map(std::string& ref_file);
+      void p_val(const double _pvalue) { pvalue = _pvalue; }
+      void chi_p_val(const double _chi_pvalue) { chi_pvalue = _chi_pvalue; }
+      void beta(const double _b) { b = _b; }
+      void set_maf(const double _maf) { maf = _maf; }
+      void add_x(const arma::vec new_x, const int num_samples); // this is defined in kmer.cpp
 
    private:
       std::string word;
@@ -52,7 +53,7 @@ class Kmer
       double pvalue;
       double chi_pvalue;
       double b;
-      long int position;
+      double maf;
 };
 
 // Overload output and input operators

@@ -18,7 +18,7 @@ int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Samp
       // Don't bother with this if not running stats tests
       pass = 1;
       arma::vec x = constructVecX(k, samples);
-      k.add_x(x);
+      k.add_x(x, samples.size());
 
       try  // Some chi^2 tests may diverge - proceed anyway for now
       {

@@ -7,36 +7,29 @@
 
 #include "kmer.hpp"
 
-
-
 // Initialisation
-Kmer::Kmer(std::string sequence, std::vector<std::string> occurrences, double pvalue, double beta, long int position)
-   :word(sequence), occurrences(occurrences), x_set(0), pvalue(pvalue), chi_pvalue(kmer_chi_pvalue_default), b(beta), position(position)
+Kmer::Kmer(std::string sequence, std::vector<std::string> occurrences, double pvalue, double beta, double _maf)
+   :word(sequence), occurrences(occurrences), x_set(0), pvalue(pvalue), chi_pvalue(kmer_chi_pvalue_default), b(beta), maf(_maf)
 {
 }
 
 // Initialise without calculated information
 Kmer::Kmer(std::string sequence, std::vector<std::string> occurrences)
-   :word(sequence), occurrences(occurrences), x_set(0), pvalue(kmer_pvalue_default), chi_pvalue(kmer_chi_pvalue_default), b(kmer_beta_default), position(kmer_position_default)
+   :word(sequence), occurrences(occurrences), x_set(0), pvalue(kmer_pvalue_default), chi_pvalue(kmer_chi_pvalue_default), b(kmer_beta_default), maf(kmer_maf_default)
 {
 }
 
 // Initialise with default info only
 Kmer::Kmer()
-   :word(kmer_seq_default), occurrences(kmer_occ_default), x_set(0), pvalue(kmer_pvalue_default), chi_pvalue(kmer_chi_pvalue_default), b(kmer_beta_default), position(kmer_position_default)
+   :word(kmer_seq_default), occurrences(kmer_occ_default), x_set(0), pvalue(kmer_pvalue_default), chi_pvalue(kmer_chi_pvalue_default), b(kmer_beta_default), maf(kmer_maf_default)
 {
-}
-
-// Map kmer to a reference file
-long int Kmer::map(std::string& ref_file)
-{
-   throw std::logic_error("kmer position mapping not yet implemented");
 }
 
 // Output
 std::ostream& operator<<(std::ostream &os, const Kmer& k)
 {
-   return os << k.sequence() << "\t" << std::scientific << k.chi_p_val() << "\t" << k.p_val() << "\t" << k.beta();
+   return os << std::fixed << std::setprecision(3) << k.sequence() << "\t" << k.get_maf()
+      << "\t" << std::scientific << k.chi_p_val() << "\t" << k.p_val() << "\t" << k.beta();
 }
 
 // Input
@@ -107,3 +100,12 @@ std::istream& operator>>(std::istream &is, Kmer& k)
 
    return is;
 }
+
+// Set the x and maf of the kmer
+void Kmer::add_x(const arma::vec new_x, const int num_samples)
+{
+   x = new_x;
+   x_set = 1;
+   maf = (double)num_occurrences()/num_samples;
+}
+

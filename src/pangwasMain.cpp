@@ -89,7 +89,7 @@ int main (int argc, char *argv[])
             // apply filters here
             if (!parameters.filter)
             {
-               k.add_x(constructVecX(k, samples));
+               k.add_x(constructVecX(k, samples), samples.size());
                kmer_lines.push_back(k);
             }
             else if (passFilters(parameters, k, samples, y, continuous_phenotype))
@@ -130,6 +130,7 @@ int main (int argc, char *argv[])
 
          if (kmer_lines[0].p_val() < parameters.log_cutoff)
          {
+            // Caclculate chisq value if not already done so in filtering
             if (kmer_lines[0].chi_p_val() == kmer_chi_pvalue_default)
             {
                if (continuous_phenotype)
@@ -201,6 +202,7 @@ int main (int argc, char *argv[])
          // Print in order when all threads complete
          if (kmer_lines[i].p_val() < parameters.log_cutoff)
          {
+            // Caclculate chisq value if not already done so in filtering
             if (kmer_lines[i].chi_p_val() == kmer_chi_pvalue_default)
             {
                if (continuous_phenotype)
