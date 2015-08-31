@@ -73,25 +73,23 @@ int main (int argc, char *argv[])
                // the kmer
                if (all_names_it->get_name() == *search_names_it)
                {
-                  // Check if four searches are running. If so, wait for the
-                  // next one to finish. Wait (for a max of 100ms) so this
-                  // thread doesn't consume processing
-                  auto list_it = threads.begin();
-                  while (threads.size() == num_threads)
+                  // Thread each search (i.e. per sample per kmer)
+                  if (num_threads > 1)
                   {
-                     auto status = list_it->wait_for(std::chrono::milliseconds(thread_wait));
-                     if (status == std::future_status::ready)
-                     {
-                        threads.erase(list_it);
-                     }
+                     // Check if four searches are running. If so, wait for the
+                     // next one to finish. Wait (for a max of 100ms) so this
+                     // thread doesn't consume processing
+                     waitForThreads(threads, num_threads - 1);
 
-                     ++list_it;
+                     // Start a new thread asynchronously, at the back of the
+                     // queue
+                     threads.push_back(std::async(std::launch::async,
+                              &Fasta::printMappings, *all_names_it, std::ref(std::cout), sig_kmer.sequence(), std::ref(out_mtx)));
                   }
-
-                  // Start a new thread asynchronously, at the back of the
-                  // queue
-                  threads.push_back(std::async(std::launch::async,
-                           &Fasta::printMappings, *all_names_it, std::ref(std::cout), sig_kmer.sequence(), std::ref(out_mtx)));
+                  else
+                  {
+                     all_names_it->printMappings(std::cout, sig_kmer.sequence(), out_mtx);
+                  }
 
                   ++search_names_it;
                   if (search_names_it == search_names.end())
@@ -100,7 +98,13 @@ int main (int argc, char *argv[])
                   }
                }
             }
+
             // Tab between every sample, line break after every kmer
+            if (num_threads > 1)
+            {
+               waitForThreads(threads, 0);
+            }
+
             std::cout << std::endl;
          }
       }
@@ -132,4 +136,22 @@ std::vector<Fasta> readSequences(const std::string& reference_file)
 
    std::sort(sequences.begin(), sequences.end(), Fasta::compareFasta);
    return sequences;
+}
+
+// Waits until there are #spaces threads left unfinished
+void waitForThreads(std::list<std::future<void>>& thread_list, const size_t leave_running)
+{
+   auto list_it = thread_list.begin();
+   while (thread_list.size() > leave_running)
+   {
+      auto status = list_it->wait_for(std::chrono::milliseconds(thread_wait));
+      if (status == std::future_status::ready)
+      {
+         list_it = thread_list.erase(list_it);
+      }
+      else if (list_it++ == thread_list.end())
+      {
+         list_it = thread_list.begin();
+      }
+   }
 }

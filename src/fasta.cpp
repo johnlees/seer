@@ -105,7 +105,7 @@ void Fasta::printMappings(std::ostream &os, const std::string search, std::mutex
       mtx.lock();
       for (std::vector<Mapping>::iterator it = hits.begin(); it != hits.end(); ++it)
       {
-         os << "\t" << Fasta::name << ":" << it->sequence_name << ":" << it->position;
+         os << "\t" << Fasta::name << ":" << it->sequence_name << ":" << it->position << "-" << it->position + search.length() - 1;
       }
       mtx.unlock();
    }

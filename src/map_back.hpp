@@ -35,6 +35,7 @@ const int thread_wait = 100; //time to wait for each thread in ms
 // Function headers
 // mapMain.cpp
 std::vector<Fasta> readSequences(const std::string& reference_file);
+void waitForThreads(std::list<std::future<void>>& thread_list, const size_t leave_running);
 
 // mapCmdLine.cpp
 int parseCommandLine (int argc, char *argv[], boost::program_options::variables_map& vm);
