@@ -17,7 +17,7 @@ Significant_kmer::Significant_kmer(const std::string& _word, const std::vector<s
 {
 }
 
-// Fills significant kmer object from pangwas output file
+// Fills significant kmer object from seer output file
 // Sample vector is returned sorted
 std::istream& operator>>(std::istream &is, Significant_kmer& sk)
 {

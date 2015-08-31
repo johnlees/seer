@@ -1,12 +1,12 @@
 /*
- * File: pangwasCmdLine.cpp
+ * File: seerCmdLine.cpp
  *
- * Reads command line input to pangwas using boost
+ * Reads command line input to seer using boost
  * program options
  *
  */
 
-#include "pangwas.hpp"
+#include "seer.hpp"
 
 namespace po = boost::program_options; // Save some typing
 
@@ -22,10 +22,10 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
     ("kmers,k", po::value<std::string>()->required(), "dsm kmer output file")
     ("pheno,p", po::value<std::string>()->required(), ".pheno metadata");
 
-   // pangloss options
-   po::options_description pangloss("pangloss options");
-   pangloss.add_options()
-    ("struct", po::value<std::string>(), "mds values from pangloss");
+   // kmds options
+   po::options_description kmds("kmds options");
+   kmds.add_options()
+    ("struct", po::value<std::string>(), "mds values from kmds");
 
    //Optional filtering parameters
    //NB pval cutoffs are strings for display, and are converted to floats later
@@ -52,7 +52,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
     ("help,h", "full help message");
 
    po::options_description all;
-   all.add(required).add(pangloss).add(performance).add(filtering).add(other);
+   all.add(required).add(kmds).add(performance).add(filtering).add(other);
 
    try
    {
@@ -84,7 +84,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
    {
       // Report errors from boost library
       std::cerr << "Error in command line input: " << e.what() << "\n";
-      std::cerr << "Run 'pangwas --help' for full option listing\n\n";
+      std::cerr << "Run 'seer --help' for full option listing\n\n";
       std::cerr << required << "\n" << other << "\n";
 
       failed = 1;

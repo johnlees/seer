@@ -1,11 +1,11 @@
 /*
- * File: panglossStruct.cpp
+ * File: kmdsStruct.cpp
  *
  * Implements metric MDS (multi-dimensional scaling)
- * for pangloss kmers
+ * for kmds kmers
  */
 
-#include "pangloss.hpp"
+#include "kmds.hpp"
 
 arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions, const unsigned int threads, const std::string& distances_file)
 {

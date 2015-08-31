@@ -1,11 +1,11 @@
 /*
- * File: panglossMain.cpp
+ * File: kmdsMain.cpp
  *
- * Control process of pangloss (mds of kmers)
+ * Control process of kmds (mds of kmers)
  *
  */
 
-#include "pangloss.hpp"
+#include "kmds.hpp"
 
 // globals
 std::default_random_engine rand_gen;
@@ -39,15 +39,15 @@ int main (int argc, char *argv[])
    //    Save matrix of top 3 eigenvals (parameter input)
 
    // Program description
-   std::cerr << "pangloss: pan-genome limitation of structure sensitivity\n";
+   std::cerr << "kmds: control for population structure\n";
 
    // Do parsing and checking of command line params
    // If no input options, give quick usage rather than full help
    boost::program_options::variables_map vm;
    if (argc == 1)
    {
-      std::cerr << "Usage: pangloss -k dsm.txt.gz -p data.pheno\n\n"
-         << "For full option details run pangloss -h\n";
+      std::cerr << "Usage: kmds -k dsm.txt.gz -p data.pheno\n\n"
+         << "For full option details run kmds -h\n";
       return 0;
    }
    else if (parseCommandLine(argc, argv, vm))
@@ -143,7 +143,7 @@ int main (int argc, char *argv[])
             }
             else if (passFilters(parameters, k, samples, y, continuous_phenotype))
             {
-#ifdef PANGWAS_DEBUG
+#ifdef SEER_DEBUG
                std::cerr << "kmer " + k.sequence() + " seems significant\n";
 #endif
                filtered_file << dsm_line << "\n";
@@ -204,13 +204,13 @@ int main (int argc, char *argv[])
       {
          if (parameters.filter)
          {
-            std::cerr << "You may now want to run:\n\tpangwas -k " << output_file_name
+            std::cerr << "You may now want to run:\n\tseer -k " << output_file_name
                << " -p " << vm["pheno"].as<std::string>() << " --struct " << dsm_file_name
                << " > significant_kmers.txt\n";
          }
          else
          {
-            std::cerr << "You may now want to run:\n\tpangwas -k " << parameters.kmers
+            std::cerr << "You may now want to run:\n\tseer -k " << parameters.kmers
                << " -p " << vm["pheno"].as<std::string>() << " --struct " << dsm_file_name
                << " > significant_kmers.txt\n";
          }
@@ -257,7 +257,7 @@ int main (int argc, char *argv[])
       std::cerr << "Done.\n";
 
       std::cerr << "Output written to " << dsm_file_name << "\n"
-         << "Use this as the --struct option of pangwas\n";
+         << "Use this as the --struct option of seer\n";
    }
 }
 

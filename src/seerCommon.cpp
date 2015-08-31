@@ -1,12 +1,12 @@
 /*
- * File: panCommon.cpp
+ * File: seerCommon.cpp
  *
- * Functions common to pangwas and pangloss
+ * Functions common to seer and kmds
  * Program options parsing
  *
  */
 
-#include "pancommon.hpp"
+#include "seercommon.hpp"
 
 // Parse command line parameters into usable program parameters
 cmdOptions verifyCommandLine(boost::program_options::variables_map& vm, const std::vector<Sample>& samples)
@@ -91,12 +91,10 @@ cmdOptions verifyCommandLine(boost::program_options::variables_map& vm, const st
       verified.print_samples = 1;
    }
 
-   
-
    return verified;
 }
 
-// Check these options in a separate function, which is also usable by pangloss
+// Check these options in a separate function, which is also usable by kmds
 // in mds_concat mode
 void verifyMDSOptions(cmdOptions& verified, boost::program_options::variables_map& vm)
 {

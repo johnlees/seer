@@ -17,7 +17,7 @@ int main (int argc, char *argv[])
    boost::program_options::variables_map vm;
    if (argc == 1)
    {
-      std::cerr << "Usage: map_back -k pangwas_output.txt -r references.txt > mappings.txt\n\n"
+      std::cerr << "Usage: map_back -k seer_output.txt -r references.txt > mappings.txt\n\n"
          << "For full option details run map_back -h\n";
       return 0;
    }

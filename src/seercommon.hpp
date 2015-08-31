@@ -1,8 +1,8 @@
 /*
  *
- * pancommon.hpp
- * Header file for pancommon
- * Shared functions between pangwas and pangloss
+ * seercommon.hpp
+ * Header file for seercommon
+ * Shared functions between seer and kmds
  *
  */
 
@@ -74,7 +74,7 @@ struct regression
 };
 
 // Function headers
-//    panCommon.cpp
+//    seerCommon.cpp
 cmdOptions verifyCommandLine(boost::program_options::variables_map& vm, const std::vector<Sample>& samples);
 void verifyMDSOptions(cmdOptions& verified, boost::program_options::variables_map& vm);
 
@@ -83,10 +83,10 @@ column_vector arma_to_dlib(const arma::vec& arma_vec);
 
 int continuousPhenotype (const std::vector<Sample>& sample_list);
 
-// panErr headers
+// seerErr headers
 void badCommand(const std::string& command, const std::string& value);
 
-// panIO headers
+// seerIO headers
 void readPheno(const std::string& filename, std::vector<Sample>& samples);
 void openDsmFile(igzstream& dsm_file, const std::string& file_name);
 
@@ -100,12 +100,12 @@ arma::mat readMDSList(const std::string& filename);
 
 int fileStat(const std::string& filename);
 
-// panFilter headers
+// seerFilter headers
 int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const arma::vec& y, const int continuous_phenotype);
 int passBasicFilters(const Kmer& k, const int max_length, const int min_words, const int max_words);
 int passStatsFilters(const arma::vec& x, const arma::vec& y, const double chi_cutoff, const int continuous_phenotype, const int positive_only);
 
-// panChiFilter headers
+// seerChiFilter headers
 double chiTest(const arma::vec& x, const arma::vec& y);
 double welchTwoSamplet(const arma::vec& x, const arma::vec& y);
 double normalPval(double testStatistic);

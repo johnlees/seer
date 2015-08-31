@@ -1,11 +1,11 @@
 /*
- * File: pangwasBinaryAssoc.cpp
+ * File: seerBinaryAssoc.cpp
  *
- * Implements logistic regression association tests for pangwas
+ * Implements logistic regression association tests for seer
  *
  */
 
-#include "pangwas.hpp"
+#include "seer.hpp"
 
 // Logistic fit without covariates
 void logisticTest(Kmer& k, const arma::vec& y_train, const unsigned int nr)
@@ -93,7 +93,7 @@ regression newtonRaphson(const arma::vec& y_train, const arma::mat& x_train)
       }
    }
 
-#ifdef PANGWAS_DEBUG
+#ifdef SEER_DEBUG
    std::cerr << "Number of iterations: " << parameter_iterations.size() << "\n";
 #endif
 
@@ -102,7 +102,7 @@ regression newtonRaphson(const arma::vec& y_train, const arma::mat& x_train)
    double W = std::abs(parameters.beta) / pow(var_covar_mat(1,1), 0.5);
    parameters.p_val = normalPval(W);
 
- #ifdef PANGWAS_DEBUG
+#ifdef SEER_DEBUG
    std::cerr << "Wald statistic: " << W << "\n";
    std::cerr << "p-value: " << parameters.p_val << "\n";
 #endif
@@ -162,7 +162,7 @@ regression logisticPval(const arma::vec& y_train, const arma::mat& x_train)
    double W = std::abs(b_1) / pow(varCovarMat(x_design, b_vector)(1,1), 0.5); // null hypothesis b_1 = 0
    parameters.p_val = normalPval(W);
 
-#ifdef PANGWAS_DEBUG
+#ifdef SEER_DEBUG
    std::cerr << "Wald statistic: " << W << "\n";
    std::cerr << "p-value: " << parameters.p_val << "\n";
 #endif

@@ -1,11 +1,11 @@
 /*
- * File: pangwasErr.cpp
+ * File: seerErr.cpp
  *
  * Throws error messages
  *
  */
 
-#include "pancommon.hpp"
+#include "seercommon.hpp"
 
 void badCommand(const std::string& command, const std::string& value)
 {

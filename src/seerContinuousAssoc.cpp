@@ -1,11 +1,11 @@
 /*
- * File: pangwasContinuousAssoc.cpp
+ * File: seerContinuousAssoc.cpp
  *
- * Implements linear regression association test for pangwas
+ * Implements linear regression association test for seer
  *
  */
 
-#include "pangwas.hpp"
+#include "seer.hpp"
 
 // Linear fit without covariates
 void linearTest(Kmer& k, const arma::vec& y_train)
@@ -48,7 +48,7 @@ void doLinear(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
       double W = std::abs(k.beta()) / (inv_xxt(1,1)*MSE); // null hypothesis b_1 = 0
       k.p_val(normalPval(W));
 
-#ifdef PANGWAS_DEBUG
+#ifdef SEER_DEBUG
       std::cerr << "Wald statistic: " << W << "\n";
       std::cerr << "p-value: " << k.p_val() << "\n";
 #endif

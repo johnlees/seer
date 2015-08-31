@@ -8,12 +8,12 @@ SEER_LDLIBS=-L../gzstream -L$(PREFIX)/lib -lhdf5 -lgzstream -lz -larmadillo -lbo
 MAP_LDLIBS=-L$(PREFIX)/lib -lboost_program_options -mkl
 COMBINE_LDLIBS=-L../gzstream -L$(PREFIX)/lib -lgzstream -lz -lboost_program_options
 
-PROGRAMS=pangwas pangloss map_back combineKmers
+PROGRAMS=seer kmds map_back combineKmers
 
 CLASSES=sample.o kmer.o
-COMMON_OBJECTS=$(CLASSES) panCommon.o panErr.o panFilter.o panIO.o panChiFilter.o
-PANGWAS_OBJECTS=$(COMMON_OBJECTS) pangwasMain.o pangwasCmdLine.o pangwasContinuousAssoc.o pangwasBinaryAssoc.o logitFunction.o
-PANGLOSS_OBJECTS=$(COMMON_OBJECTS) panglossMain.o panglossStruct.o panglossCmdLine.o
+COMMON_OBJECTS=$(CLASSES) seerCommon.o seerErr.o seerFilter.o seerIO.o seerChiFilter.o
+SEER_OBJECTS=$(COMMON_OBJECTS) seerMain.o seerCmdLine.o seerContinuousAssoc.o seerBinaryAssoc.o logitFunction.o
+KMDS_OBJECTS=$(COMMON_OBJECTS) kmdsMain.o kmdsStruct.o kmdsCmdLine.o
 MAP_OBJECTS=fasta.o significant_kmer.o mapMain.o mapCmdLine.o
 COMBINE_OBJECTS=combineInit.o combineCmdLine.o combineKmers.o
 
@@ -26,10 +26,10 @@ install: all
 	install -d $(BINDIR)
 	install $(PROGRAMS) $(BINDIR)
 
-pangwas: $(PANGWAS_OBJECTS)
+seer: $(SEER_OBJECTS)
 	$(LINK.cpp) $^ $(SEER_LDLIBS) -o $@
 
-pangloss: $(PANGLOSS_OBJECTS)
+kmds: $(KMDS_OBJECTS)
 	$(LINK.cpp) $^ $(SEER_LDLIBS) -o $@
 
 map_back: $(MAP_OBJECTS)

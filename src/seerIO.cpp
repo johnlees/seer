@@ -1,5 +1,5 @@
 /*
- * File: pangwasIO.cpp
+ * File: seerIO.cpp
  *
  * Controls: reading in pheno to sample object
  * Open (zipped) dsm file
@@ -9,7 +9,7 @@
  * <class>.cpp files
  *
  */
-#include "pancommon.hpp"
+#include "seercommon.hpp"
 
 std::regex gzipped(".+\\.gz"); // matches .gz at the end of a string (as regex match
                                // matches a whole string)

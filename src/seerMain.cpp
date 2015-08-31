@@ -1,24 +1,24 @@
 /*
- * File: pangwasMain.cpp
+ * File: seerMain.cpp
  *
- * Reads command line input to pangwas, and controls relevant functions
+ * Reads command line input to seer, and controls relevant functions
  *
  */
 
-#include "pangwas.hpp"
+#include "seer.hpp"
 
 int main (int argc, char *argv[])
 {
    // Program description
-   std::cerr << "pangwas: pan-genome wide association study using kmers\n";
+   std::cerr << "seer: sequence element enrichment analysis\n";
 
    // Do parsing and checking of command line params
    // If no input options, give quick usage rather than full help
    boost::program_options::variables_map vm;
    if (argc == 1)
    {
-      std::cerr << "Usage: pangwas -k dsm.txt.gz -p data.pheno --struct mds.dsm.txt.gz\n\n"
-         << "For full option details run pangwas -h\n";
+      std::cerr << "Usage: seer -k dsm.txt.gz -p data.pheno --struct mds.dsm.txt.gz\n\n"
+         << "For full option details run seer -h\n";
       return 0;
    }
    else if (parseCommandLine(argc, argv, vm))
@@ -94,7 +94,7 @@ int main (int argc, char *argv[])
             }
             else if (passFilters(parameters, k, samples, y, continuous_phenotype))
             {
-#ifdef PANGWAS_DEBUG
+#ifdef SEER_DEBUG
                std::cerr << "kmer " + k.sequence() + " seems significant\n";
 #endif
                kmer_lines.push_back(k);

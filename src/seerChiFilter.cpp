@@ -1,11 +1,11 @@
 /*
- * File: pangwasAssoc.cpp
+ * File: seerChiFilter
  *
- * Implements chi^2 and regression association tests for pangwas
+ * Implements chi^2 and welch two sample t test for seer and kmds filtering
  *
  */
 
-#include "pancommon.hpp"
+#include "seercommon.hpp"
 
 const double normalArea = pow(2*M_PI, -0.5);
 
@@ -42,7 +42,7 @@ double chiTest(const arma::vec& x, const arma::vec& y)
    }
 
    arma::mat::fixed<2, 2> table = {a, b, c, d};
-#ifdef PANGWAS_DEBUG
+#ifdef SEER_DEBUG
    arma::Mat<int>::fixed<2, 2> tab_out = {int (a), int (b), int (c), int(d)};
    std::cerr << tab_out << "\n";
 #endif
@@ -63,7 +63,7 @@ double chiTest(const arma::vec& x, const arma::vec& y)
 
    // For df = 1, as here, chi^2 == N(0,1)^2 (standard normal dist.)
    double p_value = normalPval(pow(chisq, 0.5));
-#ifdef PANGWAS_DEBUG
+#ifdef SEER_DEBUG
    std::cerr << "chisq:" << chisq << "\n";
    std::cerr << "chisq p: " << p_value << "\n";
 #endif
@@ -90,7 +90,7 @@ double welchTwoSamplet(const arma::vec& x, const arma::vec& y)
    // Calculate p-value from t distribution
    boost::math::students_t t_dist(df);
    double p_val = 2 * (1 - boost::math::cdf(t_dist, t));
-#ifdef PANGWAS_DEBUG
+#ifdef SEER_DEBUG
    std::cerr << "welch t:" << t << "df:" << df << "\n";
    std::cerr << "welch p-val:" << p_val << "\n";
 #endif
@@ -117,7 +117,7 @@ double normalPval(double testStatistic)
       // S(z) <= phi(z)/z
       // cdf = 1-(0.5 * S(z))
       // At z = 5 correct to +/- 2.5%
-#ifdef PANGWAS_DEBUG
+#ifdef SEER_DEBUG
       std::cerr << "using erfc bound rather than 'exact' function\n";
 #endif
       p_val = 2 * exp(-0.5*pow(testStatistic,2))*normalArea/testStatistic;

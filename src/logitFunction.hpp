@@ -3,7 +3,7 @@
  * Header file for logitFunction class
 */
 
-#include "pancommon.hpp"
+#include "seercommon.hpp"
 
 class LogitFunction
 {

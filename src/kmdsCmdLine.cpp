@@ -1,11 +1,11 @@
 /*
- * File: panglossCmdLine.cpp
+ * File: kmdsCmdLine.cpp
  *
- * Reads command line input to pangloss
+ * Reads command line input to kmds
  *
  */
 
-#include "pangloss.hpp"
+#include "kmds.hpp"
 
 namespace po = boost::program_options; // Save some typing
 
@@ -74,7 +74,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
    {
       // Report errors from boost library
       std::cerr << "Error in command line input: " << e.what() << "\n";
-      std::cerr << "Run 'pangloss --help' for full option listing\n\n";
+      std::cerr << "Run 'kmds --help' for full option listing\n\n";
       std::cerr << required << "\n" << other << "\n";
 
       failed = 1;
@@ -86,10 +86,9 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
 // Print long help message
 void printHelp(po::options_description& help)
 {
-   std::cerr << "pangloss" << "\n";
-   std::cerr << "\t1) all languages\n";
-   std::cerr << "\t2) Prof. Pangloss, from Voltaire's Candide. 'We live in the best of all possible worlds'\n";
-   std::cerr << "\t3) pan-genome limitation of structure sensitivity. 'We must cultivate our association studies'\n";
+   std::cerr << "kmds" << "\n";
+   std::cerr << "\t1) filter and subsample with --no_mds and --size\n";
+   std::cerr << "\t2) combine, and do metric multidimensional scaling with --combine_mds\n";
 
    std::cerr << help << "\n";
 }

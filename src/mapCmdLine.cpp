@@ -19,7 +19,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
    //Required options
    po::options_description required("Required options");
    required.add_options()
-    ("kmers,k", po::value<std::string>()->required(), "pangwas kmer output file")
+    ("kmers,k", po::value<std::string>()->required(), "seer kmer output file")
     ("references,r", po::value<std::string>()->required(), "file with tab separated reference name and fasta file");
 
    po::options_description other("Other options");
