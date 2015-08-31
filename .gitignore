@@ -29,6 +29,7 @@
 pangwas
 pangloss
 map_back
+combineKmers
 
 # Editors
 .vimrc
