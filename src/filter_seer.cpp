@@ -82,7 +82,7 @@ int main (int argc, char *argv[])
                   continue;
                }
                // If sorted, store in mem. Otherwise print immediately
-               else if (!sort_kmers.enabled() && !substr_sort.enabled())
+               else if (!sort_kmers && !substr_sort)
                {
                   std::cout << kmer << std::endl;
                }
@@ -93,7 +93,7 @@ int main (int argc, char *argv[])
             }
          }
          // Remove substr if necessary
-         if (substr_sort.enabled())
+         if (substr_sort)
          {
             // Sort largest to smallest
             filtered_kmers.sort(substr_sort);
@@ -106,7 +106,7 @@ int main (int argc, char *argv[])
                bool found = 0;
                for (auto sub_it = filtered_kmers.begin(); sub_it != list_it; ++sub_it)
                {
-                  if (sub_it->sequence().find(list_it->sequence()))
+                  if (sub_it->sequence().find(list_it->sequence()) != std::string::npos)
                   {
                      list_it = filtered_kmers.erase(list_it);
                      found = 1;
@@ -122,12 +122,12 @@ int main (int argc, char *argv[])
          }
 
          // If sorting, sort, then print
-         if (sort_kmers.enabled())
+         if (sort_kmers)
          {
             filtered_kmers.sort(sort_kmers);
          }
 
-         if (sort_kmers.enabled() || substr_sort.enabled())
+         if (sort_kmers || substr_sort)
          {
             for (auto out_it = filtered_kmers.begin(); out_it != filtered_kmers.end(); ++out_it)
             {

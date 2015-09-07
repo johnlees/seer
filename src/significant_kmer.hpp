@@ -48,7 +48,7 @@ class sortSigKmer
 
       // Overload for sort
       bool operator() (const Significant_kmer& sk1, const Significant_kmer& sk2) const;
-      bool enabled() { return (_sort_field > 0); };
+      explicit operator bool() const { return (_sort_field > 0); };
 
    private:
       int _sort_field;
