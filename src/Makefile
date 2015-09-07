@@ -7,8 +7,9 @@ CPPFLAGS=-I$(PREFIX)/include -I../gzstream -I../dlib -D DLIB_NO_GUI_SUPPORT=1 -D
 SEER_LDLIBS=-L../gzstream -L$(PREFIX)/lib -lhdf5 -lgzstream -lz -larmadillo -lboost_program_options -mkl
 MAP_LDLIBS=-L$(PREFIX)/lib -lboost_program_options -mkl
 COMBINE_LDLIBS=-L../gzstream -L$(PREFIX)/lib -lgzstream -lz -lboost_program_options
+FILTER_LDLIBS=-L$(PREFIX)/lib -lboost_program_options -mkl
 
-PROGRAMS=seer kmds map_back combineKmers
+PROGRAMS=seer kmds map_back combineKmers filter_seer
 
 CLASSES=sample.o kmer.o
 COMMON_OBJECTS=$(CLASSES) seerCommon.o seerErr.o seerFilter.o seerIO.o seerChiFilter.o
@@ -16,6 +17,7 @@ SEER_OBJECTS=$(COMMON_OBJECTS) seerMain.o seerCmdLine.o seerContinuousAssoc.o se
 KMDS_OBJECTS=$(COMMON_OBJECTS) kmdsMain.o kmdsStruct.o kmdsCmdLine.o
 MAP_OBJECTS=fasta.o significant_kmer.o mapMain.o mapCmdLine.o
 COMBINE_OBJECTS=combineInit.o combineCmdLine.o combineKmers.o
+FILTER_OBJECTS=significant_kmer.o filter_seer.o filterCmdLine.o
 
 all: $(PROGRAMS)
 
@@ -37,6 +39,9 @@ map_back: $(MAP_OBJECTS)
 
 combineKmers: $(COMBINE_OBJECTS)
 	$(LINK.cpp) $^ $(COMBINE_LDLIBS) -o $@
+
+filter_seer: $(FILTER_OBJECTS)
+	$(LINK.cpp) $^ $(FILTER_LDLIBS) -o $@
 
 .PHONY: all test clean install
 
