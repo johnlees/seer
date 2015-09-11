@@ -141,13 +141,15 @@ Interpreting the output
 --------------
 Run the post analysis program filter_seer
 
+    ./filter_seer -k significant_kmers.txt --pos_beta --maf 0.05 --sort pval > seer.filtered.txt
+
 Run map_back to find the position of significant kmers, in the assemblies they are from
 
-    ./map_back -k seer.sorted.k31.txt -r references.txt --threads 4
+    ./map_back -k seer.filtered.k31.txt -r references.txt --threads 4
 
 Run blat or blast on the significant kmers
 
-    cut -f 1 seer.sorted.k31.txt | awk '{print ">"NR"\n"$1}' > seer.sorted.k31.fa
+    cut -f 1 seer.filtered.k31.txt | awk '{print ">"NR"\n"$1}' > seer.sorted.k31.fa
     blat -noHead -stepSize=2 -minScore=15 reference.fa seer.sorted.k31.fa seer.k31.blat.psl
     blast -task blastn-short -subject reference.fa -query seer.sorted.k31.fa -outfmt 6 seer.k31.blast.txt
 
@@ -193,7 +195,7 @@ one in its own process using --no_mds and --size.
 
 Then list these output files in a text file, and input using
 --mds_concat. Using 16 threads this took about 30 hour and 53Gb on our test
-system of 3 000 samples, using 1% of the kmer.
+system of 3 000 samples, using 1% of the kmers.
 
 Choose the number of kmers to subsample carefully, lower and this will run
 faster and require less memory. A size of 1% of the number of kmers is
