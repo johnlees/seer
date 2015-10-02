@@ -16,6 +16,7 @@
 #include <chrono>
 #include <iterator>
 #include <vector>
+#include <unordered_map>
 #include <thread>
 #include <exception>
 #include <sys/stat.h>
@@ -87,7 +88,7 @@ int continuousPhenotype (const std::vector<Sample>& sample_list);
 void badCommand(const std::string& command, const std::string& value);
 
 // seerIO headers
-void readPheno(const std::string& filename, std::vector<Sample>& samples);
+void readPheno(const std::string& filename, std::vector<Sample>& samples, std::unordered_map<std::string,int>& sample_map);
 void openDsmFile(igzstream& dsm_file, const std::string& file_name);
 
 arma::vec constructVecY(const std::vector<Sample>& samples);
@@ -101,7 +102,7 @@ arma::mat readMDSList(const std::string& filename);
 int fileStat(const std::string& filename);
 
 // seerFilter headers
-int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const arma::vec& y, const int continuous_phenotype);
+int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const std::unordered_map<std::string,int>& sample_map, const arma::vec& y, const int continuous_phenotype);
 int passBasicFilters(const Kmer& k, const int max_length, const int min_words, const int max_words);
 int passStatsFilters(const arma::vec& x, const arma::vec& y, const double chi_cutoff, const int continuous_phenotype, const int positive_only);
 

@@ -93,18 +93,27 @@ std::istream& operator>>(std::istream &is, Kmer& k)
       }
    }
 
-   // Keep samples sorted, for easy conversion into a vector
-   std::sort(samples.begin(), samples.end());
-
    k = Kmer(word, samples);
 
    return is;
 }
 
 // Set the x and maf of the kmer
-void Kmer::add_x(const arma::vec new_x, const int num_samples)
+void Kmer::add_x(const std::unordered_map<std::string,int>& sample_map, const int num_samples)
 {
-   x = new_x;
+   x.zeros(num_samples);
+
+   for (auto it = occurrences.begin(); it < occurrences.end(); ++it)
+   {
+      auto sample_index_it = sample_map.find(*it);
+
+      if (sample_index_it != sample_map.end())
+      {
+         x[sample_index_it->second] = 1;
+      }
+   }
+
+   // Set object values
    x_set = 1;
    maf = (double)num_occurrences()/num_samples;
 }

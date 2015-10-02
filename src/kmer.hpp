@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #include <armadillo>
 
@@ -43,7 +44,7 @@ class Kmer
       void chi_p_val(const double _chi_pvalue) { chi_pvalue = _chi_pvalue; }
       void beta(const double _b) { b = _b; }
       void set_maf(const double _maf) { maf = _maf; }
-      void add_x(const arma::vec new_x, const int num_samples); // this is defined in kmer.cpp
+      void add_x(const std::unordered_map<std::string,int>& sample_map, const int num_samples); // this is defined in kmer.cpp
 
    private:
       std::string word;

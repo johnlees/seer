@@ -9,7 +9,7 @@
 #include "seercommon.hpp"
 
 // Wrapper to all filter functions
-int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const arma::vec& y, const int continuous_phenotype)
+int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const std::unordered_map<std::string,int>& sample_map, const arma::vec& y, const int continuous_phenotype)
 {
    int pass = 0;
 
@@ -17,12 +17,11 @@ int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Samp
    {
       // Don't bother with this if not running stats tests
       pass = 1;
-      arma::vec x = constructVecX(k, samples);
-      k.add_x(x, samples.size());
+      k.add_x(sample_map, samples.size());
 
       try  // Some chi^2 tests may diverge - proceed anyway for now
       {
-         pass = passStatsFilters(x, y, filterOptions.chi_cutoff, continuous_phenotype, filterOptions.positive);
+         pass = passStatsFilters(k.get_x(), y, filterOptions.chi_cutoff, continuous_phenotype, filterOptions.positive);
       }
       catch (std::exception& e)
       {

@@ -67,7 +67,8 @@ int main (int argc, char *argv[])
 
       // Open .pheno file, parse into vector of samples
       std::vector<Sample> samples;
-      readPheno(vm["pheno"].as<std::string>(), samples);
+      std::unordered_map<std::string,int> sample_map;
+      readPheno(vm["pheno"].as<std::string>(), samples, sample_map);
       arma::vec y = constructVecY(samples);
       int continuous_phenotype = continuousPhenotype(samples);
 
@@ -139,9 +140,9 @@ int main (int argc, char *argv[])
             // apply filters here
             if (!parameters.filter)
             {
-               k.add_x(constructVecX(k, samples), samples.size());
+               k.add_x(sample_map, samples.size());
             }
-            else if (passFilters(parameters, k, samples, y, continuous_phenotype))
+            else if (passFilters(parameters, k, samples, sample_map, y, continuous_phenotype))
             {
 #ifdef SEER_DEBUG
                std::cerr << "kmer " + k.sequence() + " seems significant\n";
