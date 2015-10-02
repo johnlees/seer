@@ -36,6 +36,9 @@ void readPheno(const std::string& filename, std::vector<Sample>& samples, std::u
       sample_map[s.iid()] = sample_index;
       sample_index++;
    }
+
+   // Always keep samples sorted, for consistency between programs
+   std::sort(samples.begin(), samples.end(), Sample::compareSamples);
 }
 
 // Open dsm files, which are possibly zipped
