@@ -80,9 +80,9 @@ int main (int argc, char *argv[])
       Kmer k;
       while(kmer_lines.size() < parameters.num_threads && kmer_file)
       {
+         kmer_file >> k;
          if (kmer_file)
          {
-            kmer_file >> k;
             k.add_x(sample_map, samples.size());
 
             // apply filters here
