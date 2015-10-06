@@ -29,7 +29,7 @@ class Kmer
       // nonmodifying operations
       std::string sequence() const { return word; }
       int length() const { return word.length(); }
-      int num_occurrences() const { return occurrences.size(); }
+      int num_occurrences() const;
       std::string occurrence(int i) const { return occurrences[i]; }
       std::vector<std::string> occurrence_vector() const { return occurrences; }
       arma::vec get_x() const { return x; }
@@ -39,7 +39,7 @@ class Kmer
       double beta() const { return b; }
       double get_maf() const { return maf; }
 
-      //Modifying operations
+      // Modifying operations
       void p_val(const double _pvalue) { pvalue = _pvalue; }
       void chi_p_val(const double _chi_pvalue) { chi_pvalue = _chi_pvalue; }
       void beta(const double _b) { b = _b; }

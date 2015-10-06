@@ -83,14 +83,14 @@ int main (int argc, char *argv[])
          if (kmer_file)
          {
             kmer_file >> k;
+            k.add_x(sample_map, samples.size());
 
             // apply filters here
             if (!parameters.filter)
             {
-               k.add_x(sample_map, samples.size());
                kmer_lines.push_back(k);
             }
-            else if (passFilters(parameters, k, samples, sample_map, y, continuous_phenotype))
+            else if (passFilters(parameters, k, samples, y, continuous_phenotype))
             {
 #ifdef SEER_DEBUG
                std::cerr << "kmer " + k.sequence() + " seems significant\n";

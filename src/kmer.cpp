@@ -118,3 +118,18 @@ void Kmer::add_x(const std::unordered_map<std::string,int>& sample_map, const in
    maf = (double)num_occurrences()/num_samples;
 }
 
+int Kmer::num_occurrences() const
+{
+   int total_occurrences;
+   if (x_set)
+   {
+      total_occurrences = (int) accu(x);
+   }
+   else
+   {
+      total_occurrences = occurrences.size();
+   }
+
+   return total_occurrences;
+}
+

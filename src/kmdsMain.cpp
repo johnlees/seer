@@ -136,23 +136,23 @@ int main (int argc, char *argv[])
          if (kmer_file)
          {
             dsm_stream >> k;
+            k.add_x(sample_map, samples.size());
 
             // apply filters here
-            if (!parameters.filter)
+            int passed_filters = 0;
+            if (parameters.filter && passFilters(parameters, k, samples, y, continuous_phenotype))
             {
-               k.add_x(sample_map, samples.size());
-            }
-            else if (passFilters(parameters, k, samples, sample_map, y, continuous_phenotype))
-            {
-#ifdef SEER_DEBUG
-               std::cerr << "kmer " + k.sequence() + " seems significant\n";
-#endif
+               passed_filters = 1;
                filtered_file << dsm_line << "\n";
+            }
+            else if (!parameters.filter)
+            {
+               passed_filters = 1;
             }
 
             // kmer has passed basic filters, so is a candidate for mds
             // subsampling
-            if (k.has_x())
+            if (passed_filters)
             {
                // Resevoir sampler for parameters.size kmers
                kmer_index++;

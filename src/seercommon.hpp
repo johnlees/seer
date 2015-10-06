@@ -102,7 +102,7 @@ arma::mat readMDSList(const std::string& filename);
 int fileStat(const std::string& filename);
 
 // seerFilter headers
-int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const std::unordered_map<std::string,int>& sample_map, const arma::vec& y, const int continuous_phenotype);
+int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const arma::vec& y, const int continuous_phenotype);
 int passBasicFilters(const Kmer& k, const int max_length, const int min_words, const int max_words);
 int passStatsFilters(const arma::vec& x, const arma::vec& y, const double chi_cutoff, const int continuous_phenotype, const int positive_only);
 
