@@ -30,6 +30,7 @@ seer
 kmds
 map_back
 combineKmers
+filter_seer
 
 # Editors
 .vimrc
