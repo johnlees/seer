@@ -23,9 +23,11 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
     ("pheno,p", po::value<std::string>()->required(), ".pheno metadata");
 
    // kmds options
-   po::options_description kmds("kmds options");
-   kmds.add_options()
-    ("struct", po::value<std::string>(), "mds values from kmds");
+   po::options_description covar("Covariate options");
+   covar.add_options()
+    ("struct", po::value<std::string>(), "mds values from kmds")
+    ("covar_file", po::value<std::string>(), "file containing covariates")
+    ("covar_list", po::value<std::string>(), "list of columns covariates to use. Format is 1,2q,3 (use q for quantitative)");
 
    //Optional filtering parameters
    //NB pval cutoffs are strings for display, and are converted to floats later
@@ -52,7 +54,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
     ("help,h", "full help message");
 
    po::options_description all;
-   all.add(required).add(kmds).add(performance).add(filtering).add(other);
+   all.add(required).add(covar).add(performance).add(filtering).add(other);
 
    try
    {

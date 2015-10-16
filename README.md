@@ -137,6 +137,10 @@ Output columns are sequence of element, frequency in sample set,
 uncorrected p-value, corrected p-value, odds-ratio of effect size and
 optionally samples the sequence element appears in
 
+To use covariates add --covar\_file and --covar\_list. The format of the latter is the columns in the --covar\_file to use, comma separated. They are assumed to be categorical, unless a q is added. For example, to use columns 1, 2 and 5 where column 2 is quantitative, run
+
+    ./seer -k dsm_input.txt.gz -p metadata.pheno --covar_file covariates.txt --covar_list 1,2q,5
+
 Interpreting the output
 --------------
 Run the post analysis program filter_seer

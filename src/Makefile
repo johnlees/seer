@@ -11,7 +11,7 @@ FILTER_LDLIBS=-L$(PREFIX)/lib -lboost_program_options -mkl
 
 PROGRAMS=seer kmds map_back combineKmers filter_seer
 
-CLASSES=sample.o kmer.o
+CLASSES=sample.o kmer.o covar.o
 COMMON_OBJECTS=$(CLASSES) seerCommon.o seerErr.o seerFilter.o seerIO.o seerChiFilter.o
 SEER_OBJECTS=$(COMMON_OBJECTS) seerMain.o seerCmdLine.o seerContinuousAssoc.o seerBinaryAssoc.o logitFunction.o
 KMDS_OBJECTS=$(COMMON_OBJECTS) kmdsMain.o kmdsStruct.o kmdsCmdLine.o

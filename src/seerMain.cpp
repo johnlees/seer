@@ -40,7 +40,37 @@ int main (int argc, char *argv[])
    {
       mds = readMDS(vm["struct"].as<std::string>());
       use_mds = 1;
+   }
 
+   // Set up covariates
+   if (vm.count("covar_file") && vm.count("covar_list"))
+   {
+      // File reading/parsing may fail
+      try
+      {
+         arma::mat covariate_matrix =
+            parseCovars(vm["covar_file"].as<std::string>(), vm["covar_list"].as<std::string>());
+
+         if (covariate_matrix.n_rows != samples.size())
+         {
+            throw std::runtime_error("Covariate row size does not match number of samples");
+         }
+
+         if (use_mds)
+         {
+            mds = arma::join_rows(mds, covariate_matrix);
+         }
+         else
+         {
+            mds = covariate_matrix;
+            use_mds = 1;
+         }
+      }
+      catch (std::exception& e)
+      {
+         std::cerr << "Could not process covariates: " << std::endl;
+         std::cerr << e.what() << std::endl;
+      }
    }
 
    unsigned int nr_opt;

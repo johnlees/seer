@@ -196,3 +196,16 @@ column_vector arma_to_dlib(const arma::vec& arma_vec)
 
    return converted;
 }
+
+// Converts a stl vector of strings to an arma mat of doubles
+arma::mat vecToMat(const std::vector<std::string>& in_col)
+{
+   arma::mat out_mat(in_col.size(), 1);
+
+   for (unsigned int i = 0; i < in_col.size(); ++i)
+   {
+      out_mat(i, 0) = std::stof(in_col[i]);
+   }
+
+   return out_mat;
+}

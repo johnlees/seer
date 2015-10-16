@@ -37,6 +37,7 @@
 // Classes
 #include "kmer.hpp"
 #include "sample.hpp"
+#include "covar.hpp"
 
 // Constants
 //    Default options
@@ -81,6 +82,7 @@ void verifyMDSOptions(cmdOptions& verified, boost::program_options::variables_ma
 
 arma::vec dlib_to_arma(const column_vector& dlib_vec);
 column_vector arma_to_dlib(const arma::vec& arma_vec);
+arma::mat vecToMat(const std::vector<std::string>& in_col);
 
 int continuousPhenotype (const std::vector<Sample>& sample_list);
 
@@ -98,6 +100,10 @@ void writeMDS(const std::string& file_name, const arma::mat& MDS);
 void writeDistances(const std::string& file_name, const arma::mat& distances);
 arma::mat readMDS(const std::string& file_name);
 arma::mat readMDSList(const std::string& filename);
+
+arma::mat parseCovars(const std::string& file, const std::string& columns);
+std::vector<std::tuple<int,bool>> parseCovarColumns(const std::string& columns);
+arma::mat encodeDummy(const std::vector<std::string>& in_col);
 
 int fileStat(const std::string& filename);
 
