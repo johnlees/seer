@@ -166,7 +166,7 @@ If you have [bedops](http://bedops.readthedocs.org/en/latest/index.html) and [be
     psl2bed < seer.k31.blat.psl > seer.k31.blat.bed
     gff2bed < reference.gff > reference.bed
     bedtools intersect -a seer.k31.blat.bed -b reference.bed -wb
-    bedtools intersect -a seer.k31.blat.bed -b reference.bed -c | sort -n -r -t $'\t' -k11,11
+    bedtools intersect -a reference.bed -b seer.k31.blat.bed -c | sort -n -r -t $'\t' -k11,11
 
 
 Troubleshooting

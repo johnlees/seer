@@ -209,3 +209,13 @@ arma::mat vecToMat(const std::vector<std::string>& in_col)
 
    return out_mat;
 }
+
+// Normalises a matrix's columns: subtract mean, divide by std dev
+void normaliseMatCols(arma::mat& matrix_in)
+{
+   arma::mat means = arma::mean(matrix_in);
+   arma::mat stddevs = arma::stddev(matrix_in);
+
+   matrix_in.each_row() -= means;
+   matrix_in.each_row() /= stddevs;
+}

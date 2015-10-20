@@ -198,11 +198,14 @@ arma::mat parseCovars(const std::string& file, const std::string& columns)
       arma::mat new_col;
       if (std::get<1>(*col_it))
       {
+         // Categorical covars need dummy encoding
          new_col = encodeDummy(mat_col->sortCovars());
       }
       else
       {
+         // Quantitative covars need normalising
          new_col = vecToMat(mat_col->sortCovars());
+         normaliseMatCols(new_col);
       }
 
       // Add the row in

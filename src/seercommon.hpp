@@ -83,6 +83,7 @@ void verifyMDSOptions(cmdOptions& verified, boost::program_options::variables_ma
 arma::vec dlib_to_arma(const column_vector& dlib_vec);
 column_vector arma_to_dlib(const arma::vec& arma_vec);
 arma::mat vecToMat(const std::vector<std::string>& in_col);
+void normaliseMatCols(arma::mat& matrix_in);
 
 int continuousPhenotype (const std::vector<Sample>& sample_list);
 
