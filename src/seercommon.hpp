@@ -44,7 +44,7 @@
 //    Default options
 const double maf_default = 0.01;
 const long int max_length_default = 100;
-const std::string chi2_default = "10e-5";
+const std::string chisq_default = "10e-5";
 
 typedef dlib::matrix<double,0,1> column_vector;
 
@@ -82,7 +82,7 @@ void normaliseMatCols(arma::mat& matrix_in);
 
 int continuousPhenotype (const std::vector<Sample>& sample_list);
 
-arma::mat inv_covar(arma::mat& A);
+arma::mat inv_covar(arma::mat A);
 
 // seerErr headers
 void badCommand(const std::string& command, const std::string& value);

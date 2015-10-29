@@ -31,7 +31,8 @@ void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
    starting_point(0) = log(mean(y_train)/(1 - mean(y_train)));
    for (size_t i = 1; i < x_design.n_cols; ++i)
    {
-      starting_point(i) = 0;
+      // Seems to need to be >0 to get bfgs to converge
+      starting_point(i) = 1;
    }
 
    try
@@ -46,7 +47,7 @@ void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
       // Extract beta
       arma::vec b_vector = dlib_to_arma(starting_point);
       double b_1 = b_vector(1);
-      k.beta = b_1;
+      k.beta(b_1);
 
       // Extract p-value
       //
@@ -60,7 +61,7 @@ void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
       k.standard_error(se);
 
       double W = std::abs(b_1) / se; // null hypothesis b_1 = 0
-      k.p_val = normalPval(W);
+      k.p_val(normalPval(W));
 
 #ifdef SEER_DEBUG
       std::cerr << "Wald statistic: " << W << "\n";
@@ -75,7 +76,7 @@ void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
    }
 }
 
-void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design, const bool firth = 0)
+void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design, const bool firth)
 {
    // Keep iterations to track convergence
    // Also useful to keep second derivative, for calculating p-value
@@ -97,15 +98,25 @@ void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design,
       arma::vec b0 = parameter_iterations.back();
       arma::vec y_pred = predictLogitProbs(x_design, b0);
 
-      arma::vec b1;
+      arma::vec b1 = b0;
+      var_covar_mat = inv_covar(x_design.t() * diagmat(y_pred % (arma::ones(y_pred.n_rows) - y_pred)) * x_design);
       if (firth)
       {
-         //TODO
+         // Firth logistic regression
+         // See: DOI: 10.1002/sim.1047
+         arma::mat W = diagmat(y_pred * (1 - y_pred));
+         // Hat matrix
+         // Note: W is diagonal so X.t() * W * X is still sympd
+         arma::mat H = sqrt(W) * x_design * inv_covar(x_design.t() * W * x_design) * x_design.t() * sqrt(W);
+
+         arma::vec correction(y_train.n_rows);
+         correction.fill(0.5);
+
+         b1 += var_covar_mat * (y_train - y_pred + diagmat(H) % (correction - y_pred));
       }
       else
       {
-         var_covar_mat = inv_covar(x_design.t() * diagmat(y_pred % (arma::ones(y_pred.n_rows) - y_pred)) * x_design);
-         b1 = b0 + var_covar_mat * x_design.t() * (y_train - y_pred);
+         b1 += var_covar_mat * x_design.t() * (y_train - y_pred);
       }
       parameter_iterations.push_back(b1);
 
@@ -138,7 +149,7 @@ void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design,
       double se = pow(var_covar_mat(1,1), 0.5);
       k.standard_error(se);
 
-      double W = std::abs(parameters.beta) / se;
+      double W = std::abs(k.beta()) / se;
       k.p_val(normalPval(W));
 
 #ifdef SEER_DEBUG

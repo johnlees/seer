@@ -120,7 +120,7 @@ void Kmer::add_x(const std::unordered_map<std::string,int>& sample_map, const in
 }
 
 // Add a new comment in
-void add_comment(const std::string& new_comment)
+void Kmer::add_comment(const std::string& new_comment)
 {
    if (comment == kmer_comment_default)
    {

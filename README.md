@@ -223,24 +223,13 @@ it is a bit meaningless to assign a value, but essentially the data
 exactly fits the regression.
 
 Biologically, either the effect size is enormous, or more likely the
-phenotype is monophyletic (see below).
-
-**I get the error message: 'inv_sympd(): matrix appears to be singular'**
-
-The optimiser may not have converged, check previous error messages and
-see the note about this below.
-
-If it has, it's likely the p-value is too small to calculate. You can
-approximate this p-value as 0 if you wish (the program default). If
-you're getting lots of messages like this your phenotype is probably
-perfectly associated with a clade, or small number of clades.
+phenotype is monophyletic.
 
 Check whether this is the case using a tool such as [phylocanvas](http://phylocanvas.org/).
 If your phenotype is monophyletic then you won't have good resolution on
-which sequence elements may be related to it. See the paper for more
-explanation on this
+which sequence elements may be related to it.
 
-**I get the error message: 'kmer convergence error: The objective function generated non-finite outputs'**
+**I get the error message 'A matrix inversion failed!'**
 
 The mds structure is probably poorly scaled compared to the kmers. kmers
 presence and absence is coded as 1 and 0 respectively.

@@ -13,7 +13,7 @@ cmdOptions verifyCommandLine(boost::program_options::variables_map& vm, const st
 {
    cmdOptions verified;
 
-   verified.chi_cutoff = stod(vm["chi2"].as<std::string>());
+   verified.chi_cutoff = stod(vm["chisq"].as<std::string>());
    verified.max_length = vm["max_length"].as<long int>();
 
    if(vm.count("kmers"))
@@ -221,7 +221,8 @@ void normaliseMatCols(arma::mat& matrix_in)
 }
 
 // Inverts a symmetric positive matrix, checking for errors
-arma::mat inv_covar(arma::mat& A)
+// Not passed by ref, creates a copy. Right thing to do?
+arma::mat inv_covar(arma::mat A)
 {
    // Try the default. Internally this uses Cholesky decomposition and back
    // solves. For large condition numbers it fails.

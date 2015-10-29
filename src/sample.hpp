@@ -12,17 +12,17 @@ class Sample
 {
    public:
       // Initialisation
-      Sample(int phenotype, std::string name);
+      Sample(double phenotype, std::string name);
       Sample();
 
       // nonmodifying operations
-      int pheno() const { return phenotype; }
+      double pheno() const { return phenotype; }
       int continuous() const { return continuous_pheno; }
       std::string iid() const { return name; }
       static bool compareSamples(Sample lhs, Sample rhs) { return (lhs.name < rhs.name); }
 
    private:
-      int phenotype;
+      double phenotype;
       int continuous_pheno;
       std::string name;
 };

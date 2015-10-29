@@ -7,11 +7,11 @@
 
 #include "sample.hpp"
 
-const int default_pheno = 0;
+const double default_pheno = 0;
 const std::string default_name = "";
 const int default_continuous = 0;
 
-Sample::Sample(int p, std::string n)
+Sample::Sample(double p, std::string n)
    :phenotype(p), name(n)
 {
    if (p != 0 && p != 1)
@@ -31,7 +31,7 @@ Sample::Sample()
 
 std::istream& operator>>(std::istream &is, Sample& s)
 {
-   int phenotype;
+   double phenotype;
    std::string FID, IID;
 
    is >> FID >> IID >> phenotype;

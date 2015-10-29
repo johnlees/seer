@@ -33,7 +33,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
    //NB pval cutoffs are strings for display, and are converted to floats later
    po::options_description performance("Performance options");
    performance.add_options()
-    ("threads", po::value<int>()->default_value(1), ("number of threads. Suggested: " + std::to_string(std::thread::hardware_concurrency())).c_str())
+    ("threads", po::value<int>()->default_value(1), ("number of threads. Suggested: " + std::to_string(std::thread::hardware_concurrency())).c_str());
 
    //Optional filtering parameters
    //NB pval cutoffs are strings for display, and are converted to floats later
@@ -44,7 +44,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
     ("maf", po::value<double>()->default_value(maf_default), "minimum kmer frequency")
     ("min_words", po::value<int>(), "minimum kmer occurences. Overrides --maf")
     ("positive_only", "only test words with a predicted positive effect direction")
-    ("chi2", po::value<std::string>()->default_value(chi2_default), "p-value threshold for initial chi squared test. Set to 1 to show all")
+    ("chisq", po::value<std::string>()->default_value(chisq_default), "p-value threshold for initial chi squared test. Set to 1 to show all")
     ("pval", po::value<std::string>()->default_value(pval_default), "p-value threshold for final logistic test. Set to 1 to show all");
 
    po::options_description other("Other options");

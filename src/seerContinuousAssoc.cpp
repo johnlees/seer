@@ -47,10 +47,10 @@ void doLinear(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
    // MSE = sum(Y_i-Y'_i)^2 / n-2
    //
    double MSE = accu(square(y_train - predictLinearProbs(x_design, b))) / (x_train.n_rows - 2);
-   double se = inv_covar(x_design.t()*x_design)(1,1);
+   double se = pow((inv_covar(x_design.t()*x_design)(1,1) * MSE), 0.5);
    k.standard_error(se);
 
-   double W = std::abs(k.beta()) / (se*MSE); // null hypothesis b_1 = 0
+   double W = std::abs(k.beta()) / (se); // null hypothesis b_1 = 0
    k.p_val(normalPval(W));
 
 #ifdef SEER_DEBUG

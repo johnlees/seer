@@ -27,7 +27,7 @@ void logisticTest(Kmer& k, const arma::vec& y);
 void logisticTest(Kmer& k, const arma::vec& y_train, const arma::mat& mds);
 
 void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train);
-void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design, const bool firth);
+void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design, const bool firth = 0);
 
 arma::mat varCovarMat(const arma::mat& x, const arma::mat& b);
 arma::vec predictLogitProbs(const arma::mat& x, const arma::vec& b);

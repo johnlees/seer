@@ -75,8 +75,8 @@ int main (int argc, char *argv[])
 
    // Disambiguate overloaded logistic functions by the type of parameter they
    // take
-   void (*mdsLogitFunc)(Kmer&, const arma::vec&, const unsigned int nr, const arma::mat&) = &logisticTest;
-   void (*logitFunc)(Kmer&, const arma::vec&, const unsigned int nr) = &logisticTest;
+   void (*mdsLogitFunc)(Kmer&, const arma::vec&, const arma::mat&) = &logisticTest;
+   void (*logitFunc)(Kmer&, const arma::vec&) = &logisticTest;
 
    void (*mdsLinearFunc)(Kmer&, const arma::vec&, const arma::mat&) = &linearTest;
    void (*linearFunc)(Kmer&, const arma::vec&) = &linearTest;
@@ -137,7 +137,7 @@ int main (int argc, char *argv[])
             }
             else
             {
-               threads.push_back(std::thread(mdsLogitFunc, std::ref(kmer_lines[i]), std::cref(y), nr_opt, std::cref(mds)));
+               threads.push_back(std::thread(mdsLogitFunc, std::ref(kmer_lines[i]), std::cref(y), std::cref(mds)));
             }
          }
          else
@@ -148,7 +148,7 @@ int main (int argc, char *argv[])
             }
             else
             {
-               threads.push_back(std::thread(logitFunc, std::ref(kmer_lines[i]), std::cref(y), nr_opt));
+               threads.push_back(std::thread(logitFunc, std::ref(kmer_lines[i]), std::cref(y)));
             }
          }
       }
