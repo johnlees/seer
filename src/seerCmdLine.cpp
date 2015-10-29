@@ -34,7 +34,6 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
    po::options_description performance("Performance options");
    performance.add_options()
     ("threads", po::value<int>()->default_value(1), ("number of threads. Suggested: " + std::to_string(std::thread::hardware_concurrency())).c_str())
-    ("optimiser", po::value<std::string>()->default_value("lbfgs"), "optimiser for regression. Either lbfgs or newton-raphson");
 
    //Optional filtering parameters
    //NB pval cutoffs are strings for display, and are converted to floats later

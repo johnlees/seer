@@ -219,3 +219,24 @@ void normaliseMatCols(arma::mat& matrix_in)
    matrix_in.each_row() -= means;
    matrix_in.each_row() /= stddevs;
 }
+
+// Inverts a symmetric positive matrix, checking for errors
+arma::mat inv_covar(arma::mat& A)
+{
+   // Try the default. Internally this uses Cholesky decomposition and back
+   // solves. For large condition numbers it fails.
+   arma::mat B;
+   if (!inv_sympd(B, A))
+   {
+      // If the Cholesky decomposition fails, try pseudo-inverse
+      // This uses SVD:
+      // A = U*S*V.t() => A^-1 = V*S^-1*U.t()
+      // and ignores small values in the S matrix
+      if (!arma::pinv(B, A))
+      {
+         std::cerr << "A matrix inversion failed!" << std::endl;
+      }
+   }
+
+   return B;
+}

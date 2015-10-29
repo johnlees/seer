@@ -23,13 +23,12 @@ int parseCommandLine (int argc, char *argv[], boost::program_options::variables_
 void printHelp(boost::program_options::options_description& help);
 
 // seerBinaryAssoc headers
-void logisticTest(Kmer& k, const arma::vec& y, const unsigned int nr);
-void logisticTest(Kmer& k, const arma::vec& y_train, const unsigned int nr, const arma::mat& mds);
+void logisticTest(Kmer& k, const arma::vec& y);
+void logisticTest(Kmer& k, const arma::vec& y_train, const arma::mat& mds);
 
-void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train, const unsigned int nr);
+void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train);
+void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design, const bool firth);
 
-regression logisticPval(const arma::vec& y_train, const arma::mat& x_train);
-regression newtonRaphson(const arma::vec& y_train, const arma::mat& x_train);
 arma::mat varCovarMat(const arma::mat& x, const arma::mat& b);
 arma::vec predictLogitProbs(const arma::mat& x, const arma::vec& b);
 

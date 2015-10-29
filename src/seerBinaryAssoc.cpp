@@ -8,83 +8,105 @@
 #include "seer.hpp"
 
 // Logistic fit without covariates
-void logisticTest(Kmer& k, const arma::vec& y_train, const unsigned int nr)
+void logisticTest(Kmer& k, const arma::vec& y_train)
 {
    // Train classifier
    arma::mat x_train = k.get_x();
-   doLogit(k, y_train, x_train, nr);
+   doLogit(k, y_train, x_train);
 }
 
 // Logistic fit with covariates
-void logisticTest(Kmer& k, const arma::vec& y_train, const unsigned int nr, const arma::mat& mds)
+void logisticTest(Kmer& k, const arma::vec& y_train, const arma::mat& mds)
 {
    // Train classifier
    arma::mat x_train = arma::join_rows(k.get_x(), mds);
-   doLogit(k, y_train, x_train, nr);
+   doLogit(k, y_train, x_train);
 }
 
-void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train, const unsigned int nr)
+void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
 {
-   regression fit;
+   arma::mat x_design = join_rows(arma::mat(x_train.n_rows,1,arma::fill::ones), x_train);
+   column_vector starting_point(x_design.n_cols);
+
+   starting_point(0) = log(mean(y_train)/(1 - mean(y_train)));
+   for (size_t i = 1; i < x_design.n_cols; ++i)
+   {
+      starting_point(i) = 0;
+   }
+
    try
    {
-      if (nr != 1)
-      {
-         fit = logisticPval(y_train, x_train);
-      }
-      else
-      {
-         fit = newtonRaphson(y_train, x_train);
-      }
+      // Use BFGS optimiser in dlib to maximise likelihood function by chaging the
+      // b vector, which will end in starting_point
+      dlib::find_max(dlib::bfgs_search_strategy(),
+                  dlib::objective_delta_stop_strategy(convergence_limit),
+                  LogitLikelihood(x_train, y_train), LogitLikelihoodGradient(x_train, y_train),
+                  starting_point, -1);
+
+      // Extract beta
+      arma::vec b_vector = dlib_to_arma(starting_point);
+      double b_1 = b_vector(1);
+      k.beta = b_1;
+
+      // Extract p-value
+      //
+      //
+      // W = B_1 / SE(B_1) ~ N(0,1)
+      //
+      // In the special case of a logistic regression, abs can be taken rather
+      // than ^2 as responses are 0 or 1
+      //
+      double se = pow(varCovarMat(x_design, b_vector)(1,1), 0.5);
+      k.standard_error(se);
+
+      double W = std::abs(b_1) / se; // null hypothesis b_1 = 0
+      k.p_val = normalPval(W);
+
+#ifdef SEER_DEBUG
+      std::cerr << "Wald statistic: " << W << "\n";
+      std::cerr << "p-value: " << k.p_val() << "\n";
+#endif
    }
-   // Methods will throw if a singular matrix is inverted
+   // Sometimes won't converge, use N-R instead
    catch (std::exception& e)
    {
-      std::cerr << "kmer " + k.sequence() + " convergence error: "
-                << e.what() << "\n";
-
-      fit.p_val = 0;
-      fit.beta = 0;
+      k.add_comment("bfgs-fail");
+      newtonRaphson(k, y_train, x_design);
    }
-
-   k.p_val(fit.p_val);
-   k.beta(fit.beta);
 }
 
-regression newtonRaphson(const arma::vec& y_train, const arma::mat& x_train)
+void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design, const bool firth = 0)
 {
-   regression parameters;
-
    // Keep iterations to track convergence
    // Also useful to keep second derivative, for calculating p-value
    std::vector<arma::vec> parameter_iterations;
    arma::mat var_covar_mat;
 
-   // Get starting point from a linear regression, which is fast
+   // Could get starting point from a linear regression, which is fast
    // and will reduce number of n-r iterations
    // Set up design matrix, and calculate (X'X)^-1
-   arma::mat x_design = join_rows(arma::mat(x_train.n_rows,1,arma::fill::ones), x_train);
-   try
-   {
-      arma::mat inv_xxt = inv_sympd(x_design*x_design.t());
+   // Seems more reliable to go for b = 0, plus a non-zero intercept
+   // See: doi:10.1016/S0169-2607(02)00088-3
+   arma::vec starting_point = arma::zeros(x_design.n_cols);
+   starting_point(0) = log(mean(y_train)/(1 - mean(y_train)));
 
-      // Regress beta: b = (X'X)^-1*Xy
-      parameter_iterations.push_back(inv_xxt * x_design * y_train);
-   }
-   // Method will throw if a singular matrix is inverted
-   catch (std::exception& e)
-   {
-      // Alternatively just use:
-      parameter_iterations.push_back(arma::ones(x_train.n_cols + 1));
-   }
+   parameter_iterations.push_back(starting_point);
 
    for (unsigned int i = 0; i < max_nr_iterations; ++i)
    {
       arma::vec b0 = parameter_iterations.back();
       arma::vec y_pred = predictLogitProbs(x_design, b0);
 
-      var_covar_mat = inv_sympd(x_design.t() * diagmat(y_pred % (arma::ones(y_pred.n_rows) - y_pred)) * x_design);
-      arma::vec b1 = b0 + var_covar_mat * x_design.t() * (y_train - y_pred);
+      arma::vec b1;
+      if (firth)
+      {
+         //TODO
+      }
+      else
+      {
+         var_covar_mat = inv_covar(x_design.t() * diagmat(y_pred % (arma::ones(y_pred.n_rows) - y_pred)) * x_design);
+         b1 = b0 + var_covar_mat * x_design.t() * (y_train - y_pred);
+      }
       parameter_iterations.push_back(b1);
 
       if (std::abs(b1(1) - b0(1)) < convergence_limit)
@@ -96,82 +118,37 @@ regression newtonRaphson(const arma::vec& y_train, const arma::mat& x_train)
 #ifdef SEER_DEBUG
    std::cerr << "Number of iterations: " << parameter_iterations.size() << "\n";
 #endif
-
-   parameters.beta = parameter_iterations.back()(1);
-
-   double W = std::abs(parameters.beta) / pow(var_covar_mat(1,1), 0.5);
-   parameters.p_val = normalPval(W);
-
-#ifdef SEER_DEBUG
-   std::cerr << "Wald statistic: " << W << "\n";
-   std::cerr << "p-value: " << parameters.p_val << "\n";
-#endif
-
-   return parameters;
-}
-
-// Fits logistic regression, and returns beta and pvalue
-regression logisticPval(const arma::vec& y_train, const arma::mat& x_train)
-{
-   regression parameters;
-
-   arma::mat x_design = join_rows(arma::mat(x_train.n_rows,1,arma::fill::ones), x_train);
-   column_vector starting_point(x_design.n_cols);
-/*   try
+   // If convergence not reached, try Firth logistic regression
+   if (parameter_iterations.size() == max_nr_iterations)
    {
-      arma::mat inv_xxt = inv_sympd(x_design*x_design.t());
-
-      // Regress beta: b = (X'X)^-1*Xy
-      starting_point = arma_to_dlib(inv_xxt * x_design * y_train);
-   }
-   // Method will throw if a singular matrix is inverted
-   catch (std::exception& e)
-   {
-      // Alternatively just use:
-      for (size_t i = 0; i < x_design.n_cols; ++i)
+      if (!firth)
       {
-         starting_point(i) = 1;
+         k.add_comment("nr-fail");
+         newtonRaphson(k, y_train, x_design, 1);
+      }
+      else
+      {
+         k.add_comment("firth-fail");
       }
    }
-*/
-   for (size_t i = 0; i < x_design.n_cols; ++i)
+   else
    {
-      starting_point(i) = 1;
-   }
+      k.beta(parameter_iterations.back()(1));
 
-   // Use BFGS optimiser in dlib to maximise likelihood function by chaging the
-   // b vector, which will end in starting_point
-   dlib::find_max(dlib::bfgs_search_strategy(),
-                  dlib::objective_delta_stop_strategy(convergence_limit),
-                  LogitLikelihood(x_train, y_train), LogitLikelihoodGradient(x_train, y_train),
-                  starting_point, -1);
+      double se = pow(var_covar_mat(1,1), 0.5);
+      k.standard_error(se);
 
-   // Extract beta
-   arma::vec b_vector = dlib_to_arma(starting_point);
-   double b_1 = b_vector(1);
-   parameters.beta = b_1;
-
-   // Extract p-value
-   //
-   //
-   // W = B_1 / SE(B_1) ~ N(0,1)
-   //
-   // In the special case of a logistic regression, abs can be taken rather
-   // than ^2 as responses are 0 or 1
-   //
-   double W = std::abs(b_1) / pow(varCovarMat(x_design, b_vector)(1,1), 0.5); // null hypothesis b_1 = 0
-   parameters.p_val = normalPval(W);
+      double W = std::abs(parameters.beta) / se;
+      k.p_val(normalPval(W));
 
 #ifdef SEER_DEBUG
-   std::cerr << "Wald statistic: " << W << "\n";
-   std::cerr << "p-value: " << parameters.p_val << "\n";
+      std::cerr << "Wald statistic: " << W << "\n";
+      std::cerr << "p-value: " << k.p_val() << "\n";
 #endif
-
-   return parameters;
+   }
 }
 
 // Returns var-covar matrix for logistic function
-// WARNING: This contains an inversion, which will throw on a singular matrix
 arma::mat varCovarMat(const arma::mat& x, const arma::mat& b)
 {
    // var-covar matrix = inv(I)
@@ -200,7 +177,7 @@ arma::mat varCovarMat(const arma::mat& x, const arma::mat& b)
       }
    }
 
-   return inv_sympd(I);
+   return inv_covar(I);
 }
 
 // returns y = logit(bx)

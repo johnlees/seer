@@ -2,7 +2,7 @@
  * File: logitFunction.cpp
  *
  * Likelihood, gradient and initialisation of logit function
- *
+ * Functor, based on mlpack: www.mlpack.org
  */
 
 #include "logitFunction.hpp"

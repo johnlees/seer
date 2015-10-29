@@ -31,6 +31,7 @@
 #include <boost/math/distributions/students_t.hpp>
 
 // Armadillo/dlib headers
+#define ARMA_DONT_PRINT_ERRORS
 #include <armadillo>
 #include <dlib/matrix.h>
 
@@ -69,12 +70,6 @@ struct cmdOptions
    std::string output;
 };
 
-struct regression
-{
-   double p_val;
-   double beta;
-};
-
 // Function headers
 //    seerCommon.cpp
 cmdOptions verifyCommandLine(boost::program_options::variables_map& vm, const std::vector<Sample>& samples);
@@ -86,6 +81,8 @@ arma::mat vecToMat(const std::vector<std::string>& in_col);
 void normaliseMatCols(arma::mat& matrix_in);
 
 int continuousPhenotype (const std::vector<Sample>& sample_list);
+
+arma::mat inv_covar(arma::mat& A);
 
 // seerErr headers
 void badCommand(const std::string& command, const std::string& value);

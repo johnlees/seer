@@ -8,20 +8,20 @@
 #include "kmer.hpp"
 
 // Initialisation
-Kmer::Kmer(std::string sequence, std::vector<std::string> occurrences, double pvalue, double beta, double _maf)
-   :word(sequence), occurrences(occurrences), x_set(0), pvalue(pvalue), chi_pvalue(kmer_chi_pvalue_default), b(beta), maf(_maf)
+Kmer::Kmer(std::string sequence, std::vector<std::string> occurrences, double pvalue, double beta, double _se, double _maf)
+   :word(sequence), occurrences(occurrences), x_set(0), pvalue(pvalue), chi_pvalue(kmer_chi_pvalue_default), b(beta), se(_se), maf(_maf), comment(kmer_comment_default)
 {
 }
 
 // Initialise without calculated information
 Kmer::Kmer(std::string sequence, std::vector<std::string> occurrences)
-   :word(sequence), occurrences(occurrences), x_set(0), pvalue(kmer_pvalue_default), chi_pvalue(kmer_chi_pvalue_default), b(kmer_beta_default), maf(kmer_maf_default)
+   :word(sequence), occurrences(occurrences), x_set(0), pvalue(kmer_pvalue_default), chi_pvalue(kmer_chi_pvalue_default), b(kmer_beta_default), se(kmer_se_default), maf(kmer_maf_default), comment(kmer_comment_default)
 {
 }
 
 // Initialise with default info only
 Kmer::Kmer()
-   :word(kmer_seq_default), occurrences(kmer_occ_default), x_set(0), pvalue(kmer_pvalue_default), chi_pvalue(kmer_chi_pvalue_default), b(kmer_beta_default), maf(kmer_maf_default)
+   :word(kmer_seq_default), occurrences(kmer_occ_default), x_set(0), pvalue(kmer_pvalue_default), chi_pvalue(kmer_chi_pvalue_default), b(kmer_beta_default), se(kmer_se_default), maf(kmer_maf_default), comment(kmer_comment_default)
 {
 }
 
@@ -29,7 +29,8 @@ Kmer::Kmer()
 std::ostream& operator<<(std::ostream &os, const Kmer& k)
 {
    return os << std::fixed << std::setprecision(3) << k.sequence() << "\t" << k.get_maf()
-      << "\t" << std::scientific << k.chi_p_val() << "\t" << k.p_val() << "\t" << k.beta();
+      << "\t" << std::scientific << k.chi_p_val() << "\t" << k.p_val() << "\t" << k.beta()
+      << "\t" << k.get_se() << "\t" << k.comments();
 }
 
 // Input
@@ -116,6 +117,19 @@ void Kmer::add_x(const std::unordered_map<std::string,int>& sample_map, const in
    // Set object values
    x_set = 1;
    maf = (double)num_occurrences()/num_samples;
+}
+
+// Add a new comment in
+void add_comment(const std::string& new_comment)
+{
+   if (comment == kmer_comment_default)
+   {
+      comment = new_comment;
+   }
+   else
+   {
+      comment += "," + new_comment;
+   }
 }
 
 int Kmer::num_occurrences() const

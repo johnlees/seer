@@ -73,19 +73,6 @@ int main (int argc, char *argv[])
       }
    }
 
-   unsigned int nr_opt;
-   if (vm.count("optimiser"))
-   {
-      if (vm["optimiser"].as<std::string>() == "newton-raphson")
-      {
-         nr_opt = 1;
-      }
-      else
-      {
-         nr_opt = 0;
-      }
-   }
-
    // Disambiguate overloaded logistic functions by the type of parameter they
    // take
    void (*mdsLogitFunc)(Kmer&, const arma::vec&, const unsigned int nr, const arma::mat&) = &logisticTest;
@@ -100,6 +87,9 @@ int main (int argc, char *argv[])
    // Open the dsm kmer ifstream, and read through the whole thing
    igzstream kmer_file;
    openDsmFile(kmer_file, parameters.kmers);
+
+   // Write a header
+   std::cout << "sequence\tmaf\tunadj_p_val\tp_val\tbeta\tse\tcomments" << std::endl;
 
    while (kmer_file)
    {
