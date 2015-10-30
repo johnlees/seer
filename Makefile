@@ -11,7 +11,6 @@ clean:
 
 install: all
 	cd src && $(MAKE) install
-	cd test && $(MAKE) install
 
 test: all
 	cd test && $(MAKE) test
