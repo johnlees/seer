@@ -89,7 +89,12 @@ int main (int argc, char *argv[])
    openDsmFile(kmer_file, parameters.kmers);
 
    // Write a header
-   std::cout << "sequence\tmaf\tunadj_p_val\tp_val\tbeta\tse\tcomments" << std::endl;
+   std::cout << "sequence\tmaf\tunadj_p_val\tp_val\tbeta\tse\tcomments";
+   if (parameters.print_samples)
+   {
+      std::cout << "samples_present";
+   }
+   std::cout << std::endl;
 
    while (kmer_file)
    {
@@ -162,15 +167,15 @@ int main (int argc, char *argv[])
          if (kmer_lines[i].p_val() < parameters.log_cutoff)
          {
             // Caclculate chisq value if not already done so in filtering
-            if (kmer_lines[i].chi_p_val() == kmer_chi_pvalue_default)
+            if (kmer_lines[i].unadj() == kmer_chi_pvalue_default)
             {
                if (continuous_phenotype)
                {
-                  kmer_lines[i].chi_p_val(welchTwoSamplet(kmer_lines[i].get_x(), y));
+                  kmer_lines[i].unadj_p_val(welchTwoSamplet(kmer_lines[i].get_x(), y));
                }
                else
                {
-                  kmer_lines[i].chi_p_val(chiTest(kmer_lines[i].get_x(), y));
+                  kmer_lines[i].unadj_p_val(chiTest(kmer_lines[i].get_x(), y));
                }
             }
 

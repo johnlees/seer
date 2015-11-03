@@ -18,7 +18,7 @@ class Significant_kmer
    public:
       // Initialisation
       Significant_kmer();
-      Significant_kmer(const std::string& word, const std::vector<std::string>& samples, const double maf, const double unadj_p, const double adj_p, const double beta);
+      Significant_kmer(const std::string& word, const std::vector<std::string>& samples, const double maf, const double unadj_p, const double adj_p, const double beta, const double se, const std::string& comments);
 
       // nonmodifying operations
       std::vector<std::string> samples_found() const { return _samples; }
@@ -27,8 +27,18 @@ class Significant_kmer
       double unadj() const { return _unadj_p; }
       double p_val() const { return _adj_p; }
       double beta() const { return _beta; }
+      double se() const { return _se; }
+      std::string comments() const { return _comment; }
 
-   private:
+      // Modifying operations
+      void p_val(const double pvalue) { _adj_p = pvalue; }
+      void unadj_p_val(const double chi_pvalue) { _unadj_p = chi_pvalue; }
+      void beta(const double b) { _beta = b; }
+      void standard_error(const double se) { _se = se; }
+      void set_maf(const double maf) { _maf = maf; }
+
+
+   protected:
       std::string _word;
       std::vector<std::string> _samples;
 
@@ -36,6 +46,8 @@ class Significant_kmer
       double _unadj_p;
       double _adj_p;
       double _beta;
+      double _se;
+      std::string _comment;
 };
 
 class sortSigKmer

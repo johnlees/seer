@@ -30,7 +30,7 @@ FILTER_STATIC_LDLIBS=-$(COMMON_LDLIBS) -Wl,-Bstatic -lboost_program_options -Wl,
 PROGRAMS=seer kmds map_back combineKmers filter_seer
 STATIC_PROGRAMS=seer_static kmds_static map_back_static combineKmers_static filter_seer_static
 
-CLASSES=sample.o kmer.o covar.o
+CLASSES=sample.o significant_kmer.o kmer.o covar.o
 COMMON_OBJECTS=$(CLASSES) seerCommon.o seerErr.o seerFilter.o seerIO.o seerChiFilter.o
 SEER_OBJECTS=$(COMMON_OBJECTS) seerMain.o seerCmdLine.o seerContinuousAssoc.o seerBinaryAssoc.o logitFunction.o
 KMDS_OBJECTS=$(COMMON_OBJECTS) kmdsMain.o kmdsStruct.o kmdsCmdLine.o
@@ -80,5 +80,5 @@ filter_seer_static: $(FILTER_OBJECTS)
 	$(LINK.cpp) $^ $(FILTER_STATIC_LDLIBS) -o $@
 
 
-.PHONY: all test clean install
+.PHONY: all static test clean install
 

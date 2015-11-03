@@ -8,29 +8,29 @@
 #include "kmer.hpp"
 
 // Initialisation
-Kmer::Kmer(std::string sequence, std::vector<std::string> occurrences, double pvalue, double beta, double _se, double _maf)
-   :word(sequence), occurrences(occurrences), x_set(0), pvalue(pvalue), chi_pvalue(kmer_chi_pvalue_default), b(beta), se(_se), maf(_maf), comment(kmer_comment_default)
+Kmer::Kmer(const std::string& sequence, const std::vector<std::string>& occurrences, const double pvalue, const double beta, const double se, const double maf)
+   : Significant_kmer(sequence, occurrences, maf, kmer_chi_pvalue_default, pvalue, beta, se, kmer_comment_default), _x_set(0)
 {
 }
 
 // Initialise without calculated information
-Kmer::Kmer(std::string sequence, std::vector<std::string> occurrences)
-   :word(sequence), occurrences(occurrences), x_set(0), pvalue(kmer_pvalue_default), chi_pvalue(kmer_chi_pvalue_default), b(kmer_beta_default), se(kmer_se_default), maf(kmer_maf_default), comment(kmer_comment_default)
+Kmer::Kmer(const std::string& sequence, const std::vector<std::string>& occurrences)
+   : Significant_kmer(sequence, occurrences, kmer_maf_default, kmer_chi_pvalue_default, kmer_pvalue_default, kmer_beta_default, kmer_se_default, kmer_comment_default), _x_set(0)
 {
 }
 
 // Initialise with default info only
 Kmer::Kmer()
-   :word(kmer_seq_default), occurrences(kmer_occ_default), x_set(0), pvalue(kmer_pvalue_default), chi_pvalue(kmer_chi_pvalue_default), b(kmer_beta_default), se(kmer_se_default), maf(kmer_maf_default), comment(kmer_comment_default)
+    : Significant_kmer(kmer_seq_default, kmer_occ_default, kmer_maf_default, kmer_chi_pvalue_default, kmer_pvalue_default, kmer_beta_default, kmer_se_default, kmer_comment_default), _x_set(0)
 {
 }
 
 // Output
 std::ostream& operator<<(std::ostream &os, const Kmer& k)
 {
-   return os << std::fixed << std::setprecision(3) << k.sequence() << "\t" << k.get_maf()
-      << "\t" << std::scientific << k.chi_p_val() << "\t" << k.p_val() << "\t" << k.beta()
-      << "\t" << k.get_se() << "\t" << k.comments();
+   return os << std::fixed << std::setprecision(3) << k.sequence() << "\t" << k.maf()
+      << "\t" << std::scientific << k.unadj() << "\t" << k.p_val() << "\t" << k.beta()
+      << "\t" << k.se() << "\t" << k.comments();
 }
 
 // Input
@@ -102,46 +102,46 @@ std::istream& operator>>(std::istream &is, Kmer& k)
 // Set the x and maf of the kmer
 void Kmer::add_x(const std::unordered_map<std::string,int>& sample_map, const int num_samples)
 {
-   x.zeros(num_samples);
+   _x.zeros(num_samples);
 
-   for (auto it = occurrences.begin(); it < occurrences.end(); ++it)
+   for (auto it = _samples.begin(); it < _samples.end(); ++it)
    {
       auto sample_index_it = sample_map.find(*it);
 
       if (sample_index_it != sample_map.end())
       {
-         x[sample_index_it->second] = 1;
+         _x[sample_index_it->second] = 1;
       }
    }
 
    // Set object values
-   x_set = 1;
-   maf = (double)num_occurrences()/num_samples;
+   _x_set = 1;
+   _maf = (double)num_occurrences()/num_samples;
 }
 
 // Add a new comment in
 void Kmer::add_comment(const std::string& new_comment)
 {
-   if (comment == kmer_comment_default)
+   if (_comment == kmer_comment_default)
    {
-      comment = new_comment;
+      _comment = new_comment;
    }
    else
    {
-      comment += "," + new_comment;
+      _comment += "," + new_comment;
    }
 }
 
 int Kmer::num_occurrences() const
 {
    int total_occurrences;
-   if (x_set)
+   if (_x_set)
    {
-      total_occurrences = (int) accu(x);
+      total_occurrences = (int) accu(_x);
    }
    else
    {
-      total_occurrences = occurrences.size();
+      total_occurrences = _samples.size();
    }
 
    return total_occurrences;
