@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
 #
-# PANPIPES.py
-# Pangwas ANalysis PIPEline Script
-#
+# This is an example of a wrapper script for the whole seer analysis pipeline,
+# based on having a cluster with LSF
 #
 
 # imports
@@ -14,7 +13,7 @@ import argparse
 import subprocess
 
 # globals
-subsampled_list = "pangloss_tmp_files.txt"
+subsampled_list = "kmds_tmp_files.txt"
 job_num = re.compile('^Job <(\d+)>')
 
 # subroutines
@@ -36,13 +35,13 @@ def check_done(jobs):
 parser = argparse.ArgumentParser()
 parser.add_argument("infile", help="A file containing a list of dsm output files")
 parser.add_argument("pheno", help=".pheno file containing metadata")
-parser.add_argument("-o", "--out_prefix", help="Prefix for output files",default="pangwas")
+parser.add_argument("-o", "--out_prefix", help="Prefix for output files",default="seer")
 parser.add_argument("-t", "--threads", help="Threads to use",type=int,default=4)
 parser.add_argument("--LSF", help="Submit over LSF",action="store_true",default=False)
 parser.add_argument("--pcs", help="Number of principal coordinates to use in population structure",type=int,default=3)
 parser.add_argument("--subsample", help="Proportion of total kmers to use in mds calculation",type=float,default=0.001)
 parser.add_argument("--maf", help="Minimum minor allele frequency",type=float,default=0.01)
-parser.add_argument("--chi2",help="Chi^2 filter cutoff",type=float,default=10e-5)
+parser.add_argument("--chisq",help="Chi^2 filter cutoff",type=float,default=10e-5)
 parser.add_argument("--pval", help="pvalue cutoff",type=float,default=10e-8)
 parser.add_argument("--assemble", help="assemble significant kmers, and perform association",action="store_true",default=False)
 parser.add_argument("--reference", help="map kmers back to this reference file")
@@ -58,7 +57,7 @@ with open(args.infile,'r') as f:
 
 dsm_files = [x.strip('\n') for x in dsm_files]
 
-# Run pangloss --no_mds on each file in parallel
+# Run kmds --no_mds on each file in parallel
 # Collect output
 print("Filtering " + str(len(dsm_files)) + " files\n")
 i = 0
@@ -70,25 +69,25 @@ for dsm in dsm_files:
 
     length = args.subsample * int(subprocess.check_output("gzip -d -c " + dsm + " | wc -l", shell=True))
     try:
-        pangloss_command = ""
+        kmds_command = ""
         if args.LSF:
-            pangloss_command = "bsub -o pangloss.step1.%J." + str(i) + ".o -e pangloss.step1.%J." + str(i) + ".e "
+            kmds_command = "bsub -o kmds.step1.%J." + str(i) + ".o -e kmds.step1.%J." + str(i) + ".e "
 
-        pangloss_command += "pangloss -k " + str(dsm) + " -p " + str(args.pheno) + " -o pangloss.step1." + str(i) + " --no_mds --maf " + str(args.maf) + " --chi2 " + str(args.chi2) + " --size " + str(length)
+        kmds_command += "kmds -k " + str(dsm) + " -p " + str(args.pheno) + " -o kmds.step1." + str(i) + " --no_mds --maf " + str(args.maf) + " --chisq " + str(args.chi2) + " --size " + str(length)
 
-        print(pangloss_command)
+        print(kmds_command)
 
         if args.LSF:
-            job_return = subprocess.check_output(pangloss_command, shell=True)
+            job_return = subprocess.check_output(kmds_command, shell=True)
             m = job_num.match(job_return)
 
             jobs.append(m.group())
         else:
-            retcode = subprocess.call(pangloss_command, shell=True)
+            retcode = subprocess.call(kmds_command, shell=True)
             if retcode < 0:
-                print("pangloss step 1 file " + str(i) + " failed with ", -retcode, file=sys.stderr)
+                print("kmds step 1 file " + str(i) + " failed with ", -retcode, file=sys.stderr)
 
-        subsampled_output.append("pangloss.step1." + str(i))
+        subsampled_output.append("kmds.step1." + str(i))
     except OSError as e:
         print("Execution failed:", e, file=sys.stderr)
 
@@ -104,26 +103,26 @@ for subsample in subsampled_output:
 
 write_list.close()
 
-# Run pangloss --mds_concat on output
+# Run kmds --mds_concat on output
 print("Calculating MDS components\n")
 try:
-    pangloss_command = ""
+    kmds_command = ""
     if args.LSF:
-        pangloss_command = "bsub -o pangloss.step2.%J.o -e pangloss.step2.%J..e -n" + str(args.threads) + " -R \"span[hosts=1]\" -R \"select[mem>4000] rusage[mem=4000]\" -M4000 "
+        kmds_command = "bsub -o kmds.step2.%J.o -e kmds.step2.%J..e -n" + str(args.threads) + " -R \"span[hosts=1]\" -R \"select[mem>4000] rusage[mem=4000]\" -M4000 "
 
-    pangloss_command += "pangloss --mds_concat " + str(subsampled_list) + " -o all_structure --threads " + str(args.threads) + " --pc " + str(args.pcs)
+    kmds_command += "kmds --mds_concat " + str(subsampled_list) + " -o all_structure --threads " + str(args.threads) + " --pc " + str(args.pcs)
 
-    print(pangloss_command)
+    print(kmds_command)
 
     if args.LSF:
-        job_return = subprocess.check_output(pangloss_command, shell=True)
+        job_return = subprocess.check_output(kmds_command, shell=True)
         m = job_num.match(job_return)
 
         jobs.append(m.group())
     else:
-        retcode = subprocess.call(pangloss_command, shell=True)
+        retcode = subprocess.call(kmds_command, shell=True)
         if retcode < 0:
-            print("pangloss step 2 file failed with ", -retcode, file=sys.stderr)
+            print("kmds step 2 file failed with ", -retcode, file=sys.stderr)
 except OSError as e:
     print("Execution failed:", e, file=sys.stderr)
 
@@ -132,33 +131,33 @@ if args.LSF:
         os.sleep(30)
     jobs = []
 
-# Run pangwas on each file in parallel
+# Run seer on each file in parallel
 print("Association on " + str(len(dsm_files)) + " files\n")
 i = 0
-pangwas_output = []
+seer_output = []
 for dsm in dsm_files:
     i += 1
 
     try:
-        pangwas_command = ""
+        seer_command = ""
         if args.LSF:
-            pangwas_command = "bsub -o pangloss.step1.%J." + str(i) + ".o -e pangloss.step1.%J." + str(i) + ".e -n" + str(args.threads) + " -R \"span[hosts=1]\""
+            seer_command = "bsub -o kmds.step1.%J." + str(i) + ".o -e kmds.step1.%J." + str(i) + ".e -n" + str(args.threads) + " -R \"span[hosts=1]\""
 
-        pangwas_command += "'pangwas -k " + str(dsm) + " -p " + str(args.pheno) + " --no_filtering --pval " + str(args.pval) + " --struct all_structure.dsm --threads " + str(args.threads) + " --print_samples > pangwas." + str(i) + ".result'"
+        seer_command += "'seer -k " + str(dsm) + " -p " + str(args.pheno) + " --no_filtering --pval " + str(args.pval) + " --struct all_structure.dsm --threads " + str(args.threads) + " --print_samples > seer." + str(i) + ".result'"
 
-        print(pangwas_command)
+        print(seer_command)
 
         if args.LSF:
-            job_return = subprocess.check_output(pangwas_command, shell=True)
+            job_return = subprocess.check_output(seer_command, shell=True)
             m = job_num.match(job_return)
 
             jobs.append(m.group())
         else:
-            retcode = subprocess.call(pangwas_command, shell=True)
+            retcode = subprocess.call(seer_command, shell=True)
             if retcode < 0:
-                print("pangwas file " + str(i) + " failed with ", -retcode, file=sys.stderr)
+                print("seer file " + str(i) + " failed with ", -retcode, file=sys.stderr)
 
-        pangwas_output.append("pangloss." + str(i))
+        seer_output.append("kmds." + str(i))
     except OSError as e:
         print("Execution failed:", e, file=sys.stderr)
 
@@ -168,12 +167,12 @@ if args.LSF:
     jobs = []
 
 # TODO post-processing:
-subprocess.check_call("cat pangwas.*.result > pangwas.result", shell=True)
+subprocess.check_call("cat seer.*.result > seer.result", shell=True)
 for i in range(1, len(dsm_files)):
-    subprocess.check_call("rm pangwas." + str(i) + ".result", shell=True)
+    subprocess.check_call("rm seer." + str(i) + ".result", shell=True)
 
 # map back to references
-subprocess.call("map_back -k pangwas.result -r " + args.drafts + " > kmer_draft_locations.txt")
+subprocess.call("map_back -k seer.result -r " + args.drafts + " > kmer_draft_locations.txt")
 
 # assembly of significant kmers
 if (args.assemble):
@@ -182,5 +181,5 @@ if (args.assemble):
 # use blat by default
 # fall back to blast
 
-print("All pans piped\nAssocation results written to pangwas.result")
+print("All pans piped\nAssocation results written to seer.result")
 
