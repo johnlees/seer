@@ -31,8 +31,7 @@ void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
    starting_point(0) = log(mean(y_train)/(1 - mean(y_train)));
    for (size_t i = 1; i < x_design.n_cols; ++i)
    {
-      // Seems to need to be >0 to get bfgs to converge
-      starting_point(i) = 1;
+      starting_point(i) = bfgs_start_beta;
    }
 
    try

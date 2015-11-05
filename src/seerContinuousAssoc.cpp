@@ -37,7 +37,7 @@ void doLinear(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
       starting_point(0) = mean(y_train);
       for (size_t i = 1; i < x_design.n_cols; ++i)
       {
-         starting_point(i) = 1;
+         starting_point(i) = bfgs_start_beta;
       }
 
       // Use BFGS optimiser in dlib to minimise OLS difference by chaging the
