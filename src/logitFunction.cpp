@@ -5,19 +5,14 @@
  * Functor, based on mlpack: www.mlpack.org
  */
 
-#include "logitFunction.hpp"
-
-LogitFunction::LogitFunction(const arma::mat& _predictors, const arma::vec& _responses, const double _lambda)
-   :predictors(_predictors), responses(_responses), lambda(_lambda)
-{
-}
+#include "linkFunction.hpp"
 
 /**
  * Evaluate the logistic regression objective function given the estimated
  * parameters.
  */
 double LogitLikelihood::operator()(const column_vector& parameters_in)
-    const
+   const
 {
    // Convert from dlib column matrix to armadillo column matrix
    arma::vec parameters = dlib_to_arma(parameters_in);

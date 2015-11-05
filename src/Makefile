@@ -32,7 +32,7 @@ STATIC_PROGRAMS=seer_static kmds_static map_back_static combineKmers_static filt
 
 CLASSES=sample.o significant_kmer.o kmer.o covar.o
 COMMON_OBJECTS=$(CLASSES) seerCommon.o seerErr.o seerFilter.o seerIO.o seerChiFilter.o
-SEER_OBJECTS=$(COMMON_OBJECTS) seerMain.o seerCmdLine.o seerContinuousAssoc.o seerBinaryAssoc.o logitFunction.o
+SEER_OBJECTS=$(COMMON_OBJECTS) seerMain.o seerCmdLine.o seerContinuousAssoc.o seerBinaryAssoc.o logitFunction.o linearFunction.o
 KMDS_OBJECTS=$(COMMON_OBJECTS) kmdsMain.o kmdsStruct.o kmdsCmdLine.o
 MAP_OBJECTS=fasta.o significant_kmer.o mapMain.o mapCmdLine.o
 COMBINE_OBJECTS=combineInit.o combineCmdLine.o combineKmers.o

@@ -7,7 +7,7 @@
 
 // Common headers
 //#include "seercommon.hpp"
-#include "logitFunction.hpp" // This includes seercommon.hpp
+#include "linkFunction.hpp" // This includes seercommon.hpp
 
 // dlib headers
 #include <dlib/optimization.h>

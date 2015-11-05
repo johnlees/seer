@@ -93,7 +93,7 @@ arma::mat readMDS(const std::string& file_name)
 
    if (fileStat(file_name))
    {
-      MDS.load(file_name);
+      MDS.load(file_name, arma::hdf5_binary);
    }
    else
    {

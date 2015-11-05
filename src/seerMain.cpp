@@ -40,6 +40,11 @@ int main (int argc, char *argv[])
    {
       mds = readMDS(vm["struct"].as<std::string>());
       use_mds = 1;
+
+      if (mds.n_rows != samples.size())
+      {
+         throw std::runtime_error("Number of rows in MDS matrix does not match number of samples");
+      }
    }
 
    // Set up covariates

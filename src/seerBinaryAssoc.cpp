@@ -46,8 +46,7 @@ void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
 
       // Extract beta
       arma::vec b_vector = dlib_to_arma(starting_point);
-      double b_1 = b_vector(1);
-      k.beta(b_1);
+      k.beta(b_vector(1));
 
       // Extract p-value
       //
@@ -60,7 +59,7 @@ void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
       double se = pow(varCovarMat(x_design, b_vector)(1,1), 0.5);
       k.standard_error(se);
 
-      double W = std::abs(b_1) / se; // null hypothesis b_1 = 0
+      double W = std::abs(b_vector(1)) / se; // null hypothesis b_1 = 0
       k.p_val(normalPval(W));
 
 #ifdef SEER_DEBUG
