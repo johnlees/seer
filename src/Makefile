@@ -65,19 +65,19 @@ filter_seer: $(FILTER_OBJECTS)
 	$(LINK.cpp) $^ $(FILTER_LDLIBS) -o $@
 
 seer_static: $(SEER_OBJECTS)
-	$(LINK.cpp) $^ $(SEER_STATIC_LDLIBS) -o $@
+	$(LINK.cpp) $^ $(SEER_STATIC_LDLIBS) -o seer
 
 kmds_static: $(KMDS_OBJECTS)
-	$(LINK.cpp) $^ $(SEER_STATIC_LDLIBS) -o $@
+	$(LINK.cpp) $^ $(SEER_STATIC_LDLIBS) -o kmds
 
 map_back_static: $(MAP_OBJECTS)
-	$(LINK.cpp) $^ $(MAP_STATIC_LDLIBS) -o $@
+	$(LINK.cpp) $^ $(MAP_STATIC_LDLIBS) -o map_back
 
 combineKmers_static: $(COMBINE_OBJECTS)
-	$(LINK.cpp) $^ $(COMBINE_STATIC_LDLIBS) -o $@
+	$(LINK.cpp) $^ $(COMBINE_STATIC_LDLIBS) -o combineKmers
 
 filter_seer_static: $(FILTER_OBJECTS)
-	$(LINK.cpp) $^ $(FILTER_STATIC_LDLIBS) -o $@
+	$(LINK.cpp) $^ $(FILTER_STATIC_LDLIBS) -o filter_seer
 
 
 .PHONY: all static test clean install

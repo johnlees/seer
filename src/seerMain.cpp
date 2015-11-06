@@ -97,7 +97,7 @@ int main (int argc, char *argv[])
    std::cout << "sequence\tmaf\tunadj_p_val\tp_val\tbeta\tse\tcomments";
    if (parameters.print_samples)
    {
-      std::cout << "samples_present";
+      std::cout << "\tsamples_present";
    }
    std::cout << std::endl;
 
