@@ -50,6 +50,10 @@ int main (int argc, char *argv[])
       std::mutex out_mtx;
       std::list<std::future<void>> threads;
 
+      // Read the header
+      std::string header;
+      std::getline(kmer_file, header);
+
       Significant_kmer sig_kmer;
       while(kmer_file)
       {
