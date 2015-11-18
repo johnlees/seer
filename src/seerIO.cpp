@@ -29,18 +29,22 @@ void readPheno(const std::string& filename, std::vector<Sample>& samples, std::u
       throw std::runtime_error("Could not open pheno file " + filename + "\n");
    }
 
+   // Read in
    Sample s;
-   int sample_index = 0;
    while (ist >> s)
    {
       samples.push_back(s);
 
-      sample_map[s.iid()] = sample_index;
-      sample_index++;
    }
 
    // Always keep samples sorted, for consistency between programs
    std::sort(samples.begin(), samples.end(), Sample::compareSamples);
+
+   // Map of sample names to index in vector
+   for (unsigned int sample_index = 0; sample_index < samples.size(); ++sample_index)
+   {
+      sample_map[samples[sample_index].iid()] = sample_index;
+   }
 }
 
 // Open dsm files, which are possibly zipped
