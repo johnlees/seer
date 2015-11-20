@@ -20,7 +20,7 @@ const unsigned int max_nr_iterations = 1000;
 
 // Starting value for beta vectors (except intercept)
 // Should be >0. This value is based on RMS in example study
-const double bfgs_start_beta = 0.12;
+const double bfgs_start_beta = 1;
 
 // seerCmdLine headers
 int parseCommandLine (int argc, char *argv[], boost::program_options::variables_map& vm);

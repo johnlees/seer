@@ -56,7 +56,7 @@ std::ostream& operator<<(std::ostream &os, const Significant_kmer& k)
    os << k.sequence() << "\t"
       << std::fixed << std::setprecision(3) << k.maf() << "\t"
       << std::scientific << k.unadj() << "\t" << k.p_val() << "\t" << k.beta() << "\t" << k.se()
-      << k.comments();
+      << "\t" << k.comments() << "\t";
 
    std::vector<std::string> samples_found = k.samples_found();
    std::copy(samples_found.begin(), samples_found.end() - 1, std::ostream_iterator<std::string>(os, "\t"));
