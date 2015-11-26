@@ -197,7 +197,7 @@ int main (int argc, char *argv[])
                }
                std::cout << samples_found.back();
             }
-            std::cout << "\n";
+            std::cout << std::endl;
 
          }
       }
