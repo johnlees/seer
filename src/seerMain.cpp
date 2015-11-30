@@ -176,11 +176,11 @@ int main (int argc, char *argv[])
             {
                if (continuous_phenotype)
                {
-                  kmer_lines[i].unadj_p_val(welchTwoSamplet(kmer_lines[i].get_x(), y));
+                  kmer_lines[i].unadj_p_val(welchTwoSamplet(kmer_lines[i], y));
                }
                else
                {
-                  kmer_lines[i].unadj_p_val(chiTest(kmer_lines[i].get_x(), y));
+                  kmer_lines[i].unadj_p_val(chiTest(kmer_lines[i], y));
                }
             }
 

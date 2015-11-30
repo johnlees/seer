@@ -10,8 +10,10 @@
 const double normalArea = pow(2*M_PI, -0.5);
 
 // Basic chi^2 test, using contingency table
-double chiTest(const arma::vec& x, const arma::vec& y)
+double chiTest(Kmer& k, const arma::vec& y)
 {
+   arma::mat x = k.get_x();
+
    double chisq = 0;
 
    // Contigency table
@@ -54,6 +56,11 @@ double chiTest(const arma::vec& x, const arma::vec& y)
       throw std::logic_error("Empty table for chisq test\n");
    }
 
+   if (a == 0 || b == 0 || c == 0 || d == 0)
+   {
+      k.add_comment("zero-entries");
+   }
+
    // Without Yates' continuity correction
    chisq = N * pow(det(table), 2);
    for (int i = 0; i < 2; ++i)
@@ -71,8 +78,10 @@ double chiTest(const arma::vec& x, const arma::vec& y)
 }
 
 // Welch two sample t-test, for continuous phenotypes
-double welchTwoSamplet(const arma::vec& x, const arma::vec& y)
+double welchTwoSamplet(const Kmer& k, const arma::vec& y)
 {
+   arma::mat x = k.get_x();
+
    // Subset into present and absent groups
    arma::vec group1 = y.elem(find(x==0));
    arma::vec group2 = y.elem(find(x==1));

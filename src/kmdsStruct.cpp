@@ -41,7 +41,10 @@ arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions, con
    arma::vec eigval;
    arma::mat eigvec;
 
-   arma::eig_sym(eigval, eigvec, B);
+   if (!arma::eig_sym(eigval, eigvec, B))
+   {
+      throw std::runtime_error("Could not calculate eignvalues of B matrix in metric MDS");
+   }
 
    // Step 5)
    // Eigenvalues returned are sorted ascending, so want to reverse order

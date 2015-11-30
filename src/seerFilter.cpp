@@ -20,7 +20,7 @@ int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Samp
 
       try  // Some chi^2 tests may diverge - proceed anyway for now
       {
-         pass = passStatsFilters(k.get_x(), y, filterOptions.chi_cutoff, continuous_phenotype, filterOptions.positive);
+         pass = passStatsFilters(k, y, filterOptions.chi_cutoff, continuous_phenotype, filterOptions.positive);
       }
       catch (std::exception& e)
       {
@@ -53,13 +53,14 @@ int passBasicFilters(const Kmer& k, const int max_length, const int min_words, c
    return passed;
 }
 
-int passStatsFilters(const arma::vec& x, const arma::vec& y, const double chi_cutoff, const int continuous_phenotype, const int positive_only)
+int passStatsFilters(Kmer& k, const arma::vec& y, const double chi_cutoff, const int continuous_phenotype, const int positive_only)
 {
    int passed = 1;
 
    if (continuous_phenotype)
    {
-      if (welchTwoSamplet(x, y) > chi_cutoff)
+      k.unadj_p_val(welchTwoSamplet(k, y));
+      if (k.unadj() > chi_cutoff)
       {
          passed = 0;
       }
@@ -68,15 +69,25 @@ int passStatsFilters(const arma::vec& x, const arma::vec& y, const double chi_cu
    {
       // Test positive effects only
       // i.e. having kmer associates with having phenotype
-      if (positive_only && dot(y - x, y - x) <= 0.5*y.n_rows)
+      if (positive_only)
       {
-         passed = 0;
+         arma::mat x = k.get_x();
+         if (dot(y - x, y - x) <= 0.5*y.n_rows)
+         {
+            passed = 0;
+         }
       }
-      else if (chiTest(x, y) > chi_cutoff)
+
+      if (passed)
       {
-         passed = 0;
+         k.unadj_p_val(chiTest(k, y));
+         if (k.unadj() > chi_cutoff)
+         {
+            passed = 0;
+         }
       }
    }
 
    return passed;
 }
+

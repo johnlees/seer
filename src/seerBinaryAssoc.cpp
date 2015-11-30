@@ -56,21 +56,44 @@ void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
       // than ^2 as responses are 0 or 1
       //
       double se = pow(varCovarMat(x_design, b_vector)(1,1), 0.5);
-      k.standard_error(se);
 
-      double W = std::abs(b_vector(1)) / se; // null hypothesis b_1 = 0
-      k.p_val(normalPval(W));
+      // Zeros will result in bad regression with large SE - firth regression helps
+      if (se > se_limit)
+      {
+         throw std::runtime_error("se>limit");
+      }
+      else
+      {
+         k.standard_error(se);
+
+         double W = std::abs(b_vector(1)) / se; // null hypothesis b_1 = 0
+         k.p_val(normalPval(W));
 
 #ifdef SEER_DEBUG
-      std::cerr << "Wald statistic: " << W << "\n";
-      std::cerr << "p-value: " << k.p_val() << "\n";
+         std::cerr << "Wald statistic: " << W << "\n";
+         std::cerr << "p-value: " << k.p_val() << "\n";
 #endif
+      }
    }
    // Sometimes won't converge, use N-R instead
    catch (std::exception& e)
    {
-      k.add_comment("bfgs-fail");
-      newtonRaphson(k, y_train, x_design);
+#ifdef SEER_DEBUG
+      std::cerr << "Caught error " << e.what() << std::endl;
+#endif
+
+      // SE is greater than specified limit - run Firth regression
+      if (strcmp(e.what(), "se>limit") == 0)
+      {
+         k.add_comment("large-se");
+         newtonRaphson(k, y_train, x_design, 1);
+      }
+      // BFGS optimiser did not converge - use NR iterations w/o Firth first
+      else
+      {
+         k.add_comment("bfgs-fail");
+         newtonRaphson(k, y_train, x_design);
+      }
    }
 }
 
@@ -96,28 +119,32 @@ void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design,
       arma::vec b0 = parameter_iterations.back();
       arma::vec y_pred = predictLogitProbs(x_design, b0);
 
-      arma::vec b1 = b0;
-      var_covar_mat = inv_covar(x_design.t() * diagmat(y_pred % (arma::ones(y_pred.n_rows) - y_pred)) * x_design);
+      arma::mat U(x_design.n_cols, 1);
+      arma::mat W = repmat(y_pred % (arma::ones(y_pred.n_rows) - y_pred), 1, x_design.n_cols);
+
+      var_covar_mat = inv_covar(x_design.t() * (W % x_design));
+
       if (firth)
       {
          // Firth logistic regression
          // See: DOI: 10.1002/sim.1047
-         arma::mat W = diagmat(y_pred * (1 - y_pred));
          // Hat matrix
          // Note: W is diagonal so X.t() * W * X is still sympd
-         arma::mat H = sqrt(W) * x_design * inv_covar(x_design.t() * W * x_design) * x_design.t() * sqrt(W);
+         arma::mat H = (sqrt(W) % x_design) * var_covar_mat * (x_design.t() % sqrt(W).t());
 
          arma::vec correction(y_train.n_rows);
          correction.fill(0.5);
 
-         b1 += var_covar_mat * (y_train - y_pred + diagmat(H) % (correction - y_pred));
+         // Penalised score
+         U = x_design.t() * (y_train - y_pred + diagvec(H) % (correction - y_pred));
       }
       else
       {
-         b1 += var_covar_mat * x_design.t() * (y_train - y_pred);
+         U = x_design.t() * (y_train - y_pred);
       }
-      parameter_iterations.push_back(b1);
 
+      arma::vec b1 = b0 + var_covar_mat * U;
+      parameter_iterations.push_back(b1);
       if (std::abs(b1(1) - b0(1)) < convergence_limit)
       {
          break;
@@ -125,7 +152,7 @@ void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design,
    }
 
 #ifdef SEER_DEBUG
-   std::cerr << "Number of iterations: " << parameter_iterations.size() << "\n";
+   std::cerr << "Number of iterations: " << parameter_iterations.size() - 1 << "\n";
 #endif
    // If convergence not reached, try Firth logistic regression
    if (parameter_iterations.size() == max_nr_iterations)
@@ -146,6 +173,19 @@ void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design,
 
       double se = pow(var_covar_mat(1,1), 0.5);
       k.standard_error(se);
+
+      // Deal with large SEs
+      if (se > se_limit)
+      {
+         if (!firth)
+         {
+            newtonRaphson(k, y_train, x_design, 1);
+         }
+         else
+         {
+            k.add_comment("large-se");
+         }
+      }
 
       double W = std::abs(k.beta()) / se;
       k.p_val(normalPval(W));

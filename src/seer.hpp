@@ -17,6 +17,7 @@
 const std::string pval_default = "10e-8";
 const double convergence_limit = 10e-8;
 const unsigned int max_nr_iterations = 1000;
+const double se_limit = 3;
 
 // Starting value for beta vectors (except intercept)
 // Should be >0. This value is based on RMS in example study
