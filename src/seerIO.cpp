@@ -81,9 +81,34 @@ arma::vec constructVecY(const std::vector<Sample>& samples)
    return y;
 }
 
-void writeMDS(const std::string& file_name, const arma::mat& MDS)
+// Also saves sample information
+void writeMDS(const std::string& file_name, const std::vector<Sample>& sample_names, const arma::mat& MDS)
 {
-   MDS.save(file_name, arma::hdf5_binary);
+   if (MDS.n_rows == sample_names.size())
+   {
+      MDS.save(file_name, arma::hdf5_binary);
+
+      std::string sample_file_name = file_name + sample_suffix;
+      std::ofstream sample_names_file(sample_file_name.c_str());
+
+      // Write out the sample name order
+      if (!sample_names_file)
+      {
+         std::cerr << "Could not write used sample names to " << sample_file_name << std::endl;
+      }
+      else
+      {
+         for (auto sample_it = sample_names.begin(); sample_it != sample_names.end(); ++sample_it)
+         {
+            sample_names_file << sample_it->iid() << std::endl;
+         }
+      }
+   }
+   else
+   {
+      throw std::logic_error("When writing matrix to " + file_name + " the number samples in the .pheno file did not match the number of columns or rows");
+   }
+
 }
 
 void writeDistances(const std::string& file_name, const arma::mat& distances)
@@ -91,17 +116,74 @@ void writeDistances(const std::string& file_name, const arma::mat& distances)
    distances.save(file_name, arma::csv_ascii);
 }
 
-arma::mat readMDS(const std::string& file_name)
+arma::mat readHDF5(const std::string& file_name)
 {
-   arma::mat MDS;
+   arma::mat HDF5;
 
    if (fileStat(file_name))
    {
-      MDS.load(file_name, arma::hdf5_binary);
+      HDF5.load(file_name, arma::hdf5_binary);
    }
    else
    {
       throw std::runtime_error("Problem with loading MDS input file " + file_name);
+   }
+
+   return HDF5;
+}
+
+arma::mat readMDS(const std::string& file_name, const std::vector<Sample>& sample_names)
+{
+   arma::mat MDS = readHDF5(file_name);
+
+   // Check that the sample names match up
+   std::string sample_name_file = file_name + sample_suffix;
+   if (fileStat(sample_name_file))
+   {
+      std::ifstream samples_in(sample_name_file.c_str());
+      if (samples_in)
+      {
+         arma::uvec keep_indices(sample_names.size());
+         unsigned int sample_row = 0;
+         unsigned int file_row = 0;
+
+         while (samples_in)
+         {
+            std::string sample_name;
+            samples_in >> sample_name;
+
+            // Must be ordered, and lines in sample_names be a subset of what
+            // is in the file. Otherwise a non-compatible mds will be returned
+            // which will throw
+            if (sample_name == sample_names.at(sample_row).iid())
+            {
+               keep_indices(sample_row) = file_row;
+               if (++sample_row >= sample_names.size())
+               {
+                  break;
+               }
+            }
+            ++file_row;
+         }
+
+         // Only keep the rows where the pheno file has data
+         if (sample_row == sample_names.size())
+         {
+            MDS = MDS.rows(keep_indices);
+         }
+         else
+         {
+            throw std::runtime_error("Could not find all samples in input .pheno file in --struct mat. Was kmds run with all samples included?");
+         }
+      }
+      else
+      {
+         std::cerr << "WARNING: Could not open sample file " + sample_name_file + ". Ensure kmds and seer -p inputs were identical" << std::endl;
+      }
+   }
+   else
+   {
+      std::cerr << "WARNING: Could not find sample file " + sample_name_file + ". Ensure kmds and seer -p inputs were identical" << std::endl;
    }
 
    return MDS;
@@ -124,7 +206,7 @@ arma::mat readMDSList(const std::string& filename)
    int i = 0;
    while (ist >> matrix_file)
    {
-      combined_matrix = join_rows(combined_matrix, readMDS(matrix_file));
+      combined_matrix = join_rows(combined_matrix, readHDF5(matrix_file));
 
       std::cerr << "Joined matrix " << ++i << "\n";
    }

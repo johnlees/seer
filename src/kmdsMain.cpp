@@ -55,6 +55,22 @@ int main (int argc, char *argv[])
       return 1;
    }
 
+   // Open .pheno file, parse into vector of samples
+   std::vector<Sample> samples;
+   std::unordered_map<std::string,int> sample_map;
+
+   if (vm.count("pheno"))
+   {
+      readPheno(vm["pheno"].as<std::string>(), samples, sample_map);
+   }
+   else
+   {
+      throw std::runtime_error("--pheno option is compulsory");
+   }
+
+   arma::vec y = constructVecY(samples);
+   int continuous_phenotype = continuousPhenotype(samples);
+
    // Normal operation
    if (!vm.count("mds_concat"))
    {
@@ -64,13 +80,6 @@ int main (int argc, char *argv[])
          std::cerr << "Either -k and -p must be provided, or --mds_concat\n";
          return 1;
       }
-
-      // Open .pheno file, parse into vector of samples
-      std::vector<Sample> samples;
-      std::unordered_map<std::string,int> sample_map;
-      readPheno(vm["pheno"].as<std::string>(), samples, sample_map);
-      arma::vec y = constructVecY(samples);
-      int continuous_phenotype = continuousPhenotype(samples);
 
       cmdOptions parameters = verifyCommandLine(vm, samples);
 
@@ -183,7 +192,7 @@ int main (int argc, char *argv[])
       // Write output
       if (vm.count("no_mds"))
       {
-         writeMDS(dsm_file_name, subsampledMatrix);
+         writeMDS(dsm_file_name, samples, subsampledMatrix);
       }
       else
       {
@@ -191,11 +200,11 @@ int main (int argc, char *argv[])
          // Run metric MDS, then output to file
          if (parameters.write_distances)
          {
-            writeMDS(dsm_file_name, metricMDS(subsampledMatrix, parameters.pc, parameters.num_threads, distances_file_name));
+            writeMDS(dsm_file_name, samples, metricMDS(subsampledMatrix, parameters.pc, parameters.num_threads, distances_file_name));
          }
          else
          {
-            writeMDS(dsm_file_name, metricMDS(subsampledMatrix, parameters.pc, parameters.num_threads));
+            writeMDS(dsm_file_name, samples, metricMDS(subsampledMatrix, parameters.pc, parameters.num_threads));
          }
 
       }
@@ -243,11 +252,11 @@ int main (int argc, char *argv[])
          // Run metric MDS, then output to file
          if (mdsOptions.write_distances)
          {
-            writeMDS(dsm_file_name, metricMDS(readMDSList(matrix_input), mdsOptions.pc, mdsOptions.num_threads, distances_file_name));
+            writeMDS(dsm_file_name, samples, metricMDS(readMDSList(matrix_input), mdsOptions.pc, mdsOptions.num_threads, distances_file_name));
          }
          else
          {
-            writeMDS(dsm_file_name, metricMDS(readMDSList(matrix_input), mdsOptions.pc, mdsOptions.num_threads));
+            writeMDS(dsm_file_name, samples, metricMDS(readMDSList(matrix_input), mdsOptions.pc, mdsOptions.num_threads));
          }
       }
       else

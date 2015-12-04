@@ -29,7 +29,16 @@ int main (int argc, char *argv[])
    // Open .pheno file, parse into vector of samples
    std::vector<Sample> samples;
    std::unordered_map<std::string,int> sample_map;
-   readPheno(vm["pheno"].as<std::string>(), samples, sample_map);
+
+   if (vm.count("pheno"))
+   {
+      readPheno(vm["pheno"].as<std::string>(), samples, sample_map);
+   }
+   else
+   {
+      throw std::runtime_error("--pheno option is compulsory");
+   }
+
    arma::vec y = constructVecY(samples);
    int continuous_phenotype = continuousPhenotype(samples);
 
@@ -38,7 +47,7 @@ int main (int argc, char *argv[])
    int use_mds = 0;
    if (vm.count("struct"))
    {
-      mds = readMDS(vm["struct"].as<std::string>());
+      mds = readMDS(vm["struct"].as<std::string>(), samples);
       use_mds = 1;
 
       if (mds.n_rows != samples.size())

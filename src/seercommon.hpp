@@ -48,6 +48,8 @@ const std::string chisq_default = "10e-5";
 
 typedef dlib::matrix<double,0,1> column_vector;
 
+const std::string sample_suffix = ".samples";
+
 // Structs
 struct cmdOptions
 {
@@ -94,9 +96,11 @@ void openDsmFile(igzstream& dsm_file, const std::string& file_name);
 arma::vec constructVecY(const std::vector<Sample>& samples);
 arma::vec constructVecX(const Kmer& k, const std::vector<Sample>& samples);
 
-void writeMDS(const std::string& file_name, const arma::mat& MDS);
+arma::mat readHDF5(const std::string& file_name);
+
+void writeMDS(const std::string& file_name, const std::vector<Sample>& sample_names, const arma::mat& MDS);
 void writeDistances(const std::string& file_name, const arma::mat& distances);
-arma::mat readMDS(const std::string& file_name);
+arma::mat readMDS(const std::string& file_name, const std::vector<Sample>& sample_names);
 arma::mat readMDSList(const std::string& filename);
 
 arma::mat parseCovars(const std::string& file, const std::string& columns);
