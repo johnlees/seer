@@ -18,7 +18,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
    //Required options
    po::options_description required("Required options");
    required.add_options()
-    ("kmers,k", po::value<std::string>(), "dsm kmer output file")
+    ("kmers,k", po::value<std::string>(), "dsm kmer output file (not needed if using --mds_concat)")
     ("pheno,p", po::value<std::string>(), ".pheno metadata");
 
    po::options_description mds("MDS options");
