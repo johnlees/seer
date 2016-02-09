@@ -14,7 +14,7 @@ Reformats output for easier reading as tsv. Prints to stdout
 
    Required
    -k, --kmers      Filtered significant kmers, as output by seer + filter_seer
-   -p, --bonf       Phenotype file used by seer
+   -p, --pheno       Phenotype file used by seer
 
    Optional
    -h, --help       Displays this message
@@ -28,7 +28,7 @@ USAGE
 #* gets input parameters
 my ($kmer_file, $pheno, $help);
 GetOptions ("kmers|k=s"  => \$kmer_file,
-            "bonf|p=s" => \$pheno,
+            "pheno|p=s" => \$pheno,
             "help|h"     => \$help
 		   ) or die($usage_message);
 
@@ -66,7 +66,7 @@ else
       my ($sequence, $maf, $unadj, $adj, $beta, $se, $comment, @kmer_samples) = split("\t", $kmer_line);
       @kmer_samples = sort @kmer_samples;
 
-      print join("\t", $sequence, $maf, $unadj, $adj, $beta, $se, $comment);
+      print join("\t", $sequence, $maf, $unadj, $adj, $beta, $se, $comment) . "\t";
 
       my $next_sample = shift(@kmer_samples);
       foreach my $sample (@samples)
@@ -75,7 +75,10 @@ else
          if ($sample eq $next_sample)
          {
             print $sample;
-            $next_sample = shift(@kmer_samples);
+            if (scalar(@kmer_samples) != 0)
+            {
+               $next_sample = shift(@kmer_samples);
+            }
          }
       }
       print "\n";
