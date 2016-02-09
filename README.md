@@ -46,9 +46,11 @@ Download and unpack to a folder gzstream in the root of the repository. Change i
 
 Download and unpack. Change into directory and type
 
-    cmake .
+    cmake -DARMA_USE_HDF5=1 .
     make
     make install
+
+Enable hdf5 support by uncommenting '//#define ARMA_USE_HDF5' in the file *include/armadillo_bits/config.hpp* (i.e. change to '#define ARMA_USE_HDF5'). This include path may be in your home directory, or if installed globally in */usr/local*
 
 **boost**
 
@@ -85,6 +87,7 @@ if you wish to compile from source
     make check
     make install
     make check-install
+
 
 Usage, interpretation of results, and troubleshooting
 =============

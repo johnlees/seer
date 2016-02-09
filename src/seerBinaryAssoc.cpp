@@ -89,6 +89,7 @@ void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
          newtonRaphson(k, y_train, x_design, 1);
       }
       // BFGS optimiser did not converge - use NR iterations w/o Firth first
+      // Could also be matrix inversion failing
       else
       {
          k.add_comment("bfgs-fail");
@@ -103,6 +104,7 @@ void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design,
    // Also useful to keep second derivative, for calculating p-value
    std::vector<arma::vec> parameter_iterations;
    arma::mat var_covar_mat;
+   int failed = 0;
 
    // Could get starting point from a linear regression, which is fast
    // and will reduce number of n-r iterations
@@ -122,7 +124,16 @@ void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design,
       arma::mat U(x_design.n_cols, 1);
       arma::mat W = repmat(y_pred % (arma::ones(y_pred.n_rows) - y_pred), 1, x_design.n_cols);
 
+      // Perform inversion, which may fail
       var_covar_mat = inv_covar(x_design.t() * (W % x_design));
+      if (var_covar_mat.n_cols == 0 || var_covar_mat.n_rows == 0)
+      {
+         k.add_comment("inv-fail");
+         k.p_val(0);
+
+         failed = 1;
+         break;
+      }
 
       if (firth)
       {
@@ -167,7 +178,7 @@ void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design,
          k.add_comment("firth-fail");
       }
    }
-   else
+   else if (!failed)
    {
       k.beta(parameter_iterations.back()(1));
 
