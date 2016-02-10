@@ -53,14 +53,22 @@ else
          $corrected_p = 1;
       }
 
-      my $ascii_val = int(-10*log($corrected_p)/log(10)) + 33;
-      if ($ascii_val < 33)
-      {
-         $ascii_val = 33;
-      }
-      elsif ($ascii_val > 126)
+      my $ascii_val;
+      if ($corrected_p == 0)
       {
          $ascii_val = 126;
+      }
+      else
+      {
+         $ascii_val = int(-10*log($corrected_p)/log(10)) + 33;
+         if ($ascii_val < 33)
+         {
+            $ascii_val = 33;
+         }
+         elsif ($ascii_val > 126)
+         {
+            $ascii_val = 126;
+         }
       }
 
       my $qual = chr($ascii_val) x length($kmer);
