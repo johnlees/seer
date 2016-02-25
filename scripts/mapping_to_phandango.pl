@@ -80,7 +80,12 @@ else
          if ($map_qual > $min_qual && !($flag & 4))
          {
             my ($kmer, $maf, $unadj, $adj, @other) = split("\t", $kmer);
-            my $log_p = -log($adj)/log(10);
+
+            my $log_p = 386; # Exponent limit of a double
+            if ($adj > 0)
+            {
+               $log_p = -log($adj)/log(10);
+            }
 
             $points{$kmer}{pval} = $log_p;
             $points{$kmer}{start} = $start;
