@@ -56,9 +56,17 @@ double chiTest(Kmer& k, const arma::vec& y)
       throw std::logic_error("Empty table for chisq test\n");
    }
 
-   if (a == 0 || b == 0 || c == 0 || d == 0)
+   // Treat as invalid if any entry is 0 or 1, or if more than one entry < 5
+   // Mark as needing to use Firth regression
+   int low_obs = 0;
+   for (auto obs = table.begin(); obs != table.end(); ++table)
    {
-      k.add_comment("zero-entries");
+      if (*obs <= 1 || (*obs <= 5 && ++low_obs > 2))
+      {
+         k.add_comment("bad-chisq");
+         k.firth(1);
+         break;
+      }
    }
 
    // Without Yates' continuity correction

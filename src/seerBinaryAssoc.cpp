@@ -23,77 +23,85 @@ void logisticTest(Kmer& k, const arma::vec& y_train, const arma::mat& mds)
    doLogit(k, y_train, x_train);
 }
 
+// This uses BFGS optimisation by default. Invokes NR or Firth on error
 void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
 {
    arma::mat x_design = join_rows(arma::mat(x_train.n_rows,1,arma::fill::ones), x_train);
    column_vector starting_point(x_design.n_cols);
 
-   starting_point(0) = log(mean(y_train)/(1 - mean(y_train)));
-   for (size_t i = 1; i < x_design.n_cols; ++i)
+   if (k.firth())
    {
-      starting_point(i) = bfgs_start_beta;
+      newtonRaphson(k, y_train, x_design, 1);
    }
-
-   try
+   else
    {
-      // Use BFGS optimiser in dlib to maximise likelihood function by chaging the
-      // b vector, which will end in starting_point
-      dlib::find_max(dlib::bfgs_search_strategy(),
-                  dlib::objective_delta_stop_strategy(convergence_limit),
-                  LogitLikelihood(x_train, y_train), LogitLikelihoodGradient(x_train, y_train),
-                  starting_point, -1);
-
-      // Extract beta
-      arma::vec b_vector = dlib_to_arma(starting_point);
-      k.beta(b_vector(1));
-
-      // Extract p-value
-      //
-      //
-      // W = B_1 / SE(B_1) ~ N(0,1)
-      //
-      // In the special case of a logistic regression, abs can be taken rather
-      // than ^2 as responses are 0 or 1
-      //
-      double se = pow(varCovarMat(x_design, b_vector)(1,1), 0.5);
-
-      // Zeros will result in bad regression with large SE - firth regression helps
-      if (se > se_limit)
+      starting_point(0) = log(mean(y_train)/(1 - mean(y_train)));
+      for (size_t i = 1; i < x_design.n_cols; ++i)
       {
-         throw std::runtime_error("se>limit");
+         starting_point(i) = bfgs_start_beta;
       }
-      else
-      {
-         k.standard_error(se);
 
-         double W = std::abs(b_vector(1)) / se; // null hypothesis b_1 = 0
-         k.p_val(normalPval(W));
+      try
+      {
+         // Use BFGS optimiser in dlib to maximise likelihood function by chaging the
+         // b vector, which will end in starting_point
+         dlib::find_max(dlib::bfgs_search_strategy(),
+                     dlib::objective_delta_stop_strategy(convergence_limit),
+                     LogitLikelihood(x_train, y_train), LogitLikelihoodGradient(x_train, y_train),
+                     starting_point, -1);
+
+         // Extract beta
+         arma::vec b_vector = dlib_to_arma(starting_point);
+         k.beta(b_vector(1));
+
+         // Extract p-value
+         //
+         //
+         // W = B_1 / SE(B_1) ~ N(0,1)
+         //
+         // In the special case of a logistic regression, abs can be taken rather
+         // than ^2 as responses are 0 or 1
+         //
+         double se = pow(varCovarMat(x_design, b_vector)(1,1), 0.5);
+
+         // Zeros will result in bad regression with large SE - firth regression helps
+         if (se > se_limit)
+         {
+            throw std::runtime_error("se>limit");
+         }
+         else
+         {
+            k.standard_error(se);
+
+            double W = std::abs(b_vector(1)) / se; // null hypothesis b_1 = 0
+            k.p_val(normalPval(W));
 
 #ifdef SEER_DEBUG
-         std::cerr << "Wald statistic: " << W << "\n";
-         std::cerr << "p-value: " << k.p_val() << "\n";
+            std::cerr << "Wald statistic: " << W << "\n";
+            std::cerr << "p-value: " << k.p_val() << "\n";
 #endif
+         }
       }
-   }
-   // Sometimes won't converge, use N-R instead
-   catch (std::exception& e)
-   {
+      // Sometimes won't converge, use N-R instead
+      catch (std::exception& e)
+      {
 #ifdef SEER_DEBUG
-      std::cerr << "Caught error " << e.what() << std::endl;
+         std::cerr << "Caught error " << e.what() << std::endl;
 #endif
 
-      // SE is greater than specified limit - run Firth regression
-      if (strcmp(e.what(), "se>limit") == 0)
-      {
-         k.add_comment("large-se");
-         newtonRaphson(k, y_train, x_design, 1);
-      }
-      // BFGS optimiser did not converge - use NR iterations w/o Firth first
-      // Could also be matrix inversion failing
-      else
-      {
-         k.add_comment("bfgs-fail");
-         newtonRaphson(k, y_train, x_design);
+         // SE is greater than specified limit - run Firth regression
+         if (strcmp(e.what(), "se>limit") == 0)
+         {
+            k.add_comment("large-se");
+            newtonRaphson(k, y_train, x_design, 1);
+         }
+         // BFGS optimiser did not converge - use NR iterations w/o Firth first
+         // Could also be matrix inversion failing
+         else
+         {
+            k.add_comment("bfgs-fail");
+            newtonRaphson(k, y_train, x_design);
+         }
       }
    }
 }

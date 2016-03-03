@@ -9,19 +9,19 @@
 
 // Initialisation
 Kmer::Kmer(const std::string& sequence, const std::vector<std::string>& occurrences, const double pvalue, const double beta, const double se, const double maf)
-   : Significant_kmer(sequence, occurrences, maf, kmer_chi_pvalue_default, pvalue, beta, se, kmer_comment_default), _x_set(0)
+   : Significant_kmer(sequence, occurrences, maf, kmer_chi_pvalue_default, pvalue, beta, se, kmer_comment_default), _x_set(0), _use_firth(0)
 {
 }
 
 // Initialise without calculated information
 Kmer::Kmer(const std::string& sequence, const std::vector<std::string>& occurrences)
-   : Significant_kmer(sequence, occurrences, kmer_maf_default, kmer_chi_pvalue_default, kmer_pvalue_default, kmer_beta_default, kmer_se_default, kmer_comment_default), _x_set(0)
+   : Significant_kmer(sequence, occurrences, kmer_maf_default, kmer_chi_pvalue_default, kmer_pvalue_default, kmer_beta_default, kmer_se_default, kmer_comment_default), _x_set(0), _use_firth(0)
 {
 }
 
 // Initialise with default info only
 Kmer::Kmer()
-    : Significant_kmer(kmer_seq_default, kmer_occ_default, kmer_maf_default, kmer_chi_pvalue_default, kmer_pvalue_default, kmer_beta_default, kmer_se_default, kmer_comment_default), _x_set(0)
+    : Significant_kmer(kmer_seq_default, kmer_occ_default, kmer_maf_default, kmer_chi_pvalue_default, kmer_pvalue_default, kmer_beta_default, kmer_se_default, kmer_comment_default), _x_set(0), _use_firth(0)
 {
 }
 

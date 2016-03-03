@@ -38,14 +38,17 @@ class Kmer: public Significant_kmer
       std::vector<std::string> occurrence_vector() const { return _samples; }
       arma::vec get_x() const { return _x; }
       int has_x() const { return _x_set; }
+      int firth() const { return _use_firth; }
 
       // Modifying operations
       void add_comment(const std::string& new_comment); // this is defined in kmer.cpp
       void add_x(const std::unordered_map<std::string,int>& sample_map, const int num_samples); // this is defined in kmer.cpp
+      void firth(const int use_firth) { _use_firth = use_firth; }
 
    private:
       arma::vec _x;
       int _x_set;
+      int _use_firth;
 
 };
 
