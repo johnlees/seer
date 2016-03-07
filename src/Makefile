@@ -17,7 +17,7 @@ MAP_LDLIBS=-L$(PREFIX)/lib -lboost_program_options -lpthread
 COMBINE_LDLIBS=-L../gzstream -L$(PREFIX)/lib -lgzstream -lz -lboost_program_options
 FILTER_LDLIBS=-L$(PREFIX)/lib -lboost_program_options
 
-CPPFLAGS=-I$(PREFIX)/include -I../gzstream -I../dlib -I/usr/local/hdf5/include -D DLIB_NO_GUI_SUPPORT=1 -D DLIB_USE_BLAS=1 -D DLIB_USE_LAPACK=1
+CPPFLAGS=-I$(PREFIX)/include -I../gzstream -I../dlib -I/usr/local/hdf5/include -D DLIB_NO_GUI_SUPPORT=1 -D DLIB_USE_BLAS=1 -D DLIB_USE_LAPACK=1 -DARMA_USE_HDF5=1
 
 # For static linking. To use type 'make static'
 # Requires icpc and mkl

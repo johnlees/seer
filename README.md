@@ -66,8 +66,6 @@ Download and unpack. Change into directory and type
     make
     make install
 
-Enable hdf5 support by uncommenting '//#define ARMA_USE_HDF5' in the file *include/armadillo_bits/config.hpp* (i.e. change to '#define ARMA_USE_HDF5'). This include path may be in your home directory, or if installed globally in */usr/local*
-
 **boost**
 
 Best installed with your distribution's package manager, and you should use the c++11 version if possible.
