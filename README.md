@@ -1,12 +1,12 @@
 # seer
 Sequence element enrichment analysis. This document contains
-installation instuctions. Usage can be found on the [wiki](https://github.com/johnlees/seer/wiki/Usage)
+installation instuctions. Usage can be found on the [wiki](https://github.com/johnlees/seer/wiki/Usage), and more information in the [paper](http://biorxiv.org/content/early/2016/03/02/038463).
 
 Installation
 ==============
 First clone the repository
 
-    git clone --recursive https://github.com/johnlees/seer    
+    git clone --recursive git@github.com:johnlees/seer.git
 
 If you already have dlib:
 
@@ -42,7 +42,23 @@ Download and unpack to a folder gzstream in the root of the repository. Change i
 
     make
 
+**HDF5**
+
+Best installed with your distribution's package manager. Otherwise use
+a binary from <https://www.hdfgroup.org/HDF5/release/obtain5.html>, or
+if you wish to compile from source
+
+    gunzip < hdf5-X.Y.Z.tar.gz | tar xf -
+    cd hdf5-X.Y.Z
+    ./configure --prefix=/usr/local/hdf5 <more configure_flags>
+    make
+    make check
+    make install
+    make check-install
+
 **armadillo**
+
+Make sure HDF5 is installed first.
 
 Download and unpack. Change into directory and type
 
@@ -74,19 +90,17 @@ Then run
 If not installed use the above git clone command to include with the
 repository. Otherwise unpack header files to $(PREFIX)/include
 
-**HDF5**
+**installation**
 
-Best installed with your distribution's package manager. Otherwise use
-a binary from <https://www.hdfgroup.org/HDF5/release/obtain5.html>, or
-if you wish to compile from source
+Currently tested on Linux only, installation should proceed as
 
-    gunzip < hdf5-X.Y.Z.tar.gz | tar xf -
-    cd hdf5-X.Y.Z
-    ./configure --prefix=/usr/local/hdf5 <more configure_flags>
     make
-    make check
     make install
-    make check-install
+
+You may need to explicitly set the current GCC compiler, which you can
+do by running
+
+    make CXX=g++-4.9
 
 
 Usage, interpretation of results, and troubleshooting
