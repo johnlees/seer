@@ -9,7 +9,7 @@
 #include "seercommon.hpp"
 
 // Wrapper to all filter functions
-int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const arma::vec& y, const int continuous_phenotype)
+int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const arma::vec& y, const int continuous_phenotype, const bool do_stats)
 {
    int pass = 0;
 
@@ -18,14 +18,17 @@ int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Samp
       // Don't bother with this if not running stats tests
       pass = 1;
 
-      try  // Some chi^2 tests may diverge - proceed anyway for now
+      if (do_stats)
       {
-         pass = passStatsFilters(k, y, filterOptions.chi_cutoff, continuous_phenotype, filterOptions.positive);
-      }
-      catch (std::exception& e)
-      {
-         std::cerr << "kmer " + k.sequence() + " failed chisq test with error: " + e.what() + "\n";
-         pass = 1;
+         try  // Some chi^2 tests may diverge - proceed anyway for now
+         {
+            pass = passStatsFilters(k, y, filterOptions.chi_cutoff, continuous_phenotype, filterOptions.positive);
+         }
+         catch (std::exception& e)
+         {
+            std::cerr << "kmer " + k.sequence() + " failed chisq test with error: " + e.what() + "\n";
+            pass = 1;
+         }
       }
    }
 

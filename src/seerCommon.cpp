@@ -13,7 +13,6 @@ cmdOptions verifyCommandLine(boost::program_options::variables_map& vm, const st
 {
    cmdOptions verified;
 
-   verified.chi_cutoff = stod(vm["chisq"].as<std::string>());
    verified.max_length = vm["max_length"].as<long int>();
 
    if(vm.count("kmers"))
@@ -24,6 +23,11 @@ cmdOptions verifyCommandLine(boost::program_options::variables_map& vm, const st
    if(vm.count("output"))
    {
       verified.output = vm["output"].as<std::string>();
+   }
+
+   if(vm.count("chisq"))
+   {
+      verified.chi_cutoff = stod(vm["chisq"].as<std::string>());
    }
 
    if (vm.count("pval"))

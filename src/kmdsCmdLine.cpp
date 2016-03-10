@@ -38,8 +38,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
     ("no_filtering", "turn off all filtering and do not output new kmer file")
     ("max_length", po::value<long int>()->default_value(max_length_default), "maximum kmer length")
     ("maf", po::value<double>()->default_value(maf_default), "minimum kmer frequency")
-    ("min_words", po::value<int>(), "minimum kmer occurences. Overrides --maf")
-    ("chisq", po::value<std::string>()->default_value(chisq_default), "p-value threshold for initial chi squared test. Set to 1 to show all");
+    ("min_words", po::value<int>(), "minimum kmer occurences. Overrides --maf");
 
    po::options_description other("Other options");
    other.add_options()

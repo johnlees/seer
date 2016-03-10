@@ -95,22 +95,26 @@ double welchTwoSamplet(const Kmer& k, const arma::vec& y)
    arma::vec group2 = y.elem(find(x==1));
 
    // Calculate group means and variances
-   double x1 = mean(group1);
-   double x2 = mean(group2);
-   double v1 = var(group1);
-   double v2 = var(group2);
+   double p_val = 0;
+   if (group1.n_elem != 0 && group2.n_elem != 0)
+   {
+      double x1 = mean(group1);
+      double x2 = mean(group2);
+      double v1 = var(group1);
+      double v2 = var(group2);
 
-   // t and degrees freedom for test
-   double t = (x1 - x2)*pow((v1/group1.n_rows + v2/group2.n_rows), -0.5);
-   double df = pow((v1/group1.n_rows + v2/group2.n_rows), 2) / (pow(v1/group1.n_rows,2)/(group1.n_rows-1) + pow(v2/group2.n_rows,2)/(group2.n_rows-1));
+      // t and degrees freedom for test
+      double t = (x1 - x2)*pow((v1/group1.n_rows + v2/group2.n_rows), -0.5);
+      double df = pow((v1/group1.n_rows + v2/group2.n_rows), 2) / (pow(v1/group1.n_rows,2)/(group1.n_rows-1) + pow(v2/group2.n_rows,2)/(group2.n_rows-1));
 
-   // Calculate p-value from t distribution
-   boost::math::students_t t_dist(df);
-   double p_val = 2 * (1 - boost::math::cdf(t_dist, t));
+      // Calculate p-value from t distribution
+      boost::math::students_t t_dist(df);
+      p_val = 2 * (1 - boost::math::cdf(t_dist, t));
 #ifdef SEER_DEBUG
-   std::cerr << "welch t:" << t << "df:" << df << "\n";
-   std::cerr << "welch p-val:" << p_val << "\n";
+      std::cerr << "welch t:" << t << "df:" << df << "\n";
+      std::cerr << "welch p-val:" << p_val << "\n";
 #endif
+   }
 
    return p_val;
 }

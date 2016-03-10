@@ -149,7 +149,7 @@ int main (int argc, char *argv[])
 
             // apply filters here
             int passed_filters = 0;
-            if (parameters.filter && passFilters(parameters, k, samples, y, continuous_phenotype))
+            if (parameters.filter && passFilters(parameters, k, samples, y, continuous_phenotype, 0))
             {
                passed_filters = 1;
                filtered_file << dsm_line << "\n";
