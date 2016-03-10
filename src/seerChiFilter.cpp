@@ -59,7 +59,7 @@ double chiTest(Kmer& k, const arma::vec& y)
    // Treat as invalid if any entry is 0 or 1, or if more than one entry < 5
    // Mark as needing to use Firth regression
    int low_obs = 0;
-   for (auto obs = table.begin(); obs != table.end(); ++table)
+   for (auto obs = table.begin(); obs != table.end(); ++obs)
    {
       if (*obs <= 1 || (*obs <= 5 && ++low_obs > 2))
       {
