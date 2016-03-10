@@ -1,0 +1,4 @@
+seer: sequence element enrichment analysis
+Detected binary phenotype
+sequence	maf	unadj_p_val	p_val	beta	se	comments
+Done.

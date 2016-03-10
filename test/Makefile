@@ -1,8 +1,8 @@
 all:
-	echo "Tests not yet implemented" > tests_passed.txt
+	./run_test.pl && touch tests_passed
 
 clean:
-	$(RM) *.o ~* tests_passed.txt
+	$(RM) *.o ~* tests_passed
 
 test: all
 
