@@ -28,9 +28,19 @@ Kmer::Kmer()
 // Output
 std::ostream& operator<<(std::ostream &os, const Kmer& k)
 {
-   return os << std::fixed << std::setprecision(3) << k.sequence() << "\t" << k.maf()
+   os << std::fixed << std::setprecision(3) << k.sequence() << "\t" << k.maf()
       << "\t" << std::scientific << k.unadj() << "\t" << k.p_val() << "\t" << k.beta()
-      << "\t" << k.se() << "\t" << k.comments();
+      << "\t" << k.se();
+
+   std::vector<double> covariates = k.covar_p();
+   for (auto it = covariates.begin(); it != covariates.end(); ++it)
+   {
+      os << "\t" << *it;
+   }
+
+   os << "\t" << k.comments();
+
+   return os;
 }
 
 // Input
@@ -104,7 +114,7 @@ void Kmer::add_x(const std::unordered_map<std::string,int>& sample_map, const in
 {
    _x.zeros(num_samples);
 
-   for (auto it = _samples.begin(); it < _samples.end(); ++it)
+   for (auto it = _samples.begin(); it != _samples.end(); ++it)
    {
       auto sample_index_it = sample_map.find(*it);
 

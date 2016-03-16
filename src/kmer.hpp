@@ -3,10 +3,6 @@
  * Header file for kmer class
  */
 
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <vector>
 #include <unordered_map>
 
 #define ARMA_DONT_PRINT_ERRORS

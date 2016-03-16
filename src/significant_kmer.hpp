@@ -12,12 +12,16 @@
 #include <iterator>
 #include <algorithm>
 
+const int default_covars = 0;
+const int standard_cols = 7;
+
 // kmers have a sequence, and a list of samples they appear in
 class Significant_kmer
 {
    public:
       // Initialisation
       Significant_kmer();
+      Significant_kmer(const int num_covars);
       Significant_kmer(const std::string& word, const std::vector<std::string>& samples, const double maf, const double unadj_p, const double adj_p, const double beta, const double se, const std::string& comments);
 
       // nonmodifying operations
@@ -29,6 +33,8 @@ class Significant_kmer
       double beta() const { return _beta; }
       double se() const { return _se; }
       std::string comments() const { return _comment; }
+      std::vector<double> covar_p() const { return _covar_p; }
+      unsigned int num_covars() const; // Defined in significant_kmer.cpp
 
       // Modifying operations
       void p_val(const double pvalue) { _adj_p = pvalue; }
@@ -36,6 +42,7 @@ class Significant_kmer
       void beta(const double b) { _beta = b; }
       void standard_error(const double se) { _se = se; }
       void set_maf(const double maf) { _maf = maf; }
+      void add_covar_p(const double new_covar_p) { _covar_p.push_back(new_covar_p); }
 
 
    protected:
@@ -47,7 +54,11 @@ class Significant_kmer
       double _adj_p;
       double _beta;
       double _se;
+      std::vector<double> _covar_p;
       std::string _comment;
+
+   private:
+      int _num_covars;
 };
 
 class sortSigKmer
@@ -70,4 +81,7 @@ class sortSigKmer
 std::istream& operator>>(std::istream &is, Significant_kmer& sk);
 
 std::ostream& operator<<(std::ostream &os, const Significant_kmer& k);
+
+// Function for reading header to find number of covariate fields
+int parseHeader(const std::string& header_line);
 

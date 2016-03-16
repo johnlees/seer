@@ -52,10 +52,15 @@ int main (int argc, char *argv[])
       }
       else
       {
+         // Read the header
+         std::string header;
+         std::getline(kmers_in, header);
+         int num_covar_fields = parseHeader(header);
+
          while (kmers_in)
          {
             // Read in each kmer
-            Significant_kmer kmer;
+            Significant_kmer kmer(num_covar_fields);
             kmers_in >> kmer;
 
             if (kmers_in)

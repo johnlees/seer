@@ -3,7 +3,6 @@ export BINDIR=$(PREFIX)/bin
 
 all:
 	cd src && $(MAKE) all
-	cd test && $(MAKE) all
 
 clean:
 	cd src && $(MAKE) clean

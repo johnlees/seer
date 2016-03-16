@@ -53,8 +53,9 @@ int main (int argc, char *argv[])
       // Read the header
       std::string header;
       std::getline(kmer_file, header);
+      int num_covar_fields = parseHeader(header);
 
-      Significant_kmer sig_kmer;
+      Significant_kmer sig_kmer(num_covar_fields);
       while(kmer_file)
       {
          kmer_file >> sig_kmer;

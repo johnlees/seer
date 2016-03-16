@@ -62,7 +62,8 @@ void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
          // In the special case of a logistic regression, abs can be taken rather
          // than ^2 as responses are 0 or 1
          //
-         double se = pow(varCovarMat(x_design, b_vector)(1,1), 0.5);
+         arma::mat var_covar_mat = varCovarMat(x_design, b_vector);
+         double se = pow(var_covar_mat(1,1), 0.5);
 
          // Zeros will result in bad regression with large SE - firth regression helps
          if (se > se_limit)
@@ -80,6 +81,14 @@ void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
             std::cerr << "Wald statistic: " << W << "\n";
             std::cerr << "p-value: " << k.p_val() << "\n";
 #endif
+            // Add in covariate p-values
+            for (unsigned int i = 2; i < var_covar_mat.n_rows; ++i)
+            {
+               se = pow(var_covar_mat(i,i), 0.5);
+               W = std::abs(b_vector(i)) / se;
+
+               k.add_covar_p(normalPval(W));
+            }
          }
       }
       // Sometimes won't converge, use N-R instead
@@ -213,6 +222,14 @@ void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design,
       std::cerr << "Wald statistic: " << W << "\n";
       std::cerr << "p-value: " << k.p_val() << "\n";
 #endif
+      // Add in covariate p-values
+      for (unsigned int i = 2; i< var_covar_mat.n_rows; ++i)
+      {
+         se = pow(var_covar_mat(i,i), 0.5);
+         W = std::abs(parameter_iterations.back()(i)) / se;
+
+         k.add_covar_p(normalPval(W));
+      }
    }
 }
 

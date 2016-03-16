@@ -245,3 +245,4 @@ arma::mat inv_covar(arma::mat A)
 
    return B;
 }
+

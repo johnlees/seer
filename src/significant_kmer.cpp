@@ -9,11 +9,18 @@
 #include "significant_kmer.hpp"
 
 Significant_kmer::Significant_kmer()
+   :_num_covars(default_covars)
+{
+}
+
+Significant_kmer::Significant_kmer(const int num_covars)
+   :_num_covars(num_covars)
 {
 }
 
 Significant_kmer::Significant_kmer(const std::string& word, const std::vector<std::string>& samples, const double maf, const double unadj_p, const double adj_p, const double beta, const double se, const std::string& comments)
-   :_word(word), _samples(samples), _maf(maf), _unadj_p(unadj_p), _adj_p(adj_p), _beta(beta), _se(se), _comment(comments)
+   :_word(word), _samples(samples), _maf(maf), _unadj_p(unadj_p), _adj_p(adj_p), _beta(beta), _se(se), _comment(comments),
+   _num_covars(default_covars)
 {
 }
 
@@ -36,6 +43,12 @@ std::istream& operator>>(std::istream &is, Significant_kmer& sk)
    line_stream >> adj_p;
    line_stream >> beta;
    line_stream >> se;
+
+   // Ignore the covariate fields
+   for (unsigned int i = 0; i < sk.num_covars(); ++i)
+   {
+      line_stream.ignore(std::numeric_limits<std::streamsize>::max(), ' ');
+   }
 
    line_stream >> comments;
 
@@ -67,6 +80,41 @@ std::ostream& operator<<(std::ostream &os, const Significant_kmer& k)
    }
 
    return os;
+}
+
+unsigned int Significant_kmer::num_covars() const
+{
+   unsigned int covars = 0;
+   if (_covar_p.size() > 0)
+   {
+      covars =_covar_p.size();
+   }
+   else
+   {
+      covars =_num_covars;
+   }
+
+   return covars;
+}
+
+// Returns number of excess columns (i.e. number of covariate fields)
+int parseHeader(const std::string& header_line)
+{
+   std::istringstream iss(header_line);
+
+   int num_cols = 0;
+   do
+   {
+      std::string col;
+      iss >> col;
+      if (col.length() > 0)
+      {
+         num_cols++;
+      }
+   }
+   while(iss);
+
+   return num_cols - standard_cols;
 }
 
 sortSigKmer::sortSigKmer()
@@ -135,3 +183,4 @@ bool sortSigKmer::operator() (const Significant_kmer& sk1, const Significant_kme
    }
    return compare;
 }
+

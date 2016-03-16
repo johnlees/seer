@@ -148,7 +148,7 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
 
 std::vector<DistanceElement> threadDistance(std::vector<DistanceElement> element_list, const arma::mat& rectangular_matrix)
 {
-   for(std::vector<DistanceElement>::iterator it = element_list.begin() ; it < element_list.end(); ++it)
+   for(std::vector<DistanceElement>::iterator it = element_list.begin() ; it != element_list.end(); ++it)
    {
       it->distance = distanceFunction(rectangular_matrix.row(it->row), rectangular_matrix.row(it->col));
    }

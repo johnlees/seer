@@ -103,7 +103,19 @@ int main (int argc, char *argv[])
    openDsmFile(kmer_file, parameters.kmers);
 
    // Write a header
-   std::cout << "sequence\tmaf\tunadj_p_val\tp_val\tbeta\tse\tcomments";
+   if (use_mds)
+   {
+      std::cout << "sequence\tmaf\tunadj_p_val\tp_val\tbeta\tse";
+      for (unsigned int i = 1; i <= mds.n_cols; ++i)
+      {
+         std::cout << "\tcovar" << i << "_p";
+      }
+      std::cout << "\tcomments";
+   }
+   else
+   {
+      std::cout << "sequence\tmaf\tunadj_p_val\tp_val\tbeta\tse\tcomments";
+   }
    if (parameters.print_samples)
    {
       std::cout << "\tsamples_present";

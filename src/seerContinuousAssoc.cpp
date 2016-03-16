@@ -78,7 +78,9 @@ void doLinear(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
    // MSE = sum(Y_i-Y'_i)^2 / n-2
    //
    double MSE = accu(square(y_train - predictLinearProbs(x_design, b))) / (x_train.n_rows - 2);
-   double se = pow((inv_covar(x_design.t()*x_design)(1,1) * MSE), 0.5);
+   arma::mat var_covar_mat = inv_covar(x_design.t()*x_design);
+
+   double se = pow((var_covar_mat(1,1) * MSE), 0.5);
    k.standard_error(se);
 
    double W = std::abs(k.beta()) / (se); // null hypothesis b_1 = 0
@@ -88,6 +90,15 @@ void doLinear(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
    std::cerr << "Wald statistic: " << W << "\n";
    std::cerr << "p-value: " << k.p_val() << "\n";
 #endif
+
+   // Add in covariate p-values
+   for (unsigned int i = 2; i < var_covar_mat.n_rows; ++i)
+   {
+      se = pow((var_covar_mat(i,i) * MSE), 0.5);
+      W = std::abs(b(i)) / (se);
+
+      k.add_covar_p(normalPval(W));
+   }
 }
 
 // returns y' = bx
