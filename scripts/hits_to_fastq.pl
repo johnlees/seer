@@ -14,7 +14,7 @@ Creates a fastq for mapping from significant kmers
 
    Required
    -k, --kmers      Significant kmers, as output by seer
-   -p, --bonf       Bonferroni correction to use (try 10e-8)
+   -b, --bonf       Bonferroni correction to use (try 10e-8)
 
    Optional
    -h, --help       Displays this message
