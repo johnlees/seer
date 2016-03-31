@@ -39,7 +39,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
    //NB pval cutoffs are strings for display, and are converted to floats later
    po::options_description filtering("Filtering options");
    filtering.add_options()
-    ("no_filtering", "turn off all filtering and peform tests on all kmers input")
+    ("no_filtering", "turn off all filtering and perform tests on all kmers input")
     ("max_length", po::value<long int>()->default_value(max_length_default), "maximum kmer length")
     ("maf", po::value<double>()->default_value(maf_default), "minimum kmer frequency")
     ("min_words", po::value<int>(), "minimum kmer occurences. Overrides --maf")

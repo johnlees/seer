@@ -6,7 +6,7 @@ Installation
 ==============
 First clone the repository
 
-    git clone --recursive git@github.com:johnlees/seer.git
+    git clone --recursive https://github.com/johnlees/seer
 
 If you already have dlib:
 
