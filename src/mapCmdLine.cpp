@@ -25,6 +25,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
    po::options_description other("Other options");
    other.add_options()
     ("threads", po::value<size_t>()->default_value(1), ("number of threads. Suggested: " + std::to_string(std::thread::hardware_concurrency())).c_str())
+    ("version", "prints version and exits")
     ("help,h", "full help message");
 
    po::options_description all;
@@ -37,6 +38,11 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
       if (vm.count("help"))
       {
          printHelp(all);
+         failed = 1;
+      }
+      else if (vm.count("version"))
+      {
+         std::cout << VERSION << std::endl;
          failed = 1;
       }
       else

@@ -50,6 +50,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
    po::options_description other("Other options");
    other.add_options()
     ("print_samples", "print lists of samples significant kmers were found in")
+    ("version", "prints version and exits")
     ("help,h", "full help message");
 
    po::options_description all;
@@ -62,6 +63,11 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
       if (vm.count("help"))
       {
          printHelp(all);
+         failed = 1;
+      }
+      else if (vm.count("version"))
+      {
+         std::cout << VERSION << std::endl;
          failed = 1;
       }
       else

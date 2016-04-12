@@ -28,6 +28,7 @@
 #include "significant_kmer.hpp"
 
 // Constants
+const std::string VERSION = "1.1.1";
 const int thread_wait = 100; //time to wait for each thread in ms
 
 // Structs
