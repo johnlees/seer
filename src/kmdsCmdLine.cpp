@@ -93,7 +93,7 @@ void printHelp(po::options_description& help)
 {
    std::cerr << "kmds" << "\n";
    std::cerr << "\t1) filter and subsample with --no_mds and --size\n";
-   std::cerr << "\t2) combine, and do metric multidimensional scaling with --combine_mds\n";
+   std::cerr << "\t2) combine, and do metric multidimensional scaling with --mds_concat\n";
 
    std::cerr << help << "\n";
 }
