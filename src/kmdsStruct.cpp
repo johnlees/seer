@@ -43,7 +43,7 @@ arma::mat metricMDS(const arma::mat& populationMatrix, const int dimensions, con
 
    if (!arma::eig_sym(eigval, eigvec, B))
    {
-      throw std::runtime_error("Could not calculate eignvalues of B matrix in metric MDS");
+      throw std::runtime_error("Could not calculate eigenvalues of B matrix in metric MDS");
    }
 
    // Step 5)
@@ -137,6 +137,9 @@ arma::mat dissimiliarityMatrix(const arma::mat& inMat, const unsigned int thread
          dist(it->col, it->row) = it->distance;
       }
    }
+
+   // Normalise by total k-mers
+   dist = dist / inMat.n_cols;
 
    // Print time taken
    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
