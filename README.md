@@ -34,7 +34,34 @@ You will also require
 
 You probably already have boost, HDF5 and dlib (as long as you did clone --recursive).
 
-###Brief installation instructions
+###Installation on Ubuntu/biolinux
+
+Running the following commands will install seer
+
+    sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+    sudo apt-get update
+    sudo apt-get install g++-4.9 libhdf5-dev libopenblas-dev libboost-program-options1.55-dev
+
+    git clone --recursive https://github.com/johnlees/seer
+    cd seer
+
+    wget http://www.cs.unc.edu/Research/compgeom/gzstream/gzstream.tgz
+    tar xzf gzstream.tgz
+    cd gzstream && CC=/usr/bin/gcc-4.9 make
+    cd ..
+
+    wget http://sourceforge.net/projects/arma/files/armadillo-6.700.6.tar.gz
+    tar xzf armadillo-6.700.6.tar.gz
+    cd armadillo-6.700.6
+    CXX=/usr/bin/g++-4.9 cmake .
+    make
+    sudo make install
+    sudo ldconfig /usr/lib64
+    cd ..
+
+    cd src && CXX=/usr/bin/g++-4.9 make
+
+###General installation instructions
 
 **gzstream**
 
