@@ -4,6 +4,18 @@ installation instuctions. Usage can be found on the [wiki](https://github.com/jo
 
 Installation
 ==============
+###Use a pre-compiled release
+
+Head to the [release](https://github.com/johnlees/seer/releases) page and download and unpack the tarball. If you have the dependencies installed use the dynamic version, otherwise use the static version (tested on Ubuntu only; static_all should work on other 64-bit Linux platforms).
+
+###Use on a virtual machine
+
+We have a virtual machine, containing SEER and other useful bioinformatics programs, which is available at
+ftp://ftp.sanger.ac.uk/pub/pathogens/pathogens-vm/pathogens-vm.latest.ova
+and can be imported as an appliance in [VirtualBox](https://www.virtualbox.org/).
+
+###Compile source code
+
 First clone the repository
 
     git clone --recursive https://github.com/johnlees/seer
@@ -16,6 +28,8 @@ Currently tested on Linux only, installation should proceed as
 
     make
     make install
+    
+Full installation instructions are available <a href="#installation-on-ubuntubiolinux">below</a>
 
 Dependencies
 --------------
@@ -97,7 +111,7 @@ Download and unpack. Change into directory and type
 
 Best installed with your distribution's package manager, and you should use the c++11 version if possible.
 
-For a manual installation, see <http://www.boost.org/doc/libs/1_57_0/more/getting_started/unix-variants.html> for details on how to use ./b2 to install. I reccommend that you create a user-config.jam file in the boost root which modifies the gcc compilation:
+For a manual installation, see <http://www.boost.org/doc/libs/1_57_0/more/getting_started/unix-variants.html> for details on how to use ./b2 to install. I recommend that you create a user-config.jam file in the boost root which modifies the gcc compilation:
 
     using gcc:
       : std11
