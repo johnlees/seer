@@ -38,8 +38,7 @@ filter_seer
 .ycm_extra_conf.py*
 
 # Submodules
-armadillo-4.*
-armadillo-5.*
+armadillo-*
 mlpack-1.0.*
 boost_1_*
 gzstream
