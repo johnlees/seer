@@ -18,4 +18,4 @@ install:
 #script: CXX=/usr/bin/g++-4.9 make && make test
 script: CXX=/usr/bin/g++-4.9 make
 
-after_script: seer -k example_kmers.gz -p subset.pheno
+after_script: src/seer -k test/example_kmers.gz -p test/subset.pheno && cat test/test1.txt
