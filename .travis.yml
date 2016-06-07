@@ -14,7 +14,7 @@ install:
    - wget http://sourceforge.net/projects/arma/files/armadillo-6.700.6.tar.gz
    - tar xzf armadillo-6.700.6.tar.gz
    - pushd armadillo-6.700.6 && CXX=/usr/bin/g++-4.9 cmake . && make && sudo make install && popd
-   - locate hdf5 && ls /home/travis/software/include && ls /usr/local/hdf5/include
+   - ls /home/travis/software/include && ls /usr/local/hdf5/include
 
 script: CXX=/usr/bin/g++-4.9 make && make test
 
