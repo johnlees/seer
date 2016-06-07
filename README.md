@@ -1,5 +1,5 @@
-# seer
 [![Build Status](https://travis-ci.org/johnlees/seer.svg?branch=master)](https://travis-ci.org/johnlees/seer)
+# seer
 Sequence element enrichment analysis. This document contains
 installation instuctions. Usage can be found on the [wiki](https://github.com/johnlees/seer/wiki/Usage), and more information in the [paper](http://biorxiv.org/content/early/2016/03/02/038463).
 
