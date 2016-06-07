@@ -4,8 +4,8 @@ language: cpp
 
 before_install:
    - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-   - sudo apt-get update -q
-   - sudo apt-get install g++-4.9 libhdf5-serial-dev libopenblas-dev libboost-program-options-dev -y
+   - sudo apt-get update -qq
+   - sudo apt-get install g++-4.9 libhdf5-serial-dev libopenblas-dev liblapack-dev libboost-program-options-dev -y
 
 install:
    - wget http://www.cs.unc.edu/Research/compgeom/gzstream/gzstream.tgz
@@ -14,6 +14,7 @@ install:
    - wget http://sourceforge.net/projects/arma/files/armadillo-6.700.6.tar.gz
    - tar xzf armadillo-6.700.6.tar.gz
    - pushd armadillo-6.700.6 && CXX=/usr/bin/g++-4.9 cmake . && make && sudo make install && popd
+   - locate hdf5 && ls /home/travis/software/include && ls /usr/local/hdf5/include
 
 script: CXX=/usr/bin/g++-4.9 make && make test
 
