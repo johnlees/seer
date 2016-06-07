@@ -9,18 +9,17 @@
 #include "significant_kmer.hpp"
 
 Significant_kmer::Significant_kmer()
-   :_num_covars(default_covars)
+   :_line_nr(0), _num_covars(default_covars)
 {
 }
 
 Significant_kmer::Significant_kmer(const int num_covars)
-   :_num_covars(num_covars)
+   :_line_nr(0),_num_covars(num_covars)
 {
 }
 
 Significant_kmer::Significant_kmer(const std::string& word, const std::vector<std::string>& samples, const double maf, const double unadj_p, const double adj_p, const double beta, const double se, const std::string& comments)
-   :_word(word), _samples(samples), _maf(maf), _unadj_p(unadj_p), _adj_p(adj_p), _beta(beta), _se(se), _comment(comments),
-   _num_covars(default_covars)
+   :_line_nr(0), _word(word), _samples(samples), _maf(maf), _unadj_p(unadj_p), _adj_p(adj_p), _beta(beta), _se(se), _comment(comments), _num_covars(default_covars)
 {
 }
 

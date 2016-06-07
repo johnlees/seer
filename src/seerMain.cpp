@@ -122,6 +122,7 @@ int main (int argc, char *argv[])
    }
    std::cout << std::endl;
 
+   long int input_line = 0;
    while (kmer_file)
    {
       // Parse a set of dsm lines
@@ -132,6 +133,8 @@ int main (int argc, char *argv[])
       while(kmer_lines.size() < parameters.num_threads && kmer_file)
       {
          kmer_file >> k;
+         k.set_line_nr(++input_line);
+
          if (kmer_file)
          {
             k.add_x(sample_map, samples.size());

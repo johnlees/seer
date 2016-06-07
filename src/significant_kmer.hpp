@@ -25,6 +25,7 @@ class Significant_kmer
       Significant_kmer(const std::string& word, const std::vector<std::string>& samples, const double maf, const double unadj_p, const double adj_p, const double beta, const double se, const std::string& comments);
 
       // nonmodifying operations
+      long int line_number() const { return _line_nr; }
       std::vector<std::string> samples_found() const { return _samples; }
       std::string sequence() const { return _word; }
       double maf() const { return _maf; }
@@ -37,6 +38,7 @@ class Significant_kmer
       unsigned int num_covars() const; // Defined in significant_kmer.cpp
 
       // Modifying operations
+      void set_line_nr(const long int line_nr) { _line_nr = line_nr; }
       void p_val(const double pvalue) { _adj_p = pvalue; }
       void unadj_p_val(const double chi_pvalue) { _unadj_p = chi_pvalue; }
       void beta(const double b) { _beta = b; }
@@ -46,6 +48,8 @@ class Significant_kmer
 
 
    protected:
+      long int _line_nr;
+
       std::string _word;
       std::vector<std::string> _samples;
 

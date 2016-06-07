@@ -147,7 +147,7 @@ void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design,
       {
          k.add_comment("inv-fail");
          k.p_val(0);
-
+         std::cerr << "Inversion at input line " << k.line_number() << " failed" << std::endl;
          failed = 1;
          break;
       }
