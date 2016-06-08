@@ -13,7 +13,7 @@ install:
    - pushd gzstream && make && popd
    - wget ftp://ftp.hdfgroup.org/HDF5/releases/hdf5-1.8.4/src/hdf5-1.8.4.tar.gz
    - tar xzf hdf5-1.8.4.tar.gz
-   - pushd hdf5-1.8.4 && ./configure && make && sudo make install && popd
+   - pushd hdf5-1.8.4 && ./configure --prefix=/usr CC=/usr/bin/gcc-4.9 && make && sudo make install && popd
    - wget http://sourceforge.net/projects/arma/files/armadillo-6.700.6.tar.gz
    - tar xzf armadillo-6.700.6.tar.gz
    - pushd armadillo-6.700.6 && CXX=/usr/bin/g++-4.9 cmake . && make && sudo make install && popd
@@ -23,7 +23,4 @@ install:
 script: CXX=/usr/bin/g++-4.9 make
 
 after_script:
-   - ldd src/seer
-   - locate libhdf5
-   - cat H5version.h
    - make test
