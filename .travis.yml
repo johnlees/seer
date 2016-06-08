@@ -8,6 +8,8 @@ before_install:
    - sudo apt-get install g++-4.9 libhdf5-serial-dev libopenblas-dev liblapack-dev libboost-program-options-dev -y
 
 install:
+   - sudo ldconfig
+   - sudo updatedb
    - wget http://www.cs.unc.edu/Research/compgeom/gzstream/gzstream.tgz
    - tar xzf gzstream.tgz
    - pushd gzstream && make && popd
@@ -20,4 +22,5 @@ script: CXX=/usr/bin/g++-4.9 make
 
 after_script:
    - ldd src/seer
+   - locate libhdf5
    - make test

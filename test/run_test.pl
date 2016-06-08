@@ -15,7 +15,7 @@ sub do_test($$$$)
    my $fail = 0;
 
    my $outfile = tmpnam();
-   system("$command &> $outfile");
+   system("$command 2>&1 > $outfile");
 
    my $diff = `diff -q $outfile $file`;
    if ($diff ne "")
