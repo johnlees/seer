@@ -8,6 +8,9 @@ before_install:
    - sudo apt-get install g++-4.9 libhdf5-serial-dev liblapack-dev libboost-program-options-dev -y
 
 install:
+   # Can't get this to be compatible with armadillo for some reason
+   - sudo grep -v "undef ARMA_USE_HDF5" /usr/include/armadillo_bits/include_hdf5.hpp > /usr/include/armadillo_bits/include_hdf5.hpp
+   - sudo grep -v "pragma" /usr/include/armadillo_bits/include_hdf5.hpp > /usr/include/armadillo_bits/include_hdf5.hpp
    - wget http://www.cs.unc.edu/Research/compgeom/gzstream/gzstream.tgz
    - tar xzf gzstream.tgz
    - pushd gzstream && make && popd
@@ -19,6 +22,4 @@ install:
 script: CXX=/usr/bin/g++-4.9 make
 
 after_script:
-   - cat /usr/include/H5public.h
-   - cat /usr/include/H5version.h
    - make test
