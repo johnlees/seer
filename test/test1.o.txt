@@ -1,0 +1,1 @@
+sequence	maf	unadj_p_val	p_val	beta	se	comments

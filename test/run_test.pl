@@ -15,13 +15,16 @@ sub do_test($$$$)
    my $fail = 0;
 
    my $outfile = tmpnam();
-   system("$command 2>&1 > $outfile");
+   my $errfile = tmpnam();
+   system("$command > $outfile 2> $errfile");
 
-   my $diff = `diff -q $outfile $file`;
-   if ($diff ne "")
+   my $outdiff = `diff -q $outfile $file.o`;
+   my $errdiff = `diff -q $errfile $file.e`;
+   if ($outdiff ne "" || $errdiff ne "")
    {
       print STDERR "FAILED test $num, $name\n";
-      print STDERR $diff . "\n";
+      print STDERR $outdiff . "\n";
+      print STDERR $errdiff . "\n";
       $fail = 1;
    }
    else
