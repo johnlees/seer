@@ -16,7 +16,7 @@ install:
    - pushd armadillo-6.700.6 && CXX=/usr/bin/g++-4.9 cmake . && make && sudo make install && popd
 
 #script: CXX=/usr/bin/g++-4.9 make && make test
-script: CXX=/usr/bin/g++-4.9 make CPPFLAGS=-DNO_HDF5
+script: CXX=/usr/bin/g++-4.9 make CPPFLAGS=-I../gzstream -I../dlib -D DLIB_NO_GUI_SUPPORT=1 -D DLIB_USE_BLAS=1 -D DLIB_USE_LAPACK=1 -DNO_HDF5
 
 after_script:
    - make test
