@@ -86,7 +86,11 @@ void writeMDS(const std::string& file_name, const std::vector<Sample>& sample_na
 {
    if (MDS.n_rows == sample_names.size())
    {
+#ifdef NO_HDF5
+      MDS.save(file_name, arma::arma_ascii);
+#else
       MDS.save(file_name, arma::hdf5_binary);
+#endif
 
       std::string sample_file_name = file_name + sample_suffix;
       std::ofstream sample_names_file(sample_file_name.c_str());
@@ -122,7 +126,7 @@ arma::mat readHDF5(const std::string& file_name)
 
    if (fileStat(file_name))
    {
-      HDF5.load(file_name, arma::hdf5_binary);
+      HDF5.load(file_name);
    }
    else
    {

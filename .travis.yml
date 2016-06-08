@@ -5,7 +5,7 @@ language: cpp
 before_install:
    - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
    - sudo apt-get update -qq
-   - sudo apt-get install g++-4.9 libhdf5-serial-dev liblapack-dev libboost-program-options-dev -y
+   - sudo apt-get install g++-4.9 liblapack-dev libboost-program-options-dev -y
 
 install:
    - wget http://www.cs.unc.edu/Research/compgeom/gzstream/gzstream.tgz
@@ -14,11 +14,9 @@ install:
    - wget http://sourceforge.net/projects/arma/files/armadillo-6.700.6.tar.gz
    - tar xzf armadillo-6.700.6.tar.gz
    - pushd armadillo-6.700.6 && CXX=/usr/bin/g++-4.9 cmake . && make && sudo make install && popd
-   # Can't get this to be compatible with armadillo for some reason
-   - sudo bash -c "grep -v 'undef ARMA_USE_HDF5' /usr/include/armadillo_bits/include_hdf5.hpp > tmp_arma.hpp && grep -v 'pragma' tmp_arma.hpp > /usr/include/armadillo_bits/include_hdf5.hpp"
 
 #script: CXX=/usr/bin/g++-4.9 make && make test
-script: CXX=/usr/bin/g++-4.9 make
+script: CXX=/usr/bin/g++-4.9 make CPPFLAGS=-DNO_HDF5
 
 after_script:
    - make test
