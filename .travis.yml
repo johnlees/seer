@@ -5,22 +5,20 @@ language: cpp
 before_install:
    - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
    - sudo apt-get update -qq
-   - sudo apt-get install g++-4.9 liblapack-dev libboost-program-options-dev -y
+   - sudo apt-get install g++-4.9 libhdf5-serial-dev liblapack-dev libboost-program-options-dev -y
 
 install:
    - wget http://www.cs.unc.edu/Research/compgeom/gzstream/gzstream.tgz
    - tar xzf gzstream.tgz
    - pushd gzstream && make && popd
-   - wget ftp://ftp.hdfgroup.org/HDF5/releases/hdf5-1.8.4/src/hdf5-1.8.4.tar.gz
-   - tar xzf hdf5-1.8.4.tar.gz
-   - pushd hdf5-1.8.4 && ./configure --prefix=/usr CC=/usr/bin/gcc-4.9 && make && sudo make install && popd
    - wget http://sourceforge.net/projects/arma/files/armadillo-6.700.6.tar.gz
    - tar xzf armadillo-6.700.6.tar.gz
    - pushd armadillo-6.700.6 && CXX=/usr/bin/g++-4.9 cmake . && make && sudo make install && popd
-   - sudo ldconfig
 
 #script: CXX=/usr/bin/g++-4.9 make && make test
 script: CXX=/usr/bin/g++-4.9 make
 
 after_script:
+   - cat /usr/include/H5public.h
+   - cat /usr/include/H5version.h
    - make test
