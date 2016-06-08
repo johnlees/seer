@@ -15,8 +15,8 @@ install:
    - tar xzf armadillo-6.700.6.tar.gz
    - pushd armadillo-6.700.6 && CXX=/usr/bin/g++-4.9 cmake . && make && sudo make install && popd
    # Can't get this to be compatible with armadillo for some reason
-   - sudo grep -v "undef ARMA_USE_HDF5" /usr/include/armadillo_bits/include_hdf5.hpp > /usr/include/armadillo_bits/include_hdf5.hpp
-   - sudo grep -v "pragma" /usr/include/armadillo_bits/include_hdf5.hpp > /usr/include/armadillo_bits/include_hdf5.hpp
+   - sudo bash -c "grep -v 'undef ARMA_USE_HDF5' /usr/include/armadillo_bits/include_hdf5.hpp > /usr/include/armadillo_bits/include_hdf5.hpp"
+   - sudo bash -c "grep -v 'pragma' /usr/include/armadillo_bits/include_hdf5.hpp > /usr/include/armadillo_bits/include_hdf5.hpp"
 
 #script: CXX=/usr/bin/g++-4.9 make && make test
 script: CXX=/usr/bin/g++-4.9 make
