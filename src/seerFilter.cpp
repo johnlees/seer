@@ -22,7 +22,7 @@ int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Samp
       {
          try  // Some chi^2 tests may diverge - proceed anyway for now
          {
-            pass = passStatsFilters(k, y, filterOptions.chi_cutoff, continuous_phenotype, filterOptions.positive);
+            pass = passStatsFilters(k, y, filterOptions.chi_cutoff, continuous_phenotype);
          }
          catch (std::exception& e)
          {
@@ -56,7 +56,7 @@ int passBasicFilters(const Kmer& k, const int max_length, const int min_words, c
    return passed;
 }
 
-int passStatsFilters(Kmer& k, const arma::vec& y, const double chi_cutoff, const int continuous_phenotype, const int positive_only)
+int passStatsFilters(Kmer& k, const arma::vec& y, const double chi_cutoff, const int continuous_phenotype)
 {
    int passed = 1;
 
