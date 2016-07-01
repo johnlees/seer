@@ -47,15 +47,6 @@ cmdOptions verifyCommandLine(boost::program_options::variables_map& vm, const st
    else
    {
       // Error check filtering options
-      if(vm.count("positive_only"))
-      {
-         verified.positive = 1;
-      }
-      else
-      {
-         verified.positive = 0;
-      }
-
       verified.min_words = 0;
       if (vm.count("min_words"))
       {

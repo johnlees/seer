@@ -43,7 +43,6 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
     ("max_length", po::value<long int>()->default_value(max_length_default), "maximum kmer length")
     ("maf", po::value<double>()->default_value(maf_default), "minimum kmer frequency")
     ("min_words", po::value<int>(), "minimum kmer occurences. Overrides --maf")
-    ("positive_only", "only test words with a predicted positive effect direction")
     ("chisq", po::value<std::string>()->default_value(chisq_default), "p-value threshold for initial chi squared test. Set to 1 to show all")
     ("pval", po::value<std::string>()->default_value(pval_default), "p-value threshold for final logistic test. Set to 1 to show all");
 

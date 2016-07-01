@@ -63,32 +63,15 @@ int passStatsFilters(Kmer& k, const arma::vec& y, const double chi_cutoff, const
    if (continuous_phenotype)
    {
       k.unadj_p_val(welchTwoSamplet(k, y));
-      if (k.unadj() > chi_cutoff)
-      {
-         passed = 0;
-      }
    }
    else
    {
-      // Test positive effects only
-      // i.e. having kmer associates with having phenotype
-      if (positive_only)
-      {
-         arma::mat x = k.get_x();
-         if (dot(y - x, y - x) <= 0.5*y.n_rows)
-         {
-            passed = 0;
-         }
-      }
+      k.unadj_p_val(chiTest(k, y));
+   }
 
-      if (passed)
-      {
-         k.unadj_p_val(chiTest(k, y));
-         if (k.unadj() > chi_cutoff)
-         {
-            passed = 0;
-         }
-      }
+   if (k.unadj() > chi_cutoff)
+   {
+     passed = 0;
    }
 
    return passed;

@@ -41,7 +41,7 @@
 #include "covar.hpp"
 
 // Constants
-const std::string VERSION = "1.1.2alpha";
+const std::string VERSION = "1.1.3alpha";
 //    Default options
 const double maf_default = 0.01;
 const long int max_length_default = 100;
@@ -60,7 +60,6 @@ struct cmdOptions
    long int max_length;
    long int size;
    int filter;
-   int positive;
    int pc;
    int print_samples;
    int write_distances;
