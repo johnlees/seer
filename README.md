@@ -29,7 +29,7 @@ Currently tested on Linux only, installation should proceed as
 
     make
     make install
-    
+
 Full installation instructions are available <a href="#installation-on-ubuntubiolinux">below</a>
 
 Dependencies
@@ -55,14 +55,14 @@ Running the following commands will install seer
 
     sudo add-apt-repository ppa:ubuntu-toolchain-r/test
     sudo apt-get update
-    sudo apt-get install g++-4.9 libhdf5-dev libopenblas-dev libboost-program-options1.55-dev
+    sudo apt-get install g++-4.9 libhdf5-dev libopenblas-dev libboost-program-options-dev
 
     git clone --recursive https://github.com/johnlees/seer
     cd seer
 
     wget http://www.cs.unc.edu/Research/compgeom/gzstream/gzstream.tgz
     tar xzf gzstream.tgz
-    cd gzstream && CC=/usr/bin/gcc-4.9 make
+    cd gzstream &&make CC=/usr/bin/gcc-4.9
     cd ..
 
     wget http://sourceforge.net/projects/arma/files/armadillo-6.700.6.tar.gz
@@ -73,8 +73,7 @@ Running the following commands will install seer
     sudo make install
     sudo ldconfig /usr/lib64
     cd ..
-
-    cd src && CXX=/usr/bin/g++-4.9 make
+    cd src && make CXX=/usr/bin/g++-4.9
 
 ###General installation instructions
 

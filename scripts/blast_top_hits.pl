@@ -92,7 +92,7 @@ else
       $qseqid = "qseqid";
       $qstart = "qstart";
       $qend = "qend";
-      $length = "length;"
+      $length = "length";
    }
    else
    {

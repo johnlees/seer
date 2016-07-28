@@ -46,7 +46,7 @@ std::istream& operator>>(std::istream &is, Significant_kmer& sk)
    // Ignore the covariate fields
    for (unsigned int i = 0; i < sk.num_covars(); ++i)
    {
-      line_stream.ignore(std::numeric_limits<std::streamsize>::max(), ' ');
+      line_stream.ignore(std::numeric_limits<std::streamsize>::max(), '\t');
    }
 
    line_stream >> comments;
