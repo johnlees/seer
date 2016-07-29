@@ -96,6 +96,35 @@ unsigned int Significant_kmer::num_covars() const
    return covars;
 }
 
+// Returns the reverse complement of a k-mer
+// Thanks to http://stackoverflow.com/questions/33074574/creating-complement-of-dna-sequence-and-reversing-it-c
+// for good c++11 style
+std::string Significant_kmer::rev_comp() const
+{
+   std::string rev_seq(_word);
+   auto lambda = [](const char c)
+   {
+      switch (c)
+      {
+        case 'A':
+            return 'T';
+        case 'G':
+            return 'C';
+        case 'C':
+            return 'G';
+        case 'T':
+            return 'A';
+        default:
+            throw std::runtime_error("Invalid nucleotide");
+        }
+    };
+
+    std::transform(rev_seq.cbegin(), rev_seq.cend(), rev_seq.begin(), lambda);
+    std::reverse(rev_seq.begin(), rev_seq.end());
+    return rev_seq;
+}
+
+
 // Returns number of excess columns (i.e. number of covariate fields)
 int parseHeader(const std::string& header_line)
 {

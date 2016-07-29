@@ -11,6 +11,7 @@
 #include <vector>
 #include <iterator>
 #include <algorithm>
+#include <stdexcept>
 
 const int default_covars = 0;
 const int standard_cols = 7;
@@ -36,6 +37,7 @@ class Significant_kmer
       std::string comments() const { return _comment; }
       std::vector<double> covar_p() const { return _covar_p; }
       unsigned int num_covars() const; // Defined in significant_kmer.cpp
+      std::string rev_comp() const; // Defined in significant_kmer.cpp
 
       // Modifying operations
       void set_line_nr(const long int line_nr) { _line_nr = line_nr; }

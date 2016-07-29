@@ -44,6 +44,7 @@ $exit_status = $exit_status || do_test("$seer_location/seer -k example_kmers.gz 
 $exit_status = $exit_status || do_test("$seer_location/seer -k example_kmers.gz -p example.pheno --struct all_structure_new --pval 1 --chisq 1", "test5", 5, "assocation with population structure");
 $exit_status = $exit_status || do_test("$seer_location/seer -k example_kmers.gz -p subset.pheno --covar_file covariates.txt --covar_list 2q,3 --pval 1 --chisq 1", "test6", 6, "assocation with covariates");
 $exit_status = $exit_status || do_test("$seer_location/filter_seer -k filter_in.txt --pos_beta", "test7", 7, "filter output");
+$exit_status = $exit_status || do_test("$seer_location/map_back -k map_in.txt -r assembly_locations.txt --threads 1", "test8", 8, "map k-mers");
 
 exit($exit_status);
 

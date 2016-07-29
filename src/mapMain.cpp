@@ -90,10 +90,16 @@ int main (int argc, char *argv[])
                      // queue
                      threads.push_back(std::async(std::launch::async,
                               &Fasta::printMappings, *all_names_it, std::ref(std::cout), sig_kmer.sequence(), std::ref(out_mtx)));
+
+                     // Search for reverse complement too
+                     waitForThreads(threads, num_threads - 1);
+                     threads.push_back(std::async(std::launch::async,
+                              &Fasta::printMappings, *all_names_it, std::ref(std::cout), sig_kmer.rev_comp(), std::ref(out_mtx)));
                   }
                   else
                   {
                      all_names_it->printMappings(std::cout, sig_kmer.sequence(), out_mtx);
+                     all_names_it->printMappings(std::cout, sig_kmer.rev_comp(), out_mtx);
                   }
 
                   ++search_names_it;
