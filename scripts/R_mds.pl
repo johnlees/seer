@@ -111,7 +111,7 @@ else
    my $Rscript = <<RSCRIPT;
 library(rhdf5)
 distances <- read.csv("$distance_file", header=FALSE, stringsAsFactors=FALSE)
-projection <- cmdscale(distances, k = $dimensions)
+projection <- cmdscale(distances, k = $dimensions, eig = T)
 
 for (i in 1:$dimensions)
 {
@@ -121,6 +121,10 @@ for (i in 1:$dimensions)
 h5createFile("$output_prefix")
 h5write(projection,"$output_prefix","dataset")
 H5close()
+
+pdf("scree_plot.pdf")
+plot(projection[[2]][1:30], type='l', xlab="Dimensions", ylab="Eigenvalue", main="Scree plot")
+dev.off()
 RSCRIPT
 
    open(RSCRIPT, ">$tmp_file_name") || die("Could not open $tmp_file_name: $!\n");
