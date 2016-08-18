@@ -123,6 +123,7 @@ int main (int argc, char *argv[])
    std::cout << std::endl;
 
    long int input_line = 0;
+   long int tested_kmers = 0;
    while (kmer_file)
    {
       // Parse a set of dsm lines
@@ -143,6 +144,7 @@ int main (int argc, char *argv[])
             if (!parameters.filter)
             {
                kmer_lines.push_back(k);
+               tested_kmers++;
             }
             else if (passFilters(parameters, k, samples, y, continuous_phenotype))
             {
@@ -150,6 +152,7 @@ int main (int argc, char *argv[])
                std::cerr << "kmer " + k.sequence() + " seems significant\n";
 #endif
                kmer_lines.push_back(k);
+               tested_kmers++;
             }
          }
       }
@@ -228,6 +231,9 @@ int main (int argc, char *argv[])
       // ...to here
    }
 
+   std::cerr << "Read " << input_line << " total k-mers. Of these:\n";
+   std::cerr << "\tFiltered " << input_line - tested_kmers << " k-mers\n";
+   std::cerr << "\tTested " << tested_kmers << " k-mers\n";
    std::cerr << "Done.\n";
 }
 
