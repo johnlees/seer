@@ -1,3 +1,6 @@
 seer: sequence element enrichment analysis
 Detected binary phenotype
+Read 201 total k-mers. Of these:
+	Filtered 201 k-mers
+	Tested 0 k-mers
 Done.
