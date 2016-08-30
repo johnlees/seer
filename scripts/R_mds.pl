@@ -112,14 +112,15 @@ else
 library(rhdf5)
 distances <- read.csv("$distance_file", header=FALSE, stringsAsFactors=FALSE)
 projection <- cmdscale(distances, k = $dimensions, eig = T)
+covariates <- projection[["points"]]
 
 for (i in 1:$dimensions)
 {
-   projection[,i] <- projection[,i]/max(abs(projection[,i]))
+   covariates[,i] <- covariates[,i]/max(abs(covariates[,i]))
 }
 
 h5createFile("$output_prefix")
-h5write(projection,"$output_prefix","dataset")
+h5write(covariates,"$output_prefix","dataset")
 H5close()
 
 pdf("scree_plot.pdf")
