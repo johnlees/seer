@@ -19,7 +19,7 @@
 #include "significant_kmer.hpp"
 
 // Constants
-const std::string VERSION = "1.1.1";
+const std::string VERSION = "1.1.2";
 
 // Structures
 struct cmdOptions
