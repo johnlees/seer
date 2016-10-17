@@ -1,6 +1,6 @@
 seer: sequence element enrichment analysis
 Detected continuous phenotype
-Read 201 total k-mers. Of these:
-	Filtered 185 k-mers
+Read 200 total k-mers. Of these:
+	Filtered 184 k-mers
 	Tested 16 k-mers
 Done.
