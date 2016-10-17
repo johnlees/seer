@@ -231,8 +231,8 @@ int main (int argc, char *argv[])
       // ...to here
    }
 
-   std::cerr << "Read " << input_line << " total k-mers. Of these:\n";
-   std::cerr << "\tFiltered " << input_line - tested_kmers << " k-mers\n";
+   std::cerr << "Read " << input_line - 1 << " total k-mers. Of these:\n";
+   std::cerr << "\tFiltered " << input_line - tested_kmers - 1 << " k-mers\n";
    std::cerr << "\tTested " << tested_kmers << " k-mers\n";
    std::cerr << "Done.\n";
 }
