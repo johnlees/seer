@@ -9,7 +9,8 @@
 
 /**
  * Evaluate the logistic regression objective function given the estimated
- * parameters.
+ * parameters. With thanks to mlpack http://mlpack.org/;
+ * http://mlpack.org/papers/mlpack2013.pdf
  */
 double LogitLikelihood::operator()(const column_vector& parameters_in)
    const
@@ -30,10 +31,8 @@ double LogitLikelihood::operator()(const column_vector& parameters_in)
        arma::dot(parameters.col(0).subvec(1, parameters.n_elem - 1),
                  parameters.col(0).subvec(1, parameters.n_elem - 1));
 
-   // Calculate vectors of sigmoids.  The intercept term is parameters(0, 0) and
-   // does not need to be multiplied by any of the predictors.
-   const arma::vec exponents = parameters(0) + predictors *
-       parameters.col(0).subvec(1, parameters.n_elem - 1);
+   // Calculate vectors of sigmoids
+   const arma::vec exponents = predictors * parameters;
    const arma::vec sigmoid = 1.0 / (1.0 + arma::exp(-exponents));
 
    // Assemble full objective function.  Often the objective function and the

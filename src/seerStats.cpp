@@ -5,7 +5,7 @@
  *
  */
 
-#include "seercommon.hpp"
+#include "seer.hpp"
 
 const double normalArea = pow(2*M_PI, -0.5);
 
@@ -117,6 +117,63 @@ double welchTwoSamplet(const Kmer& k, const arma::vec& y)
    }
 
    return p_val;
+}
+
+// Fit null models for null log-likelihoods
+double nullLogLikelihood(const arma::mat& x, const arma::vec& y, const int continuous)
+{
+   double null_ll = 0;
+   Kmer null_kmer;
+   if (x.n_cols > 1)
+   {
+      if (continuous)
+      {
+         doLinear(null_kmer, y, x);
+      }
+      else
+      {
+         doLogit(null_kmer, y, x);
+      }
+      null_ll = null_kmer.log_likelihood();
+   }
+   else
+   {
+      dlib::matrix<double,1,1> intercept;
+      intercept(0) = mean(y);
+
+      if (continuous)
+      {
+         LinearLikelihood likelihood_fit(x, y);
+         double SSE =  accu(square((y - x * intercept(0))));
+         null_ll = -likelihood_fit(intercept) / (SSE/x.n_rows);
+      }
+      else
+      {
+         LogitLikelihood likelihood_fit(x, y);
+         null_ll = -likelihood_fit(intercept);
+      }
+   }
+   return null_ll;
+}
+
+// Likelihood-ratio test
+double likelihoodRatioTest(Kmer& k, const double null_ll)
+{
+   double log_likelihood = k.log_likelihood();
+   double lrt_p = 0;
+   if (log_likelihood == 0 || null_ll == 0)
+   {
+      k.add_comment("zero-ll");
+   }
+   else
+   {
+      double lrt = 2*(log_likelihood - null_ll);
+      if (lrt > 0)
+      {
+         lrt_p = normalPval(pow(lrt,0.5));
+      }
+   }
+   return lrt_p;
 }
 
 // Returns p-value for a test statistic that is >0 and standard normally distributed

@@ -8,27 +8,36 @@
 #include "seer.hpp"
 
 // Linear fit without covariates
-void linearTest(Kmer& k, const arma::vec& y_train)
+void linearTest(Kmer& k, const arma::vec& y_train, const double null_ll)
 {
    // Train classifier
-   arma::mat x_train = k.get_x();
+   arma::mat x_train = join_rows(arma::mat(y_train.n_rows,1,arma::fill::ones), k.get_x());
    doLinear(k, y_train, x_train);
+
+   // Likelihood ratio test
+   k.lrt_p_val(likelihoodRatioTest(k, null_ll));
 }
 
 // Linear fit with covariates
-void linearTest(Kmer& k, const arma::vec& y_train, const arma::mat& mds)
+void linearTest(Kmer& k, const arma::vec& y_train, const double null_ll, const arma::mat& mds)
 {
    // Train classifier
-   arma::mat x_train = arma::join_rows(k.get_x(), mds);
+   arma::mat x_train = join_rows(arma::mat(y_train.n_rows,1,arma::fill::ones), k.get_x());
+   x_train = join_rows(x_train, mds);
    doLinear(k, y_train, x_train);
+
+   // Likelihood ratio test
+   k.lrt_p_val(likelihoodRatioTest(k, null_ll));
 }
 
 // Run linear fit
-void doLinear(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
+void doLinear(Kmer& k, const arma::vec& y_train, const arma::mat& x_design)
 {
-   // Set up design matrix
-   arma::mat x_design = join_rows(arma::mat(x_train.n_rows,1,arma::fill::ones), x_train);
+   // To store gradient
    arma::vec b;
+
+   // store this, used later for the LRT
+   LinearLikelihood likelihood_fit(x_design, y_train);
 
    try
    {
@@ -44,12 +53,11 @@ void doLinear(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
       // b vector, which will end in starting_point
       dlib::find_min(dlib::bfgs_search_strategy(),
                   dlib::objective_delta_stop_strategy(convergence_limit),
-                  LinearLikelihood(x_design, y_train), LinearLikelihoodGradient(x_design, y_train),
+                  likelihood_fit, LinearLikelihoodGradient(x_design, y_train),
                   starting_point, -1);
 
-      // Extract beta
+      // Extract beta and likelihood
       b = dlib_to_arma(starting_point);
-
    }
    catch (std::exception& e)
    {
@@ -68,18 +76,24 @@ void doLinear(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
       arma::solve(b, R, Q.t() * y_train);
    }
 
+   // Extract p-values
+   double SSE = accu(square(y_train - predictLinearProbs(x_design, b)));
+   double MSE = SSE / (x_design.n_rows - 2);
+
+   // LRT test
+   double ll = -likelihood_fit(arma_to_dlib(b)) / (SSE/x_design.n_rows);
+   k.log_likelihood(ll);
+
+   // Can end here for null-ll
    k.beta(b(1));
 
-   // Extract p-value
-   //
+   // Wald test
    // W = B_1 / SE(B_1) ~ N(0,1)
    //
    // SE(B_1) = MSE * (X'X)^-1
    // MSE = sum(Y_i-Y'_i)^2 / n-2
    //
-   double MSE = accu(square(y_train - predictLinearProbs(x_design, b))) / (x_train.n_rows - 2);
    arma::mat var_covar_mat = inv_covar(x_design.t()*x_design);
-
    double se = pow((var_covar_mat(1,1) * MSE), 0.5);
    k.standard_error(se);
 

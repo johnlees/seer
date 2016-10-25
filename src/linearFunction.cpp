@@ -8,7 +8,7 @@
 #include "linkFunction.hpp"
 
 /**
- * Evaluate the logistic regression objective function given the estimated
+ * Evaluate the linear regression objective function given the estimated
  * parameters.
  */
 double LinearLikelihood::operator()(const column_vector& parameters_in)
@@ -23,7 +23,7 @@ double LinearLikelihood::operator()(const column_vector& parameters_in)
    return result;
 }
 
-// Evaluate the gradient of the logistic regression objective function.
+// Evaluate the gradient of the linear regression objective function.
 column_vector LinearLikelihoodGradient::operator()(const column_vector& parameters_in)
    const
 {

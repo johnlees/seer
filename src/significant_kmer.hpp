@@ -14,7 +14,7 @@
 #include <stdexcept>
 
 const int default_covars = 0;
-const int standard_cols = 7;
+const int standard_cols = 8;
 
 // kmers have a sequence, and a list of samples they appear in
 class Significant_kmer
@@ -23,7 +23,7 @@ class Significant_kmer
       // Initialisation
       Significant_kmer();
       Significant_kmer(const int num_covars);
-      Significant_kmer(const std::string& word, const std::vector<std::string>& samples, const double maf, const double unadj_p, const double adj_p, const double beta, const double se, const std::string& comments);
+      Significant_kmer(const std::string& word, const std::vector<std::string>& samples, const double maf, const double unadj_p, const double adj_p, const double lrt_p, const double beta, const double se, const std::string& comments);
 
       // nonmodifying operations
       long int line_number() const { return _line_nr; }
@@ -32,6 +32,7 @@ class Significant_kmer
       double maf() const { return _maf; }
       double unadj() const { return _unadj_p; }
       double p_val() const { return _adj_p; }
+      double lrt_p_val() const { return _adj_lrt_p; }
       double beta() const { return _beta; }
       double se() const { return _se; }
       std::string comments() const { return _comment; }
@@ -42,6 +43,7 @@ class Significant_kmer
       // Modifying operations
       void set_line_nr(const long int line_nr) { _line_nr = line_nr; }
       void p_val(const double pvalue) { _adj_p = pvalue; }
+      void lrt_p_val(const double lrt_pvalue) { _adj_lrt_p = lrt_pvalue; }
       void unadj_p_val(const double chi_pvalue) { _unadj_p = chi_pvalue; }
       void beta(const double b) { _beta = b; }
       void standard_error(const double se) { _se = se; }
@@ -58,6 +60,7 @@ class Significant_kmer
       double _maf;
       double _unadj_p;
       double _adj_p;
+      double _adj_lrt_p;
       double _beta;
       double _se;
       std::vector<double> _covar_p;

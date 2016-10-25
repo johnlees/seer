@@ -18,8 +18,8 @@ Significant_kmer::Significant_kmer(const int num_covars)
 {
 }
 
-Significant_kmer::Significant_kmer(const std::string& word, const std::vector<std::string>& samples, const double maf, const double unadj_p, const double adj_p, const double beta, const double se, const std::string& comments)
-   :_line_nr(0), _word(word), _samples(samples), _maf(maf), _unadj_p(unadj_p), _adj_p(adj_p), _beta(beta), _se(se), _comment(comments), _num_covars(default_covars)
+Significant_kmer::Significant_kmer(const std::string& word, const std::vector<std::string>& samples, const double maf, const double unadj_p, const double adj_p, const double lrt_p, const double beta, const double se, const std::string& comments)
+   :_line_nr(0), _word(word), _samples(samples), _maf(maf), _unadj_p(unadj_p), _adj_p(adj_p), _adj_lrt_p(lrt_p), _beta(beta), _se(se), _comment(comments), _num_covars(default_covars)
 {
 }
 
@@ -27,7 +27,7 @@ Significant_kmer::Significant_kmer(const std::string& word, const std::vector<st
 // Sample vector is returned sorted
 std::istream& operator>>(std::istream &is, Significant_kmer& sk)
 {
-   double maf, unadj_p, adj_p, beta, se;
+   double maf, unadj_p, adj_p, lrt_p, beta, se;
    std::string sequence, sample, line_in, comments = "";
    std::vector<std::string> sample_list;
 
@@ -40,6 +40,7 @@ std::istream& operator>>(std::istream &is, Significant_kmer& sk)
    line_stream >> maf;
    line_stream >> unadj_p;
    line_stream >> adj_p;
+   line_stream >> lrt_p;
    line_stream >> beta;
    line_stream >> se;
 
@@ -57,7 +58,7 @@ std::istream& operator>>(std::istream &is, Significant_kmer& sk)
 
    // Ensure vector remains sorted on sample name
    std::sort(sample_list.begin(), sample_list.end());
-   sk = Significant_kmer(sequence, sample_list, maf, unadj_p, adj_p, beta, se, comments);
+   sk = Significant_kmer(sequence, sample_list, maf, unadj_p, adj_p, lrt_p, beta, se, comments);
 
    return is;
 }
@@ -65,10 +66,9 @@ std::istream& operator>>(std::istream &is, Significant_kmer& sk)
 // Print fields tab sep, identical to input. Doesn't print newline
 std::ostream& operator<<(std::ostream &os, const Significant_kmer& k)
 {
-   os << k.sequence() << "\t"
-      << std::fixed << std::setprecision(3) << k.maf() << "\t"
-      << std::scientific << k.unadj() << "\t" << k.p_val() << "\t" << k.beta() << "\t" << k.se()
-      << "\t" << k.comments();
+   os << std::fixed << std::setprecision(3) << k.sequence() << "\t" << k.maf()
+      << "\t" << std::scientific << k.unadj() << "\t" << k.p_val() << "\t" << k.lrt_p_val()
+      << "\t" << k.beta() << "\t" << k.se();
 
    std::vector<std::string> samples_found = k.samples_found();
    if (samples_found.size() > 0)

@@ -89,23 +89,34 @@ int main (int argc, char *argv[])
 
    // Disambiguate overloaded logistic functions by the type of parameter they
    // take
-   void (*mdsLogitFunc)(Kmer&, const arma::vec&, const arma::mat&) = &logisticTest;
-   void (*logitFunc)(Kmer&, const arma::vec&) = &logisticTest;
+   void (*mdsLogitFunc)(Kmer&, const arma::vec&, const double, const arma::mat&) = &logisticTest;
+   void (*logitFunc)(Kmer&, const arma::vec&, const double) = &logisticTest;
 
-   void (*mdsLinearFunc)(Kmer&, const arma::vec&, const arma::mat&) = &linearTest;
-   void (*linearFunc)(Kmer&, const arma::vec&) = &linearTest;
+   void (*mdsLinearFunc)(Kmer&, const arma::vec&, const double, const arma::mat&) = &linearTest;
+   void (*linearFunc)(Kmer&, const arma::vec&, const double) = &linearTest;
 
    // Error check command line options
    cmdOptions parameters = verifyCommandLine(vm, samples);
+
+   // calculate the null log-likelihood
+   Kmer null_kmer;
+   arma::mat x(y.n_rows, 1, arma::fill::ones);
+   if (use_mds)
+   {
+      x = join_rows(x, mds);
+   }
+
+   double null_ll = nullLogLikelihood(x, y, continuous_phenotype);
 
    // Open the dsm kmer ifstream, and read through the whole thing
    igzstream kmer_file;
    openDsmFile(kmer_file, parameters.kmers);
 
    // Write a header
+   std::string header = "sequence\tmaf\tchisq_p_val\twald_p_val\tlrt_p_val\tbeta\tse";
    if (use_mds)
    {
-      std::cout << "sequence\tmaf\tunadj_p_val\tp_val\tbeta\tse";
+      std::cout << header;
       for (unsigned int i = 1; i <= mds.n_cols; ++i)
       {
          std::cout << "\tcovar" << i << "_p";
@@ -114,7 +125,7 @@ int main (int argc, char *argv[])
    }
    else
    {
-      std::cout << "sequence\tmaf\tunadj_p_val\tp_val\tbeta\tse\tcomments";
+      std::cout << header << "\tcomments";
    }
    if (parameters.print_samples)
    {
@@ -124,6 +135,7 @@ int main (int argc, char *argv[])
 
    long int input_line = 0;
    long int tested_kmers = 0;
+   long int significant_kmers = 0;
    while (kmer_file)
    {
       // Parse a set of dsm lines
@@ -170,22 +182,22 @@ int main (int argc, char *argv[])
          {
             if (continuous_phenotype)
             {
-               threads.push_back(std::thread(mdsLinearFunc, std::ref(kmer_lines[i]), std::cref(y), std::cref(mds)));
+               threads.push_back(std::thread(mdsLinearFunc, std::ref(kmer_lines[i]), std::cref(y), null_ll, std::cref(mds)));
             }
             else
             {
-               threads.push_back(std::thread(mdsLogitFunc, std::ref(kmer_lines[i]), std::cref(y), std::cref(mds)));
+               threads.push_back(std::thread(mdsLogitFunc, std::ref(kmer_lines[i]), std::cref(y), null_ll, std::cref(mds)));
             }
          }
          else
          {
             if (continuous_phenotype)
             {
-               threads.push_back(std::thread(linearFunc, std::ref(kmer_lines[i]), std::cref(y)));
+               threads.push_back(std::thread(linearFunc, std::ref(kmer_lines[i]), std::cref(y), null_ll));
             }
             else
             {
-               threads.push_back(std::thread(logitFunc, std::ref(kmer_lines[i]), std::cref(y)));
+               threads.push_back(std::thread(logitFunc, std::ref(kmer_lines[i]), std::cref(y), null_ll));
             }
          }
       }
@@ -196,8 +208,9 @@ int main (int argc, char *argv[])
          threads[i].join();
 
          // Print in order when all threads complete
-         if (kmer_lines[i].p_val() < parameters.log_cutoff)
+         if (kmer_lines[i].p_val() < parameters.log_cutoff || kmer_lines[i].lrt_p_val() < parameters.log_cutoff)
          {
+            significant_kmers++;
             // Caclculate chisq value if not already done so in filtering
             if (kmer_lines[i].unadj() == kmer_chi_pvalue_default)
             {
@@ -232,8 +245,9 @@ int main (int argc, char *argv[])
    }
 
    std::cerr << "Read " << input_line - 1 << " total k-mers. Of these:\n";
-   std::cerr << "\tFiltered " << input_line - tested_kmers - 1 << " k-mers\n";
+   std::cerr << "\tPre-filtered " << input_line - tested_kmers - 1 << " k-mers\n";
    std::cerr << "\tTested " << tested_kmers << " k-mers\n";
+   std::cerr << "\tPrinted " << significant_kmers << " k-mers\n";
    std::cerr << "Done.\n";
 }
 

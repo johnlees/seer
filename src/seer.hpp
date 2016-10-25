@@ -27,20 +27,27 @@ const double bfgs_start_beta = 1;
 int parseCommandLine (int argc, char *argv[], boost::program_options::variables_map& vm);
 void printHelp(boost::program_options::options_description& help);
 
-// seerBinaryAssoc headers
-void logisticTest(Kmer& k, const arma::vec& y);
-void logisticTest(Kmer& k, const arma::vec& y_train, const arma::mat& mds);
+// seerStats headers
+double chiTest(Kmer& k, const arma::vec& y);
+double welchTwoSamplet(const Kmer& k, const arma::vec& y);
+double nullLogLikelihood(const arma::mat& x, const arma::vec& y, const int continuous);
+double likelihoodRatioTest(Kmer& k, const double null_ll);
+double normalPval(double testStatistic);
 
-void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train);
+// seerBinaryAssoc headers
+void logisticTest(Kmer& k, const arma::vec& y, const double null_ll);
+void logisticTest(Kmer& k, const arma::vec& y_train, const double null_ll, const arma::mat& mds);
+
+void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_design);
 void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design, const bool firth = 0);
 
 arma::mat varCovarMat(const arma::mat& x, const arma::mat& b);
 arma::vec predictLogitProbs(const arma::mat& x, const arma::vec& b);
 
 // seerContinuousAssoc headers
-void linearTest(Kmer& k, const arma::vec& y_train);
-void linearTest(Kmer& k, const arma::vec& y_train, const arma::mat& mds);
+void linearTest(Kmer& k, const arma::vec& y_train, const double null_ll);
+void linearTest(Kmer& k, const arma::vec& y_train, const double null_ll, const arma::mat& mds);
 
-void doLinear(Kmer& k, const arma::vec& y_train, const arma::mat& x_train);
+void doLinear(Kmer& k, const arma::vec& y_train, const arma::mat& x_design);
 arma::vec predictLinearProbs(const arma::mat& x, const arma::vec& b);
 

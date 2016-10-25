@@ -8,25 +8,31 @@
 #include "seer.hpp"
 
 // Logistic fit without covariates
-void logisticTest(Kmer& k, const arma::vec& y_train)
+void logisticTest(Kmer& k, const arma::vec& y_train, const double null_ll)
 {
    // Train classifier
-   arma::mat x_train = k.get_x();
+   arma::mat x_train = arma::join_rows(arma::mat(y_train.n_rows,1,arma::fill::ones), k.get_x());
    doLogit(k, y_train, x_train);
+
+   // Likelihood ratio test
+   k.lrt_p_val(likelihoodRatioTest(k, null_ll));
 }
 
 // Logistic fit with covariates
-void logisticTest(Kmer& k, const arma::vec& y_train, const arma::mat& mds)
+void logisticTest(Kmer& k, const arma::vec& y_train, const double null_ll, const arma::mat& mds)
 {
    // Train classifier
-   arma::mat x_train = arma::join_rows(k.get_x(), mds);
+   arma::mat x_train = arma::join_rows(arma::mat(y_train.n_rows,1,arma::fill::ones), k.get_x());
+   x_train = arma::join_rows(x_train, mds);
    doLogit(k, y_train, x_train);
+
+   // Likelihood ratio test
+   k.lrt_p_val(likelihoodRatioTest(k, null_ll));
 }
 
 // This uses BFGS optimisation by default. Invokes NR or Firth on error
-void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
+void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_design)
 {
-   arma::mat x_design = join_rows(arma::mat(x_train.n_rows,1,arma::fill::ones), x_train);
    column_vector starting_point(x_design.n_cols);
 
    if (k.firth())
@@ -45,14 +51,18 @@ void doLogit(Kmer& k, const arma::vec& y_train, const arma::mat& x_train)
       {
          // Use BFGS optimiser in dlib to maximise likelihood function by chaging the
          // b vector, which will end in starting_point
+         LogitLikelihood likelihood_fit(x_design, y_train); // store this, as it is used for computing the LRT
+
          dlib::find_max(dlib::bfgs_search_strategy(),
                      dlib::objective_delta_stop_strategy(convergence_limit),
-                     LogitLikelihood(x_train, y_train), LogitLikelihoodGradient(x_train, y_train),
+                     likelihood_fit, LogitLikelihoodGradient(x_design, y_train),
                      starting_point, -1);
 
-         // Extract beta
+         // Extract beta and likelihood
          arma::vec b_vector = dlib_to_arma(starting_point);
          k.beta(b_vector(1));
+
+         k.log_likelihood(likelihood_fit(starting_point));
 
          // Extract p-value
          //
@@ -173,6 +183,7 @@ void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design,
 
       arma::vec b1 = b0 + var_covar_mat * U;
       parameter_iterations.push_back(b1);
+
       if (std::abs(b1(1) - b0(1)) < convergence_limit)
       {
          break;
@@ -197,7 +208,20 @@ void newtonRaphson(Kmer& k, const arma::vec& y_train, const arma::mat& x_design,
    }
    else if (!failed)
    {
-      k.beta(parameter_iterations.back()(1));
+      // Add beta and log-likelihood
+      column_vector converged_beta = arma_to_dlib(parameter_iterations.back());
+
+      LogitLikelihood likelihood_fit(x_design, y_train);
+      if (k.firth())
+      {
+         k.log_likelihood(likelihood_fit(converged_beta) + 0.5*log(det(inv_covar(var_covar_mat))));
+      }
+      else
+      {
+         k.log_likelihood(likelihood_fit(converged_beta));
+      }
+
+      k.beta(converged_beta(1));
 
       double se = pow(var_covar_mat(1,1), 0.5);
       k.standard_error(se);
