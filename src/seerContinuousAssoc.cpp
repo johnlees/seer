@@ -15,7 +15,7 @@ void linearTest(Kmer& k, const arma::vec& y_train, const double null_ll)
    doLinear(k, y_train, x_train);
 
    // Likelihood ratio test
-   k.lrt_p_val(likelihoodRatioTest(k, null_ll));
+   k.lrt_p_val(likelihoodRatioTest(k, null_ll, 1));
 }
 
 // Linear fit with covariates
@@ -27,7 +27,7 @@ void linearTest(Kmer& k, const arma::vec& y_train, const double null_ll, const a
    doLinear(k, y_train, x_train);
 
    // Likelihood ratio test
-   k.lrt_p_val(likelihoodRatioTest(k, null_ll));
+   k.lrt_p_val(likelihoodRatioTest(k, null_ll, 1));
 }
 
 // Run linear fit
@@ -77,12 +77,11 @@ void doLinear(Kmer& k, const arma::vec& y_train, const arma::mat& x_design)
    }
 
    // Extract p-values
-   double SSE = accu(square(y_train - predictLinearProbs(x_design, b)));
+   double SSE = 2*likelihood_fit(arma_to_dlib(b));
    double MSE = SSE / (x_design.n_rows - 2);
 
-   // LRT test
-   double ll = -likelihood_fit(arma_to_dlib(b)) / (SSE/x_design.n_rows);
-   k.log_likelihood(ll);
+   // For LRT test
+   k.log_likelihood(SSE);
 
    // Can end here for null-ll
    k.beta(b(1));
@@ -113,13 +112,5 @@ void doLinear(Kmer& k, const arma::vec& y_train, const arma::mat& x_design)
 
       k.add_covar_p(normalPval(W));
    }
-}
-
-// returns y' = bx
-arma::vec predictLinearProbs(const arma::mat& x, const arma::vec& b)
-{
-   const arma::vec y = x * b;
-
-   return y;
 }
 

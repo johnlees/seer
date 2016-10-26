@@ -31,7 +31,7 @@ void printHelp(boost::program_options::options_description& help);
 double chiTest(Kmer& k, const arma::vec& y);
 double welchTwoSamplet(const Kmer& k, const arma::vec& y);
 double nullLogLikelihood(const arma::mat& x, const arma::vec& y, const int continuous);
-double likelihoodRatioTest(Kmer& k, const double null_ll);
+double likelihoodRatioTest(Kmer& k, const double null_ll, const int continuous = 0);
 double normalPval(double testStatistic);
 
 int passStatsFilters(const cmdOptions& filterOptions, Kmer& k, const arma::vec& y, const int continuous_phenotype);
@@ -51,5 +51,4 @@ void linearTest(Kmer& k, const arma::vec& y_train, const double null_ll);
 void linearTest(Kmer& k, const arma::vec& y_train, const double null_ll, const arma::mat& mds);
 
 void doLinear(Kmer& k, const arma::vec& y_train, const arma::mat& x_design);
-arma::vec predictLinearProbs(const arma::mat& x, const arma::vec& b);
 

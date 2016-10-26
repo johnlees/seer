@@ -1,2 +1,2 @@
-sequence	maf	unadj_p_val	p_val	beta	se	covar1_p	covar2_p	covar3_p	comments
-AAAAAAAAAAAAAAAAAAAT	0.055	1.379e-02	4.776e-02	1.819e+00	9.189e-01	4.800e-01	9.382e-01	9.666e-01	bad-chisq	6259_5_16
+sequence	maf	chisq_p_val	wald_p_val	lrt_p_val	beta	se	covar1_p	covar2_p	covar3_p	comments
+AAAAAAAAAAAAAAAAAAAT	0.055	1.379e-02	4.776e-02	8.661e-04	1.819e+00	9.189e-01	4.800e-01	9.382e-01	9.666e-01	bad-chisq	6259_5_16

@@ -1,1 +1,1 @@
-sequence	maf	unadj_p_val	p_val	beta	se	comments
+sequence	maf	chisq_p_val	wald_p_val	lrt_p_val	beta	se	comments

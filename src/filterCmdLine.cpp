@@ -61,7 +61,7 @@ int parseCommandLine (int argc, char *argv[], po::variables_map& vm)
    {
       // Report errors from boost library
       std::cerr << "Error in command line input: " << e.what() << "\n";
-      std::cerr << "Run 'combineKmers --help' for full option listing\n\n";
+      std::cerr << "Run 'filter_seer --help' for full option listing\n\n";
       std::cerr << required << "\n" << other << "\n";
 
       failed = 1;

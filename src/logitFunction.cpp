@@ -27,18 +27,19 @@ double LogitLikelihood::operator()(const column_vector& parameters_in)
 
    // For the regularization, we ignore the first term, which is the intercept
    // term.
-   const double regularization = 0.5 * lambda *
+   double regularization = 0;
+   if (parameters.n_elem > 1 && lambda > 0)
+   {
+      regularization = 0.5 * lambda *
        arma::dot(parameters.col(0).subvec(1, parameters.n_elem - 1),
                  parameters.col(0).subvec(1, parameters.n_elem - 1));
+   }
 
    // Calculate vectors of sigmoids
    const arma::vec exponents = predictors * parameters;
    const arma::vec sigmoid = 1.0 / (1.0 + arma::exp(-exponents));
 
-   // Assemble full objective function.  Often the objective function and the
-   // regularization as given are divided by the number of features, but this
-   // doesn't actually affect the optimization result, so we'll just ignore those
-   // terms for computational efficiency.
+   // Assemble full objective function.
    double result = 0.0;
    for (size_t i = 0; i < responses.n_elem; ++i)
    {
@@ -60,15 +61,16 @@ column_vector LogitLikelihoodGradient::operator()(const column_vector& parameter
    arma::vec gradient(parameters.n_elem);
 
    // Regularization term.
-   arma::mat regularization;
-   regularization = lambda * parameters.col(0).subvec(1, parameters.n_elem - 1);
+   arma::mat regularization(parameters.n_elem,1,arma::fill::zeros);
+   if (parameters.n_elem > 1 && lambda > 0)
+   {
+      regularization.col(0).subvec(1, parameters.n_elem - 1) =
+         lambda * parameters.col(0).subvec(1, parameters.n_elem - 1);
+   }
 
-   const arma::vec sigmoids = 1 / (1 + arma::exp(-parameters(0, 0)
-       - predictors * parameters.col(0).subvec(1, parameters.n_elem - 1)));
+   const arma::vec sigmoids = 1 / (1 + arma::exp(- predictors * parameters));
 
-   gradient[0] = arma::accu(responses - sigmoids);
-   gradient.col(0).subvec(1, parameters.n_elem - 1) = predictors.t() * (responses -
-       sigmoids) - regularization;
+   gradient = predictors.t() * (responses - sigmoids) - regularization;
 
    return arma_to_dlib(gradient);
 }

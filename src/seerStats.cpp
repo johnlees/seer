@@ -139,38 +139,59 @@ double nullLogLikelihood(const arma::mat& x, const arma::vec& y, const int conti
    else
    {
       dlib::matrix<double,1,1> intercept;
-      intercept(0) = mean(y);
 
       if (continuous)
       {
+         intercept(0) = mean(y);
          LinearLikelihood likelihood_fit(x, y);
-         double SSE =  accu(square((y - x * intercept(0))));
-         null_ll = -likelihood_fit(intercept) / (SSE/x.n_rows);
+         null_ll = 2*likelihood_fit(intercept);
       }
       else
       {
+         intercept(0) = log(mean(y)/(1-mean(y))); // null is: intercept = log-odds of success
          LogitLikelihood likelihood_fit(x, y);
-         null_ll = -likelihood_fit(intercept);
+         null_ll = likelihood_fit(intercept);
       }
    }
    return null_ll;
 }
 
 // Likelihood-ratio test
-double likelihoodRatioTest(Kmer& k, const double null_ll)
+double likelihoodRatioTest(Kmer& k, const double null_ll, const int continuous)
 {
    double log_likelihood = k.log_likelihood();
-   double lrt_p = 0;
+   double lrt_p = 1;
    if (log_likelihood == 0 || null_ll == 0)
    {
       k.add_comment("zero-ll");
    }
    else
    {
-      double lrt = 2*(log_likelihood - null_ll);
+      double lrt = 0;
+      if (continuous)
+      {
+         // R0 = y - Xb for model 0 betas etc
+         // Using LRT = n * (1-R1/R0) as a quick estimate for sigma
+         // from econweb.rutgers.edu/klein/classes/fall08/e401/handouts/lrtests.pdf
+         //
+         // sigma = R0*R1 would be better, but doesn't matter too much as
+         // I don't think this will be too useful
+         //
+         // Properly in:
+         // MEASUREMENT SCIENCE REVIEW, Volume 9, Section 1, No. 1, 2009
+         // 10.2478/v10048-009-0003-9
+         // Exact Likelihood Ratio Test for the Parameters of the Linear
+         // Regression Model with Normal Errors
+         lrt = k.get_x().n_rows * (1-log_likelihood/null_ll);
+      }
+      else
+      {
+         lrt = pow(2*(log_likelihood - null_ll), 0.5);
+      }
+
       if (lrt > 0)
       {
-         lrt_p = normalPval(pow(lrt,0.5));
+         lrt_p = normalPval(lrt);
       }
    }
    return lrt_p;
