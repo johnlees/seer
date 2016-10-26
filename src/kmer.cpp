@@ -142,9 +142,9 @@ void Kmer::add_comment(const std::string& new_comment)
    }
 }
 
-int Kmer::num_occurrences() const
+size_t Kmer::num_occurrences() const
 {
-   int total_occurrences;
+   size_t total_occurrences;
    if (_x_set)
    {
       total_occurrences = (int) accu(_x);

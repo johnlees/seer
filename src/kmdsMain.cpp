@@ -69,7 +69,6 @@ int main (int argc, char *argv[])
    }
 
    arma::vec y = constructVecY(samples);
-   int continuous_phenotype = continuousPhenotype(samples);
 
    // Normal operation
    if (!vm.count("mds_concat"))
@@ -149,7 +148,7 @@ int main (int argc, char *argv[])
 
             // apply filters here
             int passed_filters = 0;
-            if (parameters.filter && passFilters(parameters, k, samples, y, continuous_phenotype, 0))
+            if (parameters.filter && passBasicFilters(parameters, k))
             {
                passed_filters = 1;
                filtered_file << dsm_line << "\n";

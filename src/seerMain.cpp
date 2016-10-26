@@ -158,7 +158,7 @@ int main (int argc, char *argv[])
                kmer_lines.push_back(k);
                tested_kmers++;
             }
-            else if (passFilters(parameters, k, samples, y, continuous_phenotype))
+            else if (passBasicFilters(parameters, k) && passStatsFilters(parameters, k, y, continuous_phenotype))
             {
 #ifdef SEER_DEBUG
                std::cerr << "kmer " + k.sequence() + " seems significant\n";

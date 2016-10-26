@@ -29,7 +29,7 @@ class Kmer: public Significant_kmer
 
       // nonmodifying operations
       int length() const { return _word.length(); }
-      int num_occurrences() const;
+      size_t num_occurrences() const;
       std::string occurrence(int i) const { return _samples[i]; }
       std::vector<std::string> occurrence_vector() const { return _samples; }
       arma::vec get_x() const { return _x; }

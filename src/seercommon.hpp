@@ -110,7 +110,5 @@ arma::mat encodeDummy(const std::vector<std::string>& in_col);
 int fileStat(const std::string& filename);
 
 // seerFilter headers
-int passFilters(const cmdOptions& filterOptions, Kmer& k, const std::vector<Sample>& samples, const arma::vec& y, const int continuous_phenotype, const bool do_stats = 1);
-int passBasicFilters(const Kmer& k, const int max_length, const int min_words, const int max_words);
-int passStatsFilters(Kmer& k, const arma::vec& y, const double chi_cutoff, const int continuous_phenotype);
+int passBasicFilters(const cmdOptions& filterOptions, const Kmer& k);
 

@@ -203,3 +203,25 @@ double normalPval(double testStatistic)
 
    return p_val;
 }
+
+int passStatsFilters(const cmdOptions& filterOptions, Kmer& k, const arma::vec& y, const int continuous_phenotype)
+{
+   int passed = 1;
+
+   if (continuous_phenotype)
+   {
+      k.unadj_p_val(welchTwoSamplet(k, y));
+   }
+   else
+   {
+      k.unadj_p_val(chiTest(k, y));
+   }
+
+   if (k.unadj() > filterOptions.chi_cutoff)
+   {
+      passed = 0;
+   }
+
+   return passed;
+}
+

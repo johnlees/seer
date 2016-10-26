@@ -34,6 +34,8 @@ double nullLogLikelihood(const arma::mat& x, const arma::vec& y, const int conti
 double likelihoodRatioTest(Kmer& k, const double null_ll);
 double normalPval(double testStatistic);
 
+int passStatsFilters(const cmdOptions& filterOptions, Kmer& k, const arma::vec& y, const int continuous_phenotype);
+
 // seerBinaryAssoc headers
 void logisticTest(Kmer& k, const arma::vec& y, const double null_ll);
 void logisticTest(Kmer& k, const arma::vec& y_train, const double null_ll, const arma::mat& mds);
