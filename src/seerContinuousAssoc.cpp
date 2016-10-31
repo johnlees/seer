@@ -15,7 +15,7 @@ void linearTest(Kmer& k, const arma::vec& y_train, const double null_ll)
    doLinear(k, y_train, x_train);
 
    // Likelihood ratio test
-   k.lrt_p_val(likelihoodRatioTest(k, null_ll, 1));
+   k.lrt_p_val(k.p_val());
 }
 
 // Linear fit with covariates
@@ -27,7 +27,7 @@ void linearTest(Kmer& k, const arma::vec& y_train, const double null_ll, const a
    doLinear(k, y_train, x_train);
 
    // Likelihood ratio test
-   k.lrt_p_val(likelihoodRatioTest(k, null_ll, 1));
+   k.lrt_p_val(k.p_val());
 }
 
 // Run linear fit
