@@ -50,6 +50,12 @@ else
    open(KMERS, $kmer_file) || die("Could not open kmer file $kmer_file: $!\n");
 
    my $header = <KMERS>;
+   my @header_fields = split("\t", $header);
+   my $lrt = 0;
+   if ($header_fields[4] eq "lrt_p_val")
+   {
+      $lrt = 1;
+   }
 
    my %points;
    while (my $sam_line = <SAM>)
@@ -80,6 +86,10 @@ else
          if ($map_qual > $min_qual && !($flag & 4))
          {
             my ($kmer, $maf, $unadj, $adj, @other) = split("\t", $kmer);
+            if ($lrt)
+            {
+               $adj = $other[0];
+            }
 
             my $log_p = 386; # Exponent limit of a double
             if ($adj > 0)
