@@ -109,7 +109,7 @@ double welchTwoSamplet(const Kmer& k, const arma::vec& y)
 
       // Calculate p-value from t distribution
       boost::math::students_t t_dist(df);
-      p_val = 2 * (1 - boost::math::cdf(t_dist, t));
+      p_val = 2 * (1 - boost::math::cdf(t_dist, std::abs(t)));
 #ifdef SEER_DEBUG
       std::cerr << "welch t:" << t << "df:" << df << "\n";
       std::cerr << "welch p-val:" << p_val << "\n";
