@@ -114,6 +114,13 @@ double welchTwoSamplet(const Kmer& k, const arma::vec& y)
       std::cerr << "welch t:" << t << "df:" << df << "\n";
       std::cerr << "welch p-val:" << p_val << "\n";
 #endif
+
+      // Seen some errors where cdf = 0, p = 2
+      // hack for now, but should just use regression on every site
+      if (p_val > 1)
+      {
+         p_val = 1;
+      }
    }
 
    return p_val;
