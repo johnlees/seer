@@ -135,10 +135,16 @@ int parseHeader(const std::string& header_line)
    {
       std::string col;
       iss >> col;
-      if (col.length() > 0)
+      if (col.length() > 0 && col != "samples_present") // Ignore samples present, which may appear after covars
       {
          num_cols++;
       }
+
+      if (num_cols == 1 && col != "sequence")
+      {
+         throw std::runtime_error("Could not parse header row of input file");
+      }
+
    }
    while(iss);
 
