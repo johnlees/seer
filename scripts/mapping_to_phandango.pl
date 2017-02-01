@@ -18,6 +18,7 @@ Creates a plot file for visualisation in phandango
 
    Optional
    -m, --map        Minimum mapping quality
+   --print_kmer     Also print k-mer sequence in output
 
    -h, --help       Displays this message
 
@@ -28,8 +29,9 @@ USAGE
 #****************************************************************************************#
 
 #* gets input parameters
-my ($kmer_file, $sam_file, $min_qual, $help);
+my ($kmer_file, $print_kmer, $sam_file, $min_qual, $help);
 GetOptions ("kmers|k=s"  => \$kmer_file,
+            "print_kmer" => \$print_kmer,
             "sam|s=s" => \$sam_file,
             "map|m=s" => \$min_qual,
             "help|h"     => \$help
@@ -108,7 +110,14 @@ else
    my @keys = sort { $points{$a}{start} <=> $points{$b}{start} } keys(%points);
    foreach my $kmer (@keys)
    {
-      print join("\t", "26", ".", $points{$kmer}{pos}, $points{$kmer}{pval}, "0") . "\n";
+      if (defined($print_kmer))
+      {
+         print join("\t", "26", $kmer, $points{$kmer}{pos}, $points{$kmer}{pval}, "0") . "\n";
+      }
+      else
+      {
+         print join("\t", "26", ".", $points{$kmer}{pos}, $points{$kmer}{pval}, "0") . "\n";
+      }
    }
 }
 
