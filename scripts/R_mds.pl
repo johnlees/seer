@@ -80,7 +80,7 @@ else
    my $dist_line = <DIST>;
    my @dist_cols = split(",", $dist_line);
 
-   if(scalar(@dist_cols) != scalar(@samples_out))
+   if(scalar(@dist_cols) != scalar(@samples))
    {
       die("Number of samples in $pheno does not match those in $distance_file\n");
    }
@@ -99,7 +99,7 @@ else
    close DIST;
 
    open(SAMPLES, ">$output_prefix.samples") || die("Could not write to $output_prefix.samples\n");
-   foreach my $sample (@samples_out)
+   foreach my $sample (@samples)
    {
       print SAMPLES $sample . "\n";
    }
