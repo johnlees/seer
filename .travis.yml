@@ -11,8 +11,8 @@ install:
    - wget http://www.cs.unc.edu/Research/compgeom/gzstream/gzstream.tgz
    - tar xzf gzstream.tgz
    - pushd gzstream && make && popd
-   - wget http://sourceforge.net/projects/arma/files/armadillo-6.700.6.tar.gz
-   - tar xzf armadillo-6.700.6.tar.gz
-   - pushd armadillo-6.700.6 && CXX=/usr/bin/g++-4.9 cmake . && make && sudo make install && popd
+   - wget http://sourceforge.net/projects/arma/files/armadillo-7.800.1.tar.xz
+   - tar xf armadillo-7.800.1.tar.xz
+   - pushd armadillo-7.800.1 && CXX=/usr/bin/g++-4.9 cmake . && make && sudo make install && popd
 
 script: CXX=/usr/bin/g++-4.9 make CPPFLAGS="-I../gzstream -I../dlib -D DLIB_NO_GUI_SUPPORT=1 -D DLIB_USE_BLAS=1 -D DLIB_USE_LAPACK=1 -D NO_HDF5=1" SEER_LDLIBS="-L../gzstream -lgzstream -lz -larmadillo -lboost_program_options -llapack -lblas -lpthread" && make test
