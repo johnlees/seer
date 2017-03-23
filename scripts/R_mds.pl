@@ -11,10 +11,12 @@ Usage: ./R_mds.pl -k <filtered_kmers.txt> -p <pheno_file>
 Projects distance matrix into lower number of dimensions
 Requires R and rhdf5 to be installed, see github wiki for more details
 
+NB ensure order in dist matrix and pheno file is the same!
+
    Options
 
    Required
-   -d, --dist       Distance matrix output by kmds
+   -d, --dist       Distance matrix output by kmds/mash
    -p, --pheno      Phenotype file used by seer
 
    Optional
@@ -71,10 +73,8 @@ else
       chomp $line_in;
       my @fields = split(/\t/, $line_in);
 
-      push(@samples, $fields[1]);
+      push(@samples, $fields[0]);
    }
-
-   my @samples_out = sort @samples;
 
    open(DIST, $distance_file) || die("Could not open distance file $distance_file: $!\n");
    my $dist_line = <DIST>;
