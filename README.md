@@ -3,19 +3,18 @@
 Sequence element enrichment analysis. This document contains
 installation instuctions. Usage can be found on the [wiki](https://github.com/johnlees/seer/wiki/Usage), and more information in the [paper](http://www.nature.com/articles/ncomms12797).
 
-Installation
-==============
-###Use a pre-compiled release
+## Installation
+### Use a pre-compiled release
 
 Head to the [release](https://github.com/johnlees/seer/releases) page and download and unpack the tarball. If you have the dependencies installed use the dynamic version, otherwise use the static version (tested on Ubuntu only; static_all should work on other 64-bit Linux platforms).
 
-###Use on a virtual machine
+### Use on a virtual machine
 
 We have a virtual machine, containing SEER and other useful bioinformatics programs, which is available at
 ftp://ftp.sanger.ac.uk/pub/pathogens/pathogens-vm/pathogens-vm.latest.ova
 and can be imported as an appliance in [VirtualBox](https://www.virtualbox.org/).
 
-###Compile source code
+### Compile source code
 
 First clone the repository
 
@@ -32,8 +31,7 @@ Currently tested on Linux only, installation should proceed as
 
 Full installation instructions are available <a href="#installation-on-ubuntubiolinux">below</a>
 
-Dependencies
---------------
+## Dependencies
 seer currently depends on
 
 - gzstream <http://www.cs.unc.edu/Research/compgeom/gzstream/>
@@ -49,7 +47,7 @@ You will also require
 
 You probably already have boost, HDF5 and dlib (as long as you did clone --recursive).
 
-###Installation on Ubuntu/biolinux
+### Installation on Ubuntu/biolinux
 
 Running the following commands will install seer
 
@@ -75,7 +73,7 @@ Running the following commands will install seer
     cd ..
     cd src && make CXX=/usr/bin/g++-4.9
 
-###General installation instructions
+### General installation instructions
 
 **gzstream**
 
@@ -142,6 +140,5 @@ do by running
     make CXX=g++-4.9
 
 
-Usage, interpretation of results, and troubleshooting
-=============
+## Usage, interpretation of results, and troubleshooting
 See the [wiki](https://github.com/johnlees/seer/wiki/Usage)

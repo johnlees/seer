@@ -138,6 +138,7 @@ arma::mat readHDF5(const std::string& file_name)
 
 arma::mat readMDS(const std::string& file_name, const std::vector<Sample>& sample_names)
 {
+   std::map<std::string,unsigned int> mds_idx;
    arma::mat MDS = readHDF5(file_name);
 
    // Check that the sample names match up
@@ -147,31 +148,40 @@ arma::mat readMDS(const std::string& file_name, const std::vector<Sample>& sampl
       std::ifstream samples_in(sample_name_file.c_str());
       if (samples_in)
       {
-         arma::uvec keep_indices(sample_names.size());
-         unsigned int sample_row = 0;
+         arma::uvec keep_indices(MDS.n_rows);
          unsigned int file_row = 0;
 
+         // Read in sample file to get MDS row order
          while (samples_in)
          {
             std::string sample_name;
             samples_in >> sample_name;
-
-            // Must be ordered, and lines in sample_names be a subset of what
-            // is in the file. Otherwise a non-compatible mds will be returned
-            // which will throw
-            if (sample_name == sample_names.at(sample_row).iid())
+            if (samples_in)
             {
-               keep_indices(sample_row) = file_row;
-               if (++sample_row >= sample_names.size())
-               {
-                  break;
-               }
+               mds_idx[sample_name] = file_row;
             }
             ++file_row;
          }
 
+         // Get MDS rows (using sample file read above) in same sorted order as
+         // sample vector
+         unsigned int sample_row = 0;
+         for (auto it = sample_names.begin(); it != sample_names.end(); ++it)
+         {
+            auto find_it = mds_idx.find(it->iid());
+            if (find_it == mds_idx.end())
+            {
+               throw std::runtime_error("Could not find sample " + it->iid() + " in the pheno file");
+            }
+            else
+            {
+               keep_indices(sample_row) = find_it->second;
+            }
+            sample_row++;
+         }
+
          // Only keep the rows where the pheno file has data
-         if (sample_row == sample_names.size())
+         if (mds_idx.size() >= sample_names.size())
          {
             MDS = MDS.rows(keep_indices);
          }
