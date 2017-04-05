@@ -148,7 +148,7 @@ arma::mat readMDS(const std::string& file_name, const std::vector<Sample>& sampl
       std::ifstream samples_in(sample_name_file.c_str());
       if (samples_in)
       {
-         arma::uvec keep_indices(MDS.n_rows);
+         arma::uvec keep_indices(sample_names.size());
          unsigned int file_row = 0;
 
          // Read in sample file to get MDS row order
