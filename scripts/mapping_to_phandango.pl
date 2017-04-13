@@ -68,18 +68,9 @@ else
       {
          my ($kmer_id, $flag, $chrom, $pos, $map_qual, $cigar, $mate_chrom, $mate_pos, $insert_size, $sequence, $quality, @optional) = split("\t", $sam_line);
 
-         # Get position, check for reverse complement
-         my ($end, $start);
-         if ($flag & 16)
-         {
-            $end = $pos;
-            $start = $pos - length($sequence) + 1;
-         }
-         else
-         {
-            $start = $pos;
-            $end = $pos + length($sequence) - 1;
-         }
+         # Get position
+         my $start = $pos;
+         my $end = $pos + length($sequence) - 1;
 
          my $kmer = <KMERS>;
          chomp $kmer;
@@ -91,6 +82,11 @@ else
             if ($lrt)
             {
                $adj = $other[0];
+            }
+
+            if ($kmer ne $sequence)
+            {
+               print STDERR "WARNING: line $kmer_id sequence mismatch. Are input files in same order?\n";
             }
 
             my $log_p = 386; # Exponent limit of a double
