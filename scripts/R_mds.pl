@@ -21,7 +21,7 @@ NB ensure order in dist matrix and pheno file is the same!
 
    Optional
    -o, --output     Output prefix (default 'all_structure')
-   --pc             Number of dimensions to project into (default 3)
+   --pc             Number of dimensions to project into (default 10)
    -R               R executable (default 'which R')
    -h, --help       Displays this message
 
@@ -52,7 +52,7 @@ else
    # Set defaults
    if (!defined($dimensions))
    {
-      $dimensions = 3;
+      $dimensions = 10;
    }
    if (!defined($R_exec))
    {

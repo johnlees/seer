@@ -15,7 +15,7 @@
 
 // Constants
 //    Default options
-const int pc_default = 3;
+const int pc_default = 10;
 const long int size_default = 1000000;
 
 // Structs

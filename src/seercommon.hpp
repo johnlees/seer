@@ -41,7 +41,7 @@
 #include "covar.hpp"
 
 // Constants
-const std::string VERSION = "1.2alpha3";
+const std::string VERSION = "1.2alpha4";
 //    Default options
 const double maf_default = 0.01;
 const long int max_length_default = 100;
