@@ -12,7 +12,7 @@ BINDIR=$(PREFIX)/bin
 #FILTER_LDLIBS=-L$(PREFIX)/lib -lboost_program_options -mkl
 # gcc
 CXXFLAGS=-Wall -O3 -std=c++11
-SEER_LDLIBS=-L../gzstream -L$(PREFIX)/lib -lhdf5 -lgzstream -lz -larmadillo -lboost_program_options -llapack -lblas -lpthread
+SEER_LDLIBS=-L../gzstream -L$(PREFIX)/lib -L/usr/local/hdf5/lib -lhdf5 -lgzstream -lz -larmadillo -lboost_program_options -llapack -lblas -lpthread
 MAP_LDLIBS=-L$(PREFIX)/lib -lboost_program_options -lpthread
 COMBINE_LDLIBS=-L../gzstream -L$(PREFIX)/lib -lgzstream -lz -lboost_program_options
 FILTER_LDLIBS=-L$(PREFIX)/lib -lboost_program_options
