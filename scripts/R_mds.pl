@@ -22,6 +22,7 @@ NB ensure order in dist matrix and pheno file is the same!
    Optional
    -o, --output     Output prefix (default 'all_structure')
    --pc             Number of dimensions to project into (default 10)
+   --no_hdf5        Write output as csv, use if seer compiled with 'NO_HDF5'
    -R               R executable (default 'which R')
    -h, --help       Displays this message
 
@@ -34,10 +35,11 @@ my $tmp_file_name = "mds_tmp.Rscript";
 #****************************************************************************************#
 
 #* gets input parameters
-my ($distance_file, $pheno, $output_prefix, $dimensions, $R_exec, $help);
+my ($distance_file, $pheno, $output_prefix, $dimensions, ,$no_hdf5, $R_exec, $help);
 GetOptions ("dist|d=s"  => \$distance_file,
             "pheno|p=s" => \$pheno,
             "output|o=s" => \$output_prefix,
+            "no_hdf5" => \$no_hdf5,
             "pc=i" => \$dimensions,
             "R=s" => \$R_exec,
             "help|h"     => \$help
@@ -108,7 +110,30 @@ else
    #****************************************************************************************#
    #* Rscript                                                                              *#
    #****************************************************************************************#
-   my $Rscript = <<RSCRIPT;
+   my $Rscript;
+   if ($no_hdf5)
+   {
+      $Rscript = <<RSCRIPT;
+distances <- read.csv("$distance_file", header=FALSE, stringsAsFactors=FALSE)
+projection <- cmdscale(distances, k = $dimensions, eig = T)
+covariates <- projection[["points"]]
+
+for (i in 1:$dimensions)
+{
+   covariates[,i] <- covariates[,i]/max(abs(covariates[,i]))
+}
+
+write.table(covariates, file="$output_prefix", quote=F, sep=",", row.names=F, col.names=F)
+
+pdf("scree_plot.pdf")
+plot(projection[[2]][1:30], type='l', xlab="Dimensions", ylab="Eigenvalue", main="Scree plot")
+dev.off()
+RSCRIPT
+
+   }
+   else
+   {
+      $Rscript = <<RSCRIPT;
 library(rhdf5)
 distances <- read.csv("$distance_file", header=FALSE, stringsAsFactors=FALSE)
 projection <- cmdscale(distances, k = $dimensions, eig = T)
@@ -127,6 +152,7 @@ pdf("scree_plot.pdf")
 plot(projection[[2]][1:30], type='l', xlab="Dimensions", ylab="Eigenvalue", main="Scree plot")
 dev.off()
 RSCRIPT
+   }
 
    open(RSCRIPT, ">$tmp_file_name") || die("Could not open $tmp_file_name: $!\n");
    print RSCRIPT $Rscript;
