@@ -73,6 +73,11 @@ Running the following commands will install seer
     cd ..
     cd src && make CXX=/usr/bin/g++-4.9
 
+If you are having trouble finding hdf5 (e.g. on Ubuntu 16.04) try
+running:
+
+    make CPPFLAGS="-I../gzstream -I../dlib -I/usr/include/hdf5/serial -D DLIB_NO_GUI_SUPPORT=1 -D DLIB_USE_BLAS=1 -D DLIB_USE_LAPACK=1"
+
 ### General installation instructions
 
 **gzstream**
