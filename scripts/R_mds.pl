@@ -6,7 +6,7 @@ use warnings;
 use Getopt::Long;
 
 my $usage_message = <<USAGE;
-Usage: ./R_mds.pl -k <filtered_kmers.txt> -p <pheno_file>
+Usage: ./R_mds.pl -d <distances.csv> -p <pheno_file>
 
 Projects distance matrix into lower number of dimensions
 Requires R and rhdf5 to be installed, see github wiki for more details
