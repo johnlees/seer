@@ -208,7 +208,7 @@ int main (int argc, char *argv[])
          threads[i].join();
 
          // Print in order when all threads complete
-         if (kmer_lines[i].p_val() < parameters.log_cutoff || kmer_lines[i].lrt_p_val() < parameters.log_cutoff)
+         if (!parameters.filter || kmer_lines[i].p_val() < parameters.log_cutoff || kmer_lines[i].lrt_p_val() < parameters.log_cutoff)
          {
             significant_kmers++;
             // Caclculate chisq value if not already done so in filtering
