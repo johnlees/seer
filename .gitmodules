@@ -1,7 +1,6 @@
 [submodule "dlib"]
-   path = dlib
-   url = https://github.com/davisking/dlib
-
+	path = dlib
+	url = https://github.com/davisking/dlib
 [submodule "gzstream"]
-   path = gzstream
-   url = https://github.com/kanedo/gzstream
+	path = gzstream
+	url = https://github.com/kanedo/gzstream
