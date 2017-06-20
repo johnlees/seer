@@ -1,5 +1,5 @@
-export PREFIX=${HOME}/software
-export BINDIR=$(PREFIX)/bin
+#export PREFIX=${HOME}/software
+#export BINDIR=$(PREFIX)/bin
 
 all:
 	cd src && $(MAKE) all

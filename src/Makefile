@@ -1,6 +1,6 @@
 # Default prefix. Can change this to system directories if needed
-PREFIX=${HOME}/software
-BINDIR=$(PREFIX)/bin
+#PREFIX=${HOME}/software
+#BINDIR=$(PREFIX)/bin
 
 # Intel compiler - uncomment if you have icpc and mkl.
 # gcc
