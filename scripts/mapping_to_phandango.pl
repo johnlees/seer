@@ -5,6 +5,27 @@ use warnings;
 
 use Getopt::Long;
 
+my %rev_map = (
+   A => "T",
+   T => "A",
+   C => "G",
+   G => "C",
+);
+
+sub rev_comp($)
+{
+   my ($seq) = @_;
+   my @chars = split(//, $seq);
+
+   my $rev;
+   for (my $i = scalar(@chars) - 1; $i < 0; $i--)
+   {
+      my $rev .= $rev_map{$chars[$i]};
+   }
+
+   return $rev;
+}
+
 my $usage_message = <<USAGE;
 Usage: ./mapping_to_phandango.pl -s <sam_file> -k <seer_kmers> > phandango.plot
 
@@ -84,7 +105,7 @@ else
                $adj = $other[0];
             }
 
-            if ($kmer ne $sequence)
+            if ($kmer ne $sequence && $kmer ne rev_comp($sequence))
             {
                print STDERR "WARNING: line $kmer_id sequence mismatch. Are input files in same order?\n";
             }
