@@ -96,7 +96,7 @@ double welchTwoSamplet(const Kmer& k, const arma::vec& y)
 
    // Calculate group means and variances
    double p_val = 0;
-   if (group1.n_elem != 0 && group2.n_elem != 0)
+   if (group1.n_elem >= 3 && group2.n_elem >= 3) // need >2 to get var
    {
       double x1 = mean(group1);
       double x2 = mean(group2);
