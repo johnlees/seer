@@ -110,10 +110,14 @@ else
                print STDERR "WARNING: line $kmer_id sequence mismatch. Are input files in same order?\n";
             }
 
-            my $log_p = 386; # Exponent limit of a double
+            my $log_p = 0;
             if ($adj > 0)
             {
                $log_p = -log($adj)/log(10);
+            }
+	    else
+	    {
+               print STDERR "$kmer_id has p-value zero\n";
             }
 
             $points{$kmer}{pval} = $log_p;
