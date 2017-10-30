@@ -8,9 +8,6 @@ before_install:
    - sudo apt-get install g++-4.9 liblapack-dev libboost-program-options-dev -y
 
 install:
-   - wget http://www.cs.unc.edu/Research/compgeom/gzstream/gzstream.tgz
-   - tar xzf gzstream.tgz
-   - pushd gzstream && make && popd
    - wget https://www.dropbox.com/s/n0zxh86y5nk65km/armadillo-6.100.1.tar.gz?dl=0
    - mv 'armadillo-6.100.1.tar.gz?dl=0' armadillo-6.100.1.tar.gz && tar xf armadillo-6.100.1.tar.gz
    - pushd armadillo-6.100.1 && CXX=/usr/bin/g++-4.9 cmake . && make && sudo make install && popd

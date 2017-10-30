@@ -1,8 +1,11 @@
 #export PREFIX=${HOME}/software
 #export BINDIR=$(PREFIX)/bin
 
-all:
+all: gzstream
 	cd src && $(MAKE) all
+
+gzstream:
+	cd gzstream && $(MAKE) gzstream
 
 clean:
 	cd src && $(MAKE) clean
