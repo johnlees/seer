@@ -2,7 +2,7 @@
 #export BINDIR=$(PREFIX)/bin
 
 all:
-	cd gzstream && $(MAKE)
+	cd gzstream && $(MAKE) clean && $(MAKE)
 	cd src && $(MAKE) all
 
 clean:
