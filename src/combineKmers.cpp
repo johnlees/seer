@@ -64,10 +64,8 @@ int main (int argc, char *argv[])
          std::cerr.flush();
 
          std::string kmer, abundance;
-         while (kmer_counts)
+         while (kmer_counts >> kmer >> abundance)
          {
-            kmer_counts >> kmer >> abundance;
-
             kmer_union[kmer].push_back(std::make_tuple(i, stoi(abundance)));
          }
       }
