@@ -3,7 +3,36 @@
 Sequence element enrichment analysis. This document contains
 installation instuctions. Usage can be found on the [wiki](https://github.com/johnlees/seer/wiki/Usage), and more information in the [paper](http://www.nature.com/articles/ncomms12797).
 
+**NOTE:** seer has now been superseeded by [pyseer](https://pyseer.readthedocs.io). We would recommend you use that implementation instead.
+
+## Usage, interpretation of results, and troubleshooting
+See the [wiki](https://github.com/johnlees/seer/wiki/Usage)
+
 ## Installation
+These options are roughly listed in increasing order of difficulty. seer only works on Linux.
+
+### Use bioconda
+
+Simply run:
+```
+conda install seer
+```
+
+If you do not have conda, first install [miniconda](https://conda.io/miniconda.html)
+then add the necessary channels:
+```
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+```
+
+### Use homebrew
+If you have homebrew, the following recipe is available:
+```
+brew tap tseemann/homebrew-bioinformatics-linux
+brew tap homebrew/science
+brew install seer
+```
 ### Use a pre-compiled release
 
 Head to the [release](https://github.com/johnlees/seer/releases) page and download and unpack the tarball. If you have the dependencies installed use the dynamic version, otherwise use the static version (tested on Ubuntu only; static_all should work on other 64-bit Linux platforms).
@@ -144,6 +173,3 @@ do by running
 
     make CXX=g++-4.9
 
-
-## Usage, interpretation of results, and troubleshooting
-See the [wiki](https://github.com/johnlees/seer/wiki/Usage)
