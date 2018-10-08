@@ -22,19 +22,19 @@ CPPFLAGS=-I$(PREFIX)/include -I../gzstream -I../dlib -I/usr/local/hdf5/include -
 # For static linking. To use type 'make static'
 # Requires icpc and mkl
 # Dynamically links libm, libz, libc
-COMMON_LDLIBS=-L../gzstream -L$(PREFIX)/lib -static-libstdc++ -static-libgcc -static-intel
-SEER_STATIC_LDLIBS=$(COMMON_LDLIBS) -Wl,-Bstatic -lhdf5 -lgzstream -larmadillo -lboost_program_options -Wl,-Bdynamic -lz -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_ilp64.a ${MKLROOT}/lib/intel64/libmkl_core.a ${MKLROOT}/lib/intel64/libmkl_sequential.a -Wl,--end-group
-MAP_STATIC_LDLIBS=$(COMMON_LDLIBS) -Wl,-Bstatic -lboost_program_options -Wl,-Bdynamic
-COMBINE_STATIC_LDLIBS=$(COMMON_LDLIBS) -Wl,-Bstatic -lgzstream -lboost_program_options -Wl,-Bdynamic -lz
-FILTER_STATIC_LDLIBS=-$(COMMON_LDLIBS) -Wl,-Bstatic -lboost_program_options -Wl,-Bdynamic
+#COMMON_LDLIBS=-L../gzstream -L$(PREFIX)/lib -static-libstdc++ -static-libgcc -static-intel
+#SEER_STATIC_LDLIBS=$(COMMON_LDLIBS) -Wl,-Bstatic -lhdf5 -lgzstream -larmadillo -lboost_program_options -Wl,-Bdynamic -lz -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_ilp64.a ${MKLROOT}/lib/intel64/libmkl_core.a ${MKLROOT}/lib/intel64/libmkl_sequential.a -Wl,--end-group
+#MAP_STATIC_LDLIBS=$(COMMON_LDLIBS) -Wl,-Bstatic -lboost_program_options -Wl,-Bdynamic
+#COMBINE_STATIC_LDLIBS=$(COMMON_LDLIBS) -Wl,-Bstatic -lgzstream -lboost_program_options -Wl,-Bdynamic -lz
+#FILTER_STATIC_LDLIBS=-$(COMMON_LDLIBS) -Wl,-Bstatic -lboost_program_options -Wl,-Bdynamic
 
 # Full static linking with gcc
-#COMMON_LDLIBS=-L../gzstream -L$(PREFIX)/lib -static -static-libstdc++ -static-libgcc
-#SEER_LDLIBS=$(COMMON_LDLIBS) -L../gzstream -L$(PREFIX)/lib -lhdf5 -lgzstream -lz -larmadillo -lboost_program_options -llapack -lblas -lpthread -lgfortran -lquadmath -lm
-#MAP_LDLIBS=$(COMMON_LDLIBS) -L$(PREFIX)/lib -lboost_program_options -lpthread
-#COMBINE_LDLIBS=$(COMMON_LDLIBS) -L../gzstream -L$(PREFIX)/lib -lgzstream -lz -lboost_program_options
-#FILTER_LDLIBS=$(COMMON_LDLIBS) -L$(PREFIX)/lib -lboost_program_options
-#
+COMMON_LDLIBS=-L../gzstream -L$(PREFIX)/lib -static -static-libstdc++ -static-libgcc
+SEER_LDLIBS=$(COMMON_LDLIBS) -L../gzstream -L$(PREFIX)/lib -lhdf5 -lgzstream -lz -larmadillo -lboost_program_options -llapack -lblas -lpthread -lgfortran -lquadmath -lm
+MAP_LDLIBS=$(COMMON_LDLIBS) -L$(PREFIX)/lib -lboost_program_options -lpthread
+COMBINE_LDLIBS=$(COMMON_LDLIBS) -L../gzstream -L$(PREFIX)/lib -lgzstream -lz -lboost_program_options
+FILTER_LDLIBS=$(COMMON_LDLIBS) -L$(PREFIX)/lib -lboost_program_options
+
 
 PROGRAMS=seer kmds map_back combineKmers filter_seer
 STATIC_PROGRAMS=seer_static kmds_static map_back_static combineKmers_static filter_seer_static
