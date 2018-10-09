@@ -30,10 +30,10 @@ CPPFLAGS=-I$(PREFIX)/include -I../gzstream -I../dlib -I/usr/local/hdf5/include -
 
 # Full static linking with gcc
 COMMON_LDLIBS=-L../gzstream -L$(PREFIX)/lib -static -static-libstdc++ -static-libgcc
-SEER_LDLIBS=$(COMMON_LDLIBS) -L../gzstream -L$(PREFIX)/lib -lhdf5 -lgzstream -lz -larmadillo -lboost_program_options -llapack -lblas -lpthread -lgfortran -lquadmath -lm
-MAP_LDLIBS=$(COMMON_LDLIBS) -L$(PREFIX)/lib -lboost_program_options -lpthread
-COMBINE_LDLIBS=$(COMMON_LDLIBS) -L../gzstream -L$(PREFIX)/lib -lgzstream -lz -lboost_program_options
-FILTER_LDLIBS=$(COMMON_LDLIBS) -L$(PREFIX)/lib -lboost_program_options
+SEER_STATIC_LDLIBS=$(COMMON_LDLIBS) -L../gzstream -L$(PREFIX)/lib -lhdf5 -lgzstream -lz -larmadillo -lboost_program_options -llapack -lblas -lpthread -lgfortran -lquadmath -lm
+MAP_STATIC_LDLIBS=$(COMMON_LDLIBS) -L$(PREFIX)/lib -lboost_program_options -lpthread
+COMBINE_STATIC_LDLIBS=$(COMMON_LDLIBS) -L../gzstream -L$(PREFIX)/lib -lgzstream -lz -lboost_program_options
+FILTER_STATIC_LDLIBS=$(COMMON_LDLIBS) -L$(PREFIX)/lib -lboost_program_options
 
 
 PROGRAMS=seer kmds map_back combineKmers filter_seer
