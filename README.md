@@ -1,9 +1,11 @@
 [![Build Status](https://travis-ci.org/johnlees/seer.svg?branch=master)](https://travis-ci.org/johnlees/seer)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/seer/badges/version.svg)](https://anaconda.org/bioconda/seer)
+
 # seer
 Sequence element enrichment analysis. This document contains
 installation instuctions. Usage can be found on the [wiki](https://github.com/johnlees/seer/wiki/Usage), and more information in the [paper](http://www.nature.com/articles/ncomms12797).
 
-**NOTE:** seer has now been superseeded by [pyseer](https://pyseer.readthedocs.io). We would recommend you use that implementation instead.
+**NOTE:** seer has now been superseded by [pyseer](https://pyseer.readthedocs.io). We would recommend you use that implementation instead.
 
 ## Usage, interpretation of results, and troubleshooting
 See the [wiki](https://github.com/johnlees/seer/wiki/Usage)
