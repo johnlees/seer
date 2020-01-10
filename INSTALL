@@ -1,0 +1,14 @@
+To prepare the submodule version for conda
+
+git clone --depth 1 https://github.com/boostorg/boost.git boost
+rmdir libs/program_options
+cd boost
+git clone --depth 50 https://github.com/boostorg/program_options.git libs/program_options
+git submodule update -q --init tools/boostdep
+git submodule update -q --init tools/build
+git submodule update -q --init tools/inspect
+<create user-config.jam>
+cd ../..
+gtar czf seer_v1.1.4_submodules.tar.gz seer
+
+build.sh for conda is in root
