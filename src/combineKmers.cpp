@@ -83,7 +83,7 @@ int main (int argc, char *argv[])
    {
       if (kmer_it->second.size() >= min_samples)
       {
-         out_file << kmer_it->first;
+         out_file << kmer_it->first << " |";
          for (auto sample_it = kmer_it->second.cbegin(); sample_it != kmer_it->second.cend(); ++sample_it)
          {
             int sample, abundance;
