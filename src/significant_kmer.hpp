@@ -12,6 +12,7 @@
 #include <iterator>
 #include <algorithm>
 #include <stdexcept>
+#include <limits>
 
 const int default_covars = 0;
 const int standard_cols = 8;
